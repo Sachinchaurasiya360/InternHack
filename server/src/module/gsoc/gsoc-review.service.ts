@@ -1,4 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
 import type { GsocReviewInput } from "./gsoc-review.validation.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -211,23 +212,19 @@ function buildFallback(input: GsocReviewInput): GsocReviewResult {
 
 export class GsocReviewService {
   async review(input: GsocReviewInput): Promise<GsocReviewResult> {
-    const apiKey = process.env["GEMINI_API_KEY"];
-    if (!apiKey) {
-      return buildFallback(input);
-    }
-
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const provider = getProviderForService("GSOC_REVIEW");
       const prompt = buildPrompt(input);
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().trim();
+      const response = await provider.generateText(prompt);
+      const text = response.text.trim();
       const parsed = parseReviewResponse(text);
 
       if (!parsed) {
+        logAIRequest("GSOC_REVIEW", response, false, "Failed to parse review response");
         return buildFallback(input);
       }
 
+      logAIRequest("GSOC_REVIEW", response, true);
       return parsed;
     } catch {
       return buildFallback(input);

@@ -1,30 +1,77 @@
 import { prisma } from "../../database/db.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
+import { cacheGet, cacheSet } from "../../utils/cache.js";
 import { Prisma } from "@prisma/client";
 import type { UserRole } from "@prisma/client";
 
-export class AdminPlatformService {
-  async getPlatformDashboard() {
-    const [totalStudents, recentUsers] = await Promise.all([
-      prisma.user.count({ where: { role: "STUDENT" } }),
-      prisma.user.findMany({
-        take: 10,
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          isActive: true,
-          createdAt: true,
-        },
-      }),
-    ]);
+type PlatformDashboardData = {
+  totalStudents: number;
+  totalJobs: number;
+  activeJobs: number;
+  totalApplications: number;
+  recentUsers: { id: number; name: string; email: string; role: UserRole; isActive: boolean; createdAt: Date }[];
+  recentJobs: {
+    id: number;
+    company: string | null;
+    role: string | null;
+    isActive: boolean;
+    expiresAt: Date;
+    createdAt: Date;
+    _count: { applications: number };
+  }[];
+};
 
-    return {
+const DASHBOARD_CACHE_KEY = "admin:platform-dashboard";
+
+export class AdminPlatformService {
+  async getPlatformDashboard(): Promise<PlatformDashboardData> {
+    const cached = await cacheGet<PlatformDashboardData>(DASHBOARD_CACHE_KEY);
+    if (cached) return cached;
+
+    const now = new Date();
+    const [totalStudents, totalJobs, activeJobs, totalApplications, recentUsers, recentJobs] =
+      await Promise.all([
+        prisma.user.count({ where: { role: "STUDENT" } }),
+        prisma.adminJob.count(),
+        prisma.adminJob.count({ where: { isActive: true, expiresAt: { gt: now } } }),
+        prisma.externalJobApplication.count(),
+        prisma.user.findMany({
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            isActive: true,
+            createdAt: true,
+          },
+        }),
+        prisma.adminJob.findMany({
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            company: true,
+            role: true,
+            isActive: true,
+            expiresAt: true,
+            createdAt: true,
+            _count: { select: { applications: true } },
+          },
+        }),
+      ]);
+
+    const data: PlatformDashboardData = {
       totalStudents,
+      totalJobs,
+      activeJobs,
+      totalApplications,
       recentUsers,
+      recentJobs,
     };
+    await cacheSet(DASHBOARD_CACHE_KEY, data, 60);
+    return data;
   }
 
   async getUsers(query: {

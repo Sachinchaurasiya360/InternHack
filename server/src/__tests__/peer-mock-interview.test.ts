@@ -1,12 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PeerMockInterviewService } from "../module/peer-mock-interview/peer-mock-interview.service.js";
+import { getGenericPrepMaterial } from "../module/peer-mock-interview/peer-mock-interview.prep.js";
 import { prisma } from "../database/db.js";
+import { sendEmail } from "../utils/email.utils.js";
 
 vi.mock("../database/db.js", () => {
   const mockPrisma = {
     $transaction: vi.fn(async (cb) => cb(mockPrisma)),
     peerMockInterviewPreference: {
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
       upsert: vi.fn(),
       findMany: vi.fn(),
     },
@@ -25,6 +28,9 @@ vi.mock("../database/db.js", () => {
       findUnique: vi.fn(),
       findMany: vi.fn(),
     },
+    verifiedSkill: {
+      findMany: vi.fn(),
+    },
     $queryRaw: vi.fn().mockResolvedValue([{ locked: true }]),
   };
   return { prisma: mockPrisma };
@@ -33,6 +39,13 @@ vi.mock("../database/db.js", () => {
 vi.mock("../utils/email.utils.js", () => ({
   sendEmail: vi.fn().mockResolvedValue(undefined),
   sendEmailBatch: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("../utils/cache.js", () => ({
+  cacheGet: vi.fn().mockResolvedValue(null),
+  cacheSet: vi.fn().mockResolvedValue(undefined),
+  cacheDel: vi.fn().mockResolvedValue(undefined),
+  cacheDelPattern: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe("PeerMockInterviewService", () => {
@@ -63,7 +76,7 @@ describe("PeerMockInterviewService", () => {
       vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValue([]);
 
       const res = await service.upsertPreference(1, "DSA", ["WEEKENDS"], true);
-      const prepFields = { targetRole: undefined, experienceLevel: undefined, focusAreas: [] };
+      const prepFields = { targetRole: undefined, experienceLevel: undefined, focusAreas: [], customTopic: null };
       expect(prisma.peerMockInterviewPreference.upsert).toHaveBeenCalledWith({
         where: { userId: 1 },
         update: { topic: "DSA", availability: ["WEEKENDS"], enabled: true, ...prepFields },
@@ -333,59 +346,226 @@ describe("PeerMockInterviewService", () => {
     });
   });
 
-  describe("runMatchingJob", () => {
-    it("should match eligible users in the pool", async () => {
-      const mockPrefs = [
+  const enrollment = {
+    roadmapId: 10,
+    experienceLevel: "SOME",
+    roadmap: { topicCount: 10 },
+    _count: { topicProgress: 4 },
+  };
+
+  const viewerPref = (tier: "FREE" | "PREMIUM") => ({
+    userId: 1,
+    topic: "DSA",
+    availability: ["WEEKENDS"],
+    enabled: true,
+    user: {
+      id: 1,
+      name: "Alice",
+      email: "alice@test.com",
+      subscriptionPlan: tier === "PREMIUM" ? "MONTHLY" : "NONE",
+      subscriptionStatus: tier === "PREMIUM" ? "ACTIVE" : "INACTIVE",
+      subscriptionEndDate: null,
+      roadmapEnrollments: [enrollment],
+    },
+  });
+
+  const poolCandidate = (id: number, name: string) => ({
+    userId: id,
+    topic: "DSA",
+    availability: ["WEEKENDS"],
+    enabled: true,
+    user: {
+      id,
+      name,
+      email: `${name.toLowerCase()}@test.com`,
+      college: "Test College",
+      profilePic: null,
+      roadmapEnrollments: [enrollment],
+    },
+  });
+
+  describe("getLiveMatches", () => {
+    it("should report optedIn false when the user has no enabled preference", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(null);
+
+      const res: any = await service.getLiveMatches(1);
+      expect(res.optedIn).toBe(false);
+      expect(res.matches).toEqual([]);
+    });
+
+    it("should rank skill-verified candidates first and lock beyond top 2 for free tier", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("FREE") as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([]) // active pairings
+        .mockResolvedValueOnce([]); // past partners
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        poolCandidate(2, "Bob"),
+        poolCandidate(3, "Carol"),
+        poolCandidate(4, "Dave"),
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([
+        { studentId: 3, skillName: "javascript", score: 90 },
+      ] as any);
+
+      const res: any = await service.getLiveMatches(1);
+
+      expect(res.tier).toBe("FREE");
+      expect(res.totalCandidates).toBe(3);
+      // Carol holds a verified DSA-relevant skill, so she outranks Bob/Dave.
+      expect(res.matches[0].userId).toBe(3);
+      expect(res.matches).toHaveLength(2);
+      // Locked entries must carry no identifying data.
+      expect(res.lockedMatches).toHaveLength(1);
+      expect(res.lockedMatches[0]).toEqual({
+        nameInitial: expect.any(String),
+        matchStrength: expect.any(String),
+      });
+    });
+
+    it("should unlock the full list for premium users", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("PREMIUM") as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        poolCandidate(2, "Bob"),
+        poolCandidate(3, "Carol"),
+        poolCandidate(4, "Dave"),
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
+
+      const res: any = await service.getLiveMatches(1);
+      expect(res.tier).toBe("PREMIUM");
+      expect(res.matches).toHaveLength(3);
+      expect(res.lockedMatches).toHaveLength(0);
+    });
+
+    it("should rank same-custom-topic candidates first for OTHER", async () => {
+      const otherViewer = { ...viewerPref("PREMIUM"), topic: "OTHER", customTopic: "Android" };
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(otherViewer as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        // Different roadmap so only the custom-topic bonus separates them.
+        { ...poolCandidate(2, "Bob"), topic: "OTHER", customTopic: "Blockchain" },
+        { ...poolCandidate(3, "Carol"), topic: "OTHER", customTopic: "  android " },
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
+
+      const res: any = await service.getLiveMatches(1);
+
+      // Carol named the same topic (normalized), so she outranks Bob.
+      expect(res.customTopic).toBe("Android");
+      expect(res.matches[0].userId).toBe(3);
+      expect(res.matches[0].customTopic).toBe("  android ");
+      expect(res.matches[1].userId).toBe(2);
+    });
+
+    it("should never display a match percent of 50 or below, even with zero compatibility", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("PREMIUM") as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      // Different roadmap, no shared availability, no verified skills: raw score 0.
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
         {
-          userId: 1,
-          topic: "DSA",
-          availability: ["WEEKENDS"],
+          ...poolCandidate(2, "Bob"),
+          availability: ["WEEKDAYS_MORNING"],
           user: {
-            id: 1,
-            name: "Alice",
-            email: "alice@test.com",
-            college: "Harvard",
-            roadmapEnrollments: [
-              {
-                roadmapId: 10,
-                experienceLevel: "BEGINNER",
-                roadmap: { topicCount: 10 },
-                _count: { topicProgress: 4 },
-              }
-            ]
-          }
+            ...poolCandidate(2, "Bob").user,
+            roadmapEnrollments: [{ ...enrollment, roadmapId: 99 }],
+          },
         },
-        {
-          userId: 2,
-          topic: "DSA",
-          availability: ["WEEKENDS"],
-          user: {
-            id: 2,
-            name: "Bob",
-            email: "bob@test.com",
-            college: "Harvard",
-            roadmapEnrollments: [
-              {
-                roadmapId: 10,
-                experienceLevel: "BEGINNER",
-                roadmap: { topicCount: 10 },
-                _count: { topicProgress: 4 },
-              }
-            ]
-          }
-        }
-      ];
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
 
-      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue(mockPrefs as any);
-      vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValue([]);
-      vi.mocked(prisma.dsaProblem.findMany).mockResolvedValue([{ id: 101, title: "Two Sum" }] as any);
-      vi.mocked(prisma.peerMockInterview.create).mockResolvedValue({ id: 99 } as any);
+      const res: any = await service.getLiveMatches(1);
+      expect(res.matches[0].matchPercent).toBeGreaterThan(50);
+      expect(res.matches[0].matchStrength).toBe("FAIR");
+    });
 
-      const res = await service.runMatchingJob();
-      expect(res.length).toEqual(1);
+    it("should fall back to the seed account when the topic pool is empty", async () => {
+      const sdViewer = { ...viewerPref("FREE"), topic: "SYSTEM_DESIGN" };
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(sdViewer as any);
+      // Only the active-pairings check runs before the empty-pool fallback kicks
+      // in; the past-partners lookup is never reached, so only one queued call.
+      vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValueOnce([]); // active pairings
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([]); // empty topic pool
+      vi.mocked(prisma.peerMockInterviewPreference.findFirst).mockResolvedValue({
+        userId: 99,
+        customTopic: null,
+        availability: ["WEEKENDS"],
+        user: { id: 99, name: "Seed Student", email: "mrsachinchaurasiya@gmail.com", college: "Test College", profilePic: null },
+      } as any);
+
+      const res: any = await service.getLiveMatches(1);
+
+      expect(prisma.peerMockInterviewPreference.findFirst).toHaveBeenCalledWith({
+        where: { enabled: true, user: { email: "mrsachinchaurasiya@gmail.com" } },
+        include: { user: expect.any(Object) },
+      });
+      expect(res.totalCandidates).toBe(1);
+      expect(res.matches).toHaveLength(1);
+      expect(res.matches[0].userId).toBe(99);
+      expect(res.matches[0].name).toBe("Seed Student");
+    });
+
+    it("should not fall back to the seed account itself, or one already paired", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("FREE") as any);
+      vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([]);
+      // Seed account resolves to the viewer's own userId (e.g. the viewer IS the seed account).
+      vi.mocked(prisma.peerMockInterviewPreference.findFirst).mockResolvedValue({
+        userId: 1,
+        customTopic: null,
+        availability: [],
+        user: { id: 1, name: "Alice", email: "mrsachinchaurasiya@gmail.com", college: null, profilePic: null },
+      } as any);
+
+      const res: any = await service.getLiveMatches(1);
+      expect(res.matches).toEqual([]);
+      expect(res.totalCandidates).toBe(0);
+    });
+
+    it("should report an active pairing instead of matches", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("PREMIUM") as any);
+      vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValueOnce([
+        { studentAId: 1, studentBId: 7 },
+      ] as any);
+
+      const res: any = await service.getLiveMatches(1);
+      expect(res.activePairing).toBe(true);
+      expect(res.matches).toEqual([]);
+    });
+  });
+
+  describe("selectMatch", () => {
+    it("should instantly create a pairing with the selected candidate", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("PREMIUM") as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        poolCandidate(2, "Bob"),
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
+      vi.mocked(prisma.dsaProblem.findMany).mockResolvedValue([{ id: 101 }] as any);
+      vi.mocked(prisma.peerMockInterview.findFirst).mockResolvedValue(null); // conflict re-check in tx
+      vi.mocked(prisma.peerMockInterview.create).mockResolvedValue({
+        id: 99,
+        topic: "DSA",
+        studentA: { id: 1, name: "Alice", email: "alice@test.com" },
+        studentB: { id: 2, name: "Bob", email: "bob@test.com" },
+        assignedProblem: { id: 101, title: "Two Sum", slug: "two-sum", difficulty: "Medium" },
+      } as any);
+
+      const res: any = await service.selectMatch(1, 2);
+
       expect(prisma.peerMockInterview.create).toHaveBeenCalledWith({
         data: {
           topic: "DSA",
+          customTopic: null,
           studentAId: 1,
           studentBId: 2,
           assignedProblemId: 101,
@@ -397,8 +577,170 @@ describe("PeerMockInterviewService", () => {
           studentA: { select: { id: true, name: true, email: true } },
           studentB: { select: { id: true, name: true, email: true } },
           assignedProblem: true,
-        }
+        },
       });
+      expect(res.id).toBe(99);
+      expect(res.preparationMaterial.type).toBe("DSA");
+    });
+
+    it("should block free users from pairing beyond their top matches", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("FREE") as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        poolCandidate(2, "Bob"),
+        poolCandidate(3, "Carol"),
+        poolCandidate(4, "Dave"),
+      ] as any);
+      // Bob and Carol hold verified skills so Dave ranks third (locked).
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([
+        { studentId: 2, skillName: "javascript", score: 80 },
+        { studentId: 3, skillName: "python", score: 85 },
+      ] as any);
+
+      await expect(service.selectMatch(1, 4)).rejects.toThrow("Upgrade to Premium");
+      expect(prisma.peerMockInterview.create).not.toHaveBeenCalled();
+    });
+
+    it("should embed the practice prompt in the pairing emails for non-DSA topics", async () => {
+      const sdViewer = { ...viewerPref("PREMIUM"), topic: "SYSTEM_DESIGN" };
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(sdViewer as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        { ...poolCandidate(2, "Bob"), topic: "SYSTEM_DESIGN" },
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
+      vi.mocked(prisma.peerMockInterview.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.peerMockInterview.create).mockResolvedValue({
+        id: 100,
+        topic: "SYSTEM_DESIGN",
+        assignedProblem: null,
+        studentA: { id: 1, name: "Alice", email: "alice@test.com" },
+        studentB: { id: 2, name: "Bob", email: "bob@test.com" },
+      } as any);
+
+      await service.selectMatch(1, 2);
+
+      // No DSA problem lookup for a non-DSA topic.
+      expect(prisma.dsaProblem.findMany).not.toHaveBeenCalled();
+      const prep = getGenericPrepMaterial("SYSTEM_DESIGN")!;
+      const calls = vi.mocked(sendEmail).mock.calls;
+      expect(calls).toHaveLength(2);
+      for (const [args] of calls) {
+        expect((args as any).subject).toContain("SYSTEM DESIGN");
+        expect((args as any).html).toContain(prep.prompt);
+        expect((args as any).html).toContain(prep.requirements[0]);
+      }
+    });
+
+    it("should record the shared custom topic on an OTHER pairing and use it in emails", async () => {
+      const otherViewer = { ...viewerPref("PREMIUM"), topic: "OTHER", customTopic: "Android" };
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(otherViewer as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([
+        { ...poolCandidate(2, "Bob"), topic: "OTHER", customTopic: "android" },
+      ] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
+      vi.mocked(prisma.peerMockInterview.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.peerMockInterview.create).mockResolvedValue({
+        id: 101,
+        topic: "OTHER",
+        customTopic: "Android",
+        assignedProblem: null,
+        studentA: { id: 1, name: "Alice", email: "alice@test.com" },
+        studentB: { id: 2, name: "Bob", email: "bob@test.com" },
+      } as any);
+
+      await service.selectMatch(1, 2);
+
+      expect(prisma.peerMockInterview.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ topic: "OTHER", customTopic: "Android" }),
+        }),
+      );
+      const calls = vi.mocked(sendEmail).mock.calls;
+      expect(calls).toHaveLength(2);
+      for (const [args] of calls) {
+        expect((args as any).subject).toContain("Android");
+        expect((args as any).html).toContain("custom topic");
+      }
+    });
+
+    it("should reject a candidate who is no longer in the pool", async () => {
+      vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(viewerPref("PREMIUM") as any);
+      vi.mocked(prisma.peerMockInterview.findMany)
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      vi.mocked(prisma.peerMockInterviewPreference.findMany).mockResolvedValue([] as any);
+      vi.mocked(prisma.verifiedSkill.findMany).mockResolvedValue([]);
+
+      await expect(service.selectMatch(1, 42)).rejects.toThrow("no longer available");
+    });
+  });
+
+  describe("declinePairing", () => {
+    it("should cancel a pending pairing and notify the partner", async () => {
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        topic: "DSA",
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.updateMany).mockResolvedValue({ count: 1 } as any);
+
+      const res: any = await service.declinePairing(1, 5);
+      expect(prisma.peerMockInterview.updateMany).toHaveBeenCalledWith({
+        where: { id: 5, status: "PENDING_SCHEDULE" },
+        data: { status: "CANCELLED" },
+      });
+      expect(res.status).toBe("CANCELLED");
+    });
+
+    it("should refuse to decline a scheduled pairing", async () => {
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "SCHEDULED",
+        topic: "DSA",
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+
+      await expect(service.declinePairing(1, 5)).rejects.toThrow("can be declined");
+      expect(prisma.peerMockInterview.updateMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("getGenericPrepMaterial", () => {
+    it("should provide prep material for every topic except DSA", () => {
+      // DSA gets a concrete assigned problem instead of generic prep.
+      const genericTopics = [
+        "SYSTEM_DESIGN",
+        "FRONTEND",
+        "BACKEND",
+        "BEHAVIORAL",
+        "DEVOPS",
+        "DATA_SCIENCE",
+      ] as const;
+      for (const topic of genericTopics) {
+        const prep = getGenericPrepMaterial(topic);
+        expect(prep, `missing prep material for ${topic}`).not.toBeNull();
+        expect(prep!.prompt.length).toBeGreaterThan(0);
+        expect(prep!.requirements.length).toBeGreaterThan(0);
+        expect(prep!.followUpQuestions.length).toBeGreaterThan(0);
+      }
+      expect(getGenericPrepMaterial("DSA")).toBeNull();
     });
   });
 });

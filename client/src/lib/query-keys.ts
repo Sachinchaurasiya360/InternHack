@@ -1,17 +1,4 @@
 export const queryKeys = {
-  // Jobs
-  jobs: {
-    all: ["jobs"] as const,
-    list: (params?: Record<string, string | number | boolean | undefined>) =>
-      ["jobs", "list", params] as const,
-    detail: (id: string | number) => ["jobs", "detail", id] as const,
-    related: (id: string | number) => ["jobs", "related", id] as const,
-  },
-  savedJobs: {
-    all: ["saved-jobs"] as const,
-    list: () => ["saved-jobs", "list"] as const,
-    check: (jobId: string | number) => ["saved-jobs", "check", jobId] as const,
-  },
   // Hackathons
   hackathons: {
     all: ["hackathons"] as const,
@@ -23,10 +10,6 @@ export const queryKeys = {
   applications: {
     all: ["applications"] as const,
     mine: () => ["applications", "mine"] as const,
-    progress: (id: string | number) =>
-      ["applications", "progress", id] as const,
-    statusByJob: (jobId: string | number) =>
-      ["applications", "status-by-job", jobId] as const,
   },
 
   // ATS
@@ -112,8 +95,6 @@ export const queryKeys = {
     featured: () => ["blog", "featured"] as const,
     related: (slug: string) => ["blog", "related", slug] as const,
     byTags: (tags: string) => ["blog", "by-tags", tags] as const,
-    admin: (params?: Record<string, string | number>) =>
-      ["blog", "admin", params] as const,
   },
 
   // Aptitude
@@ -159,6 +140,8 @@ export const queryKeys = {
   },
   
   externalJobs: {
+    list: (params?: Record<string, string | number | undefined>) =>
+      ["external-job", "list", params] as const,
     detail: (slug: string) => ["external-job", slug] as const,
     similar: (id: string | number) => ["external-job-similar", id] as const,
     status: (id: string | number) => ["external-job-status", id] as const,
@@ -231,6 +214,8 @@ export const queryKeys = {
     list: (name: string, page?: number) => ["dsa", "list", name, page] as const,
     submissions: (problemId: number) =>
       ["dsa", "submissions", problemId] as const,
+    testCases: (problemId: number) =>
+      ["dsa", "testcases", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
@@ -265,6 +250,7 @@ export const queryKeys = {
   peerMockInterview: {
     preferences: () => ["peer-mock-interview", "preferences"] as const,
     upcoming: () => ["peer-mock-interview", "upcoming"] as const,
+    matches: () => ["peer-mock-interview", "matches"] as const,
     history: (userId?: number) => ["peer-mock-interview", "history", userId] as const,
   },
 

@@ -1,6 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
-import { executeCode, LANGUAGE_IDS } from "../../utils/judge0.utils.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import {
@@ -16,11 +14,7 @@ interface TestCaseResult {
   passed: boolean;
   label: string | null;
   timeMs: number;
-  memoryKb: number;
-  statusId: number;
-  statusDescription: string;
-  stderr: string | null;
-  compileOutput: string | null;
+  error?: string | null;
 }
 
 // In-memory cache for aggregation queries that scan all problems (companies/patterns).
@@ -1064,8 +1058,7 @@ export class DsaService {
     constraints: string | null;
     difficulty: string;
   }): Promise<{ input: string; expected: string; label: string }[]> {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const provider = getProviderForService("DSA_TESTCASE_GEN");
 
     const prompt = `You are a competitive programming test case generator.
 
@@ -1096,8 +1089,8 @@ RULES:
 Return ONLY a JSON array, no markdown fences:
 [{"input":"...","expected":"...","label":"Basic case 1"},...]`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text().trim();
+    const response = await provider.generateText(prompt);
+    const text = response.text.trim();
 
     let cleaned = text;
     if (cleaned.startsWith("```")) {
@@ -1109,6 +1102,7 @@ Return ONLY a JSON array, no markdown fences:
       if (!Array.isArray(parsed) || parsed.length === 0) {
         throw new Error("AI returned empty or non-array result");
       }
+      logAIRequest("DSA_TESTCASE_GEN", response, true);
       return parsed.map((tc: Record<string, unknown>) => ({
         input: String(tc.input ?? ""),
         expected: String(tc.expected ?? ""),
@@ -1118,99 +1112,79 @@ Return ONLY a JSON array, no markdown fences:
       const arrMatch = cleaned.match(/\[[\s\S]*\]/);
       if (arrMatch) {
         const parsed = JSON.parse(arrMatch[0]);
+        logAIRequest("DSA_TESTCASE_GEN", response, true);
         return parsed.map((tc: Record<string, unknown>) => ({
           input: String(tc.input ?? ""),
           expected: String(tc.expected ?? ""),
           label: String(tc.label ?? "Test case"),
         }));
       }
+      logAIRequest("DSA_TESTCASE_GEN", response, false, "Failed to parse AI-generated test cases");
       throw new Error("Failed to parse AI-generated test cases");
     }
   }
 
   // ── Code execution ──
+  // Code runs entirely in the student's browser (Web Worker for JS, Pyodide
+  // for Python — see client/src/module/student/dsa/lib/dsa-runner.ts). The
+  // server never executes untrusted code; it only knows the stdin/expected
+  // pairs (getTestCasesForRun withholds `expected` until after submission)
+  // and authoritatively compares the client-reported actual output.
 
-  async executeCodeAgainstTestCases(
+  /** Test cases to run against, without the expected output (withheld until after submission). */
+  async getTestCasesForRun(problemId: number) {
+    const testCases = await this.getOrGenerateTestCases(problemId);
+    return testCases.map((tc) => ({ id: tc.id, input: tc.input, label: tc.label }));
+  }
+
+  async submitExecutionResults(
     studentId: number,
     problemId: number,
     language: string,
     code: string,
+    clientResults: { testCaseId: number; actual: string; timeMs: number; error?: string }[],
   ) {
-    const languageId = LANGUAGE_IDS[language];
-    if (!languageId) throw new Error(`Unsupported language: ${language}`);
-
-    const testCases = await this.getOrGenerateTestCases(problemId);
+    const testCases = await prisma.dsaTestCase.findMany({
+      where: { problemId },
+      orderBy: { orderIndex: "asc" },
+    });
     if (testCases.length === 0) throw new Error("No test cases available");
+
+    const byTestCaseId = new Map(clientResults.map((r) => [r.testCaseId, r]));
 
     const results: TestCaseResult[] = [];
     let maxTime = 0;
-    let maxMemory = 0;
 
     for (const tc of testCases) {
-      try {
-        const result = await executeCode(code, languageId, tc.input);
+      const clientResult = byTestCaseId.get(tc.id);
+      const expectedOutput = tc.expected.trim();
 
-        const actualOutput = (result.stdout ?? "").trim();
-        const expectedOutput = tc.expected.trim();
-        const passed = actualOutput === expectedOutput;
-
-        const timeMs = result.time
-          ? Math.round(parseFloat(result.time) * 1000)
-          : 0;
-        const memoryKb = result.memory ?? 0;
-        if (timeMs > maxTime) maxTime = timeMs;
-        if (memoryKb > maxMemory) maxMemory = memoryKb;
-
+      if (!clientResult) {
         results.push({
           input: tc.input,
           expected: expectedOutput,
-          actual: actualOutput,
-          passed,
-          label: tc.label,
-          timeMs,
-          memoryKb,
-          statusId: result.status.id,
-          statusDescription: result.status.description,
-          stderr: result.stderr,
-          compileOutput: result.compile_output,
-        });
-
-        // On compile/runtime error, stop early
-        if (result.status.id !== 3 && result.status.id !== 4) {
-          for (let i = results.length; i < testCases.length; i++) {
-            const skipped = testCases[i]!;
-            results.push({
-              input: skipped.input,
-              expected: skipped.expected.trim(),
-              actual: "",
-              passed: false,
-              label: skipped.label,
-              timeMs: 0,
-              memoryKb: 0,
-              statusId: -1,
-              statusDescription: "Not executed",
-              stderr: null,
-              compileOutput: null,
-            });
-          }
-          break;
-        }
-      } catch (err: unknown) {
-        results.push({
-          input: tc.input,
-          expected: tc.expected.trim(),
           actual: "",
           passed: false,
           label: tc.label,
           timeMs: 0,
-          memoryKb: 0,
-          statusId: -1,
-          statusDescription:
-            err instanceof Error ? err.message : "Execution failed",
-          stderr: null,
-          compileOutput: null,
+          error: "Not executed",
         });
+        continue;
       }
+
+      const actualOutput = clientResult.actual.trim();
+      const passed = !clientResult.error && actualOutput === expectedOutput;
+      if (clientResult.timeMs > maxTime) maxTime = clientResult.timeMs;
+
+      results.push({
+        input: tc.input,
+        expected: expectedOutput,
+        actual: actualOutput,
+        passed,
+        label: tc.label,
+        timeMs: clientResult.timeMs,
+        error: clientResult.error ?? null,
+      });
     }
 
     const passedCount = results.filter((r) => r.passed).length;
@@ -1226,7 +1200,7 @@ Return ONLY a JSON array, no markdown fences:
         total: testCases.length,
         allPassed,
         timeMs: maxTime,
-        memoryKb: maxMemory,
+        memoryKb: 0,
         results: JSON.stringify(results),
       },
     });

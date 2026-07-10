@@ -33,10 +33,6 @@ const LoginPage = lazyWithRetry(() => import("./module/auth/LoginPage"));
 const RegisterPage = lazyWithRetry(() => import("./module/auth/RegisterPage"));
 const VerifyEmailPage = lazyWithRetry(() => import("./module/auth/VerifyEmailPage"));
 const ForgotPasswordPage = lazyWithRetry(() => import("./module/auth/ForgotPasswordPage"));
-const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
-const JobDetailPage = lazyWithRetry(() => import("./module/student/jobs/JobDetailPage"));
-const JobLandingPage = lazyWithRetry(() => import("./module/student/jobs/JobLandingPage"));
-const SavedJobsPage = lazyWithRetry(() => import("./module/student/jobs/SavedJobsPage"));
 const ScrapedJobsPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobsPage"));
 const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
 const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
@@ -67,6 +63,7 @@ const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/s
 const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
 const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
 const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/YCCompanyDetailPage"));
+const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
@@ -83,10 +80,8 @@ const AboutPage = lazyWithRetry(() => import("./module/legal/AboutPage"));
 const RefundPage = lazyWithRetry(() => import("./module/legal/RefundPage"));
 
 // Student pages
-const ApplyPage = lazyWithRetry(() => import("./module/student/applications/ApplyPage"));
 const StudentLayout = lazyWithRetry(() => import("./module/student/StudentLayout"));
 const MyApplicationsPage = lazyWithRetry(() => import("./module/student/applications/MyApplicationsPage"));
-const ApplicationProgressPage = lazyWithRetry(() => import("./module/student/applications/ApplicationProgressPage"));
 const AtsLandingPage = lazyWithRetry(() => import("./module/student/ats/AtsLandingPage"));
 const AtsScorePage = lazyWithRetry(() =>
   import("./module/student/ats/AtsScorePage").then((m) => ({
@@ -215,14 +210,11 @@ const AdminLayout = lazyWithRetry(() => import("./module/admin/AdminLayout"));
 const AdminDashboard = lazyWithRetry(() => import("./module/admin/AdminDashboard"));
 const UsersListPage = lazyWithRetry(() => import("./module/admin/users/UsersListPage"));
 const UserDetailPage = lazyWithRetry(() => import("./module/admin/users/UserDetailPage"));
-const AdminJobsListPage = lazyWithRetry(() => import("./module/admin/jobs/AdminJobsListPage"));
 const ErrorLogsPage = lazyWithRetry(() => import("./module/admin/activity/ActivityLogsPage"));
 const AdminCompaniesPage = lazyWithRetry(() => import("./module/admin/companies/AdminCompaniesPage"));
 const AdminReviewsPage = lazyWithRetry(() => import("./module/admin/reviews/AdminReviewsPage"));
 const AdminContributionsPage = lazyWithRetry(() => import("./module/admin/contributions/AdminContributionsPage"));
 const AdminSubscribersPage = lazyWithRetry(() => import("./module/admin/AdminSubscribersPage"));
-const AdminBlogPage = lazyWithRetry(() => import("./module/admin/blog/AdminBlogPage"));
-const AdminBlogEditor = lazyWithRetry(() => import("./module/admin/blog/AdminBlogEditor"));
 const AdminDsaPage = lazyWithRetry(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazyWithRetry(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazyWithRetry(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
@@ -233,24 +225,6 @@ const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broad
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
 const AdminExpertAvailabilityPage = lazyWithRetry(() => import("./module/admin/expert-availability/AdminExpertAvailabilityPage"));
-const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
-
-function JobBrowseOrRedirect() {
-  const { isAuthenticated, user } = useAuthStore();
-  if (isAuthenticated && user?.role === "STUDENT") {
-    return <Navigate to="/student/jobs" replace />;
-  }
-  return <JobBrowsePage />;
-}
-
-function JobDetailOrRedirect() {
-  const { isAuthenticated, user } = useAuthStore();
-  const { id } = useParams();
-  if (isAuthenticated && user?.role === "STUDENT") {
-    return <Navigate to={`/student/jobs/${id}`} replace />;
-  }
-  return <JobDetailPage />;
-}
 
 function CompanyListOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -276,11 +250,6 @@ function YCCompanyOrRedirect() {
     return <Navigate to={`/student/yc/${slug}`} replace />;
   }
   return <YCCompanyDetailPage />;
-}
-
-function ApplyRedirect() {
-  const { jobId } = useParams();
-  return <Navigate to={`/student/jobs/${jobId}/apply`} replace />;
 }
 
 function ProfileRedirect() {
@@ -322,9 +291,6 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/verify/:token" element={<SkillVerificationBadgePage />} />
-            <Route path="/jobs" element={<JobBrowseOrRedirect />} />
-            <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
-            <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
             <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
             <Route path="/internships" element={<GovInternshipsPage />} />
             <Route path="/external-jobs" element={<ScrapedJobsPage />} />
@@ -481,19 +447,14 @@ function App() {
             <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
 
             {/* Student protected routes */}
-            <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyRedirect /></ProtectedRoute>} />
             <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
               <Route index element={<Navigate to="applications" replace />} />
               <Route path="jobs" element={<JobBrowsePage />} />
-              <Route path="jobs/saved" element={<SavedJobsPage />} />
-              <Route path="jobs/:id" element={<JobDetailPage />} />
-              <Route path="jobs/:id/apply" element={<ApplyPage />} />
               <Route path="internships" element={<GovInternshipsPage />} />
               <Route path="companies" element={<CompanyListPage />} />
               <Route path="companies/:slug" element={<CompanyDetailPage />} />
               <Route path="yc/:slug" element={<YCCompanyDetailPage />} />
               <Route path="applications" element={<MyApplicationsPage />} />
-              <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
               <Route path="ats" element={<AtsLandingPage />} />
               <Route path="ats/score" element={<AtsScorePage />} />
               <Route path="ats/resume-generator" element={<ResumeGeneratorPage />} />
@@ -556,7 +517,6 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="users" element={<UsersListPage />} />
               <Route path="users/:id" element={<UserDetailPage />} />
-              <Route path="jobs" element={<AdminJobsListPage />} />
               <Route path="errors" element={<ErrorLogsPage />} />
               <Route path="companies" element={<AdminCompaniesPage />} />
               <Route path="reviews" element={<AdminReviewsPage />} />
@@ -572,10 +532,6 @@ function App() {
               <Route path="expert-availability" element={<AdminExpertAvailabilityPage />} />
               <Route path="signals" element={<AdminSignalsPage />} />
               <Route path="broadcast-email" element={<AdminBroadcastEmailPage />} />
-              <Route path="blog" element={<AdminBlogPage />} />
-              <Route path="blog/editor" element={<AdminBlogEditor />} />
-              <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-              <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>
 

@@ -142,6 +142,7 @@ export type PeerMockInterviewStatus = "PENDING_SCHEDULE" | "SCHEDULED" | "COMPLE
 export interface PeerMockInterview {
   id: number;
   topic: string;
+  customTopic?: string | null;
   studentAId: number | null;
   studentBId: number | null;
   assignedProblemId: number | null;
@@ -174,4 +175,38 @@ export interface MockInterviewPreparationMaterial {
     objectives?: string[];
     followUpQuestions: string[];
   };
+}
+
+// Live peer matching
+export type PeerMatchStrength = "STRONG" | "GOOD" | "FAIR";
+
+export interface PeerMatchCandidate {
+  userId: number;
+  name: string;
+  college: string | null;
+  profilePic: string | null;
+  matchPercent: number;
+  matchStrength: PeerMatchStrength;
+  customTopic?: string | null;
+  sharedAvailability: string[];
+  hasRoadmapMatch: boolean;
+  verifiedSkills: { skillName: string; score: number }[];
+}
+
+// Locked entries carry no identifying data; the server only sends an initial
+// and the strength band for the blurred premium-upsell cards.
+export interface PeerLockedMatch {
+  nameInitial: string;
+  matchStrength: PeerMatchStrength;
+}
+
+export interface PeerMatchListResponse {
+  optedIn: boolean;
+  activePairing: boolean;
+  tier: "FREE" | "PREMIUM";
+  topic?: string;
+  customTopic?: string | null;
+  matches: PeerMatchCandidate[];
+  lockedMatches: PeerLockedMatch[];
+  totalCandidates: number;
 }

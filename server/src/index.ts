@@ -67,7 +67,6 @@ import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
 import { startOpensourceRepoStatsCron, stopOpensourceRepoStatsCron } from "./cron/opensource-repo-stats.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
-import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
@@ -426,18 +425,13 @@ const server = app.listen(PORT, async () => {
     fn: () => stopDeadlineAlertCron(),
   });
 
-  // Start weekly peer mock interview matching from one owner only in production.
+  // Peer mock interview matching is live (students browse and pair via the
+  // /matches endpoints), so there is no match cron anymore. Only the session
+  // reminders still run on a schedule, from one owner only in production.
   const runPeerMockInterviewCron =
     process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] === "true" ||
     (process.env["NODE_ENV"] !== "production" && process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] !== "false");
   if (runPeerMockInterviewCron) {
-    startPeerMockInterviewMatchCron();
-    shutdownManager.register({
-      name: "Peer Mock Interview Match Cron",
-      priority: 10,
-      fn: () => stopPeerMockInterviewMatchCron(),
-    });
-
     startPeerMockInterviewRemindersCron();
     shutdownManager.register({
       name: "Peer Mock Interview Reminders Cron",
@@ -445,7 +439,7 @@ const server = app.listen(PORT, async () => {
       fn: () => stopPeerMockInterviewRemindersCron(),
     });
   } else {
-    logger.info("Peer mock interview match cron disabled on this process");
+    logger.info("Peer mock interview reminders cron disabled on this process");
   }
 
   // Env var names kept as-is (RUN_GITHUB_CONTRIBUTIONS_CRON / GITHUB_CONTRIBUTIONS_CRON)

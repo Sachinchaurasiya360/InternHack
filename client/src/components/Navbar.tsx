@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "Jobs", href: "/jobs" },
+  { label: "Jobs", href: "/external-jobs" },
   { label: "Learn", href: "/learn" },
   { label: "Companies", href: "/companies" },
   { label: "Blog", href: "/blog" },
@@ -92,12 +92,10 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 if (item.href === "/") {
                   return location.pathname === "/";
                 }
-                if (item.href === "/jobs") {
+                if (item.href === "/external-jobs") {
                   return (
                     location.pathname === "/jobs" ||
                     location.pathname.startsWith("/jobs/") ||
-                    location.pathname === "/student/jobs" ||
-                    location.pathname.startsWith("/student/jobs/") ||
                     location.pathname === "/internships" ||
                     location.pathname.startsWith("/internships/") ||
                     location.pathname === "/student/internships" ||

@@ -20,7 +20,7 @@ const OPTIONS = [
     description:
       "Practice 1-on-1 with fellow students on your roadmap. Coordinate sessions, solve assigned problems, and review each other's performance.",
     icon: Users,
-    tags: ["Weekly matches", "Collaborative"],
+    tags: ["Instant matches", "Collaborative"],
   },
 ] as const;
 
@@ -147,7 +147,7 @@ export default function MockInterviewLandingPage() {
               {
                 icon: Calendar,
                 label: "flexible timing",
-                sub: "expert on your schedule, peers weekly",
+                sub: "expert on your schedule, peers instantly",
               },
             ].map((f) => (
               <div

@@ -10,11 +10,9 @@ import {
   MapPin,
   IndianRupee,
   Wallet,
-  Clock,
   X,
   Landmark,
   ArrowUpRight,
-  Bookmark,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { ResultCount } from "../../../components/ui/ResultCount";
@@ -28,14 +26,11 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { CARD_BASE } from "../../../lib/card-styles";
-import { useSaveJob } from "../../../hooks/useSaveJob";
 import type {
   ExternalJob,
-  Job,
   Pagination,
   ScrapedJob,
 } from "../../../lib/types";
-import JobCard from "./component/jobcard";
 import { GridBackground } from "../../../components/ui/GridBackground";
 import { TagList } from "../../../components/ui/TagList";
 import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
@@ -147,14 +142,8 @@ export default function JobBrowsePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>(
     () => searchParams.get("tags")?.split(",").filter(Boolean) ?? [],
   );
-  const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
-  const [salaryMin, setSalaryMin] = useState("");
-  const [salaryMax, setSalaryMax] = useState("");
-  const debouncedSalaryMin = useDebounce(salaryMin, 500);
-  const debouncedSalaryMax = useDebounce(salaryMax, 500);
-  const [hideExpired, setHideExpired] = useState(true);
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
@@ -162,7 +151,6 @@ export default function JobBrowsePage() {
   // Sync location filter to URL and reset pages when it or search changes
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset pagination when filters/search change
-    setPage(1);
     setExtPage(1);
     setScrPage(1);
     const next = new URLSearchParams(searchParams);
@@ -172,37 +160,8 @@ export default function JobBrowsePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedLocation, debouncedSearch]);
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: queryKeys.jobs.list({
-      page,
-      search: debouncedSearch,
-      location: debouncedLocation,
-      tags: selectedTags.join(","),
-      includeExpired: !hideExpired,
-      salaryMin: debouncedSalaryMin || undefined,
-      salaryMax: debouncedSalaryMax || undefined,
-    }),
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: "12",
-      });
-      if (debouncedSearch) params.set("search", debouncedSearch);
-      if (debouncedLocation) params.set("location", debouncedLocation);
-      if (selectedTags.length) params.set("tags", selectedTags.join(","));
-      params.set("includeExpired", String(!hideExpired));
-      if (debouncedSalaryMin) params.set("salaryMin", debouncedSalaryMin);
-      if (debouncedSalaryMax) params.set("salaryMax", debouncedSalaryMax);
-      const res = await api.get(`/jobs?${params}`);
-      return res.data as { jobs: Job[]; pagination: Pagination };
-    },
-    staleTime: 60_000,
-    placeholderData: keepPreviousData,
-  });
-
   const { data: extData } = useQuery({
-    queryKey: queryKeys.jobs.list({
-      _src: "ext",
+    queryKey: queryKeys.externalJobs.list({
       page: extPage,
       search: debouncedSearch,
       location: debouncedLocation,
@@ -228,9 +187,8 @@ export default function JobBrowsePage() {
     placeholderData: keepPreviousData,
   });
 
-  const { data: scrData } = useQuery({
-    queryKey: queryKeys.jobs.list({
-      _src: "scr",
+  const { data: scrData, isLoading } = useQuery({
+    queryKey: queryKeys.scrapedJobs.list({
       page: scrPage,
       search: debouncedSearch,
       location: debouncedLocation,
@@ -251,15 +209,6 @@ export default function JobBrowsePage() {
     placeholderData: keepPreviousData,
   });
 
-  const { data: savedIds } = useQuery({
-    queryKey: queryKeys.savedJobs.list(),
-    queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
-    staleTime: 30_000,
-    select: (jobs) => new Set(jobs.map((j) => j.id)),
-  });
-
-  const { toggleSave } = useSaveJob();
-
   const toggleTag = (tag: string) => {
     const updated = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
@@ -269,7 +218,6 @@ export default function JobBrowsePage() {
     if (updated.length > 0) next.set("tags", updated.join(","));
     else next.delete("tags");
     setSearchParams(next, { replace: true });
-    setPage(1);
     setExtPage(1);
     setScrPage(1);
   };
@@ -278,15 +226,12 @@ export default function JobBrowsePage() {
     setSearch("");
     setLocationFilter("");
     setSelectedTags([]);
-    setSalaryMin("");
-    setSalaryMax("");
     setSearchParams({});
-    setPage(1);
     setExtPage(1);
     setScrPage(1);
   }, [setSearch, setSearchParams]);
 
-  const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
+  const hasFilters = search || locationFilter || selectedTags.length > 0;
   const selectSuggestion = (location: string) => {
     setLocationFilter(location);
     setShowSuggestions(false);
@@ -294,7 +239,6 @@ export default function JobBrowsePage() {
   };
   // submitSearch: immediately flush location to URL (search is already synced by hook)
   const submitSearch = useCallback(() => {
-    setPage(1);
     setExtPage(1);
     setScrPage(1);
     const next = new URLSearchParams(searchParams);
@@ -309,13 +253,12 @@ export default function JobBrowsePage() {
       Array.from(
         new Set(
           [
-            ...(data?.jobs ?? []).map((job) => job.location),
             ...(filteredExtJobs ?? []).map((job) => job.location),
             ...(scrapedJobs ?? []).map((job) => job.location),
           ].filter((loc): loc is string => Boolean(loc))
         )
       ),
-    [data?.jobs, filteredExtJobs, scrapedJobs]
+    [filteredExtJobs, scrapedJobs]
   );
 
   const locationSuggestions = locationFilter.trim()
@@ -340,15 +283,13 @@ export default function JobBrowsePage() {
       .slice(0, 6)
     : [];
 
-  const internalTotal = data?.pagination?.total;
   const externalTotal = extData?.total;
   const scrapedTotal = scrData?.pagination?.total;
 
   const allEmpty =
     !isLoading &&
     filteredExtJobs.length === 0 &&
-    scrapedJobs.length === 0 &&
-    (data?.jobs ?? []).length === 0;
+    scrapedJobs.length === 0;
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 relative">
@@ -392,20 +333,11 @@ export default function JobBrowsePage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Open positions from partner companies plus curated external
-              listings, updated daily.
+              Curated external listings, updated daily.
             </p>
           </div>
           <div className="flex flex-col items-end gap-3">
             <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-              {typeof internalTotal === "number" && internalTotal > 0 && (
-                <span>
-                  internal{" "}
-                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                    {internalTotal}
-                  </span>
-                </span>
-              )}
               {typeof externalTotal === "number" && (
                 <span>
                   external{" "}
@@ -423,15 +355,6 @@ export default function JobBrowsePage() {
                 </span>
               )}
             </div>
-            {isInsideLayout && (
-              <Link
-                to="/student/jobs/saved"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-              >
-                <Bookmark className="w-3.5 h-3.5" />
-                saved jobs
-              </Link>
-            )}
           </div>
         </motion.div>
 
@@ -546,42 +469,6 @@ export default function JobBrowsePage() {
             </div>
           </form>
 
-          {/* Salary range inputs */}
-          <div className="flex items-center gap-2 flex-wrap mt-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1 flex items-center gap-1">
-              <IndianRupee className="w-3 h-3" />
-              salary /
-            </span>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 pointer-events-none font-mono">min</span>
-                <input
-                  id="salary-min-input"
-                  type="number"
-                  min={0}
-                  value={salaryMin}
-                  onChange={(e) => { setSalaryMin(e.target.value); setPage(1); }}
-                  className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  placeholder="0"
-                />
-              </div>
-              <span className="text-stone-400 text-xs">—</span>
-              <div className="relative">
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 pointer-events-none font-mono">max</span>
-                <input
-                  id="salary-max-input"
-                  type="number"
-                  min={0}
-                  value={salaryMax}
-                  onChange={(e) => { setSalaryMax(e.target.value); setPage(1); }}
-                  className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  placeholder="∞"
-                />
-              </div>
-              <span className="text-xs font-mono text-stone-400">LPA</span>
-            </div>
-          </div>
-
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
@@ -600,27 +487,7 @@ export default function JobBrowsePage() {
               />
             </motion.div>
           ))}
-              
 
-            <label
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${hideExpired
-                  ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-                  : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
-                }`}
-            >
-              <input
-                type="checkbox"
-                checked={hideExpired}
-                onChange={(e) => setHideExpired(e.target.checked)}
-                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20 accent-lime-400"
-              />
-              <span
-                className={`text-xs font-mono uppercase tracking-widest ${hideExpired ? "text-lime-700 dark:text-lime-400" : "text-stone-500"
-                  }`}
-              >
-                Hide expired
-              </span>
-            </label>
             <AnimatePresence>
               {hasFilters && (
                 <motion.button
@@ -706,7 +573,7 @@ export default function JobBrowsePage() {
           </motion.div>
         )}
 
-        {/* Global empty state — shown when ALL three sources return nothing */}
+        {/* Global empty state — shown when both sources return nothing */}
         {allEmpty && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -721,7 +588,7 @@ export default function JobBrowsePage() {
             </h2>
           </motion.div>
         )}
-        {isLoading ? (
+        {isLoading && !allEmpty && filteredExtJobs.length === 0 && scrapedJobs.length === 0 && (
           <div className="py-20 text-center">
             <div className="inline-flex flex-col items-center gap-3">
               <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
@@ -730,108 +597,23 @@ export default function JobBrowsePage() {
               </span>
             </div>
           </div>
-        ) : (data?.jobs ?? []).length === 0 ? (
+        )}
+        {!isLoading && allEmpty && hasFilters && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <EmptyState
               title="No jobs match your filters"
               description="try adjusting your search or filters"
               action={
-                hasFilters ? (
-                  <button
-                    type="button"
-                    onClick={clearAll}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" /> Clear filters
-                  </button>
-                ) : undefined
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" /> Clear filters
+                </button>
               }
             />
           </motion.div>
-        ) : (
-          <>
-            <div className="flex items-end justify-between gap-4 mb-6">
-              <div>
-                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-                  <span className="h-1 w-1 bg-lime-400" />
-                  internal / live
-                </div>
-              </div>
-            </div>
-
-            {isLoading ? (
-              <div className="py-20 text-center">
-                <div className="inline-flex flex-col items-center gap-3">
-                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
-                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
-                </div>
-              </div>
-            ) : (
-              <>
-                {data?.pagination && <ResultCount currentCount={(data.jobs ?? []).length} totalCount={data.pagination.total} />}
-                <div className="relative">
-                  {isFetching && (
-                    <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
-                      <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
-                    </div>
-                  )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {(data?.jobs ?? []).map((job, i) => (
-                      <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                        <div className="relative">
-                          <JobCard
-                            to={`/jobs/${job.id}`}
-                            company={job.company || "C"}
-                            title={job.title}
-                            description={job.description}
-                            tags={job.tags}
-                            rightMeta={job._count ? `${job._count.applications} applied` : undefined}
-                            metaChips={
-                              <>
-                                <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
-                                <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
-                                {job.deadline && (
-                                  new Date(job.deadline) < new Date() ? (
-                                    <MetaChip icon={<Clock className="w-3 h-3" />} className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40">
-                                      expired
-                                    </MetaChip>
-                                  ) : (
-                                    <MetaChip icon={<Clock className="w-3 h-3" />}>
-                                      {new Date(job.deadline).toLocaleDateString()}
-                                    </MetaChip>
-                                  )
-                                )}
-                              </>
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave({ jobId: job.id, isSaved: savedIds?.has(job.id) ?? false }); }}
-                            className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors border-0 bg-transparent cursor-pointer z-10 ${
-                              savedIds?.has(job.id)
-                                ? "text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-900/20"
-                                : "text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                            }`}
-                            title={savedIds?.has(job.id) ? "Remove from saved" : "Save job"}
-                          >
-                            <Bookmark className={`w-4 h-4 ${savedIds?.has(job.id) ? "fill-lime-600 dark:fill-lime-400" : ""}`} />
-                          </button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                {data?.pagination && (
-                  <PaginationControls
-                    currentPage={page}
-                    totalPages={data.pagination.totalPages}
-                    onPageChange={setPage}
-                  />
-                )}
-              </>
-            )}
-          </>
         )}
       </div>
       <Footer />

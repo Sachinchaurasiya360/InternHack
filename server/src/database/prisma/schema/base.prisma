@@ -948,7 +948,7 @@ model aiServiceConfig {
   id          Int            @id @default(autoincrement())
   service     AIServiceType  @unique
   provider    AIProviderType @default(GEMINI)
-  modelName   String         @default("gemini-2.5-flash-lite")
+  modelName   String         @default("gemini-flash-lite-latest")
   updatedAt   DateTime       @updatedAt
   requestLogs aiRequestLog[]
 }
@@ -1330,6 +1330,11 @@ enum AIServiceType {
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
   DSA_CODE_REVIEW
+  DSA_TESTCASE_GEN
+  BEHAVIORAL_EVALUATION
+  GSOC_REVIEW
+  JOB_ENRICHMENT
+  LEARN_READINESS
 }
 
 enum ScrapedJobStatus {
@@ -1412,6 +1417,7 @@ enum UsageAction {
   GITHUB_STATS
   ROADMAP_GENERATION
   BEHAVIORAL_EVAL
+  DSA_EXECUTE
 }
 
 enum EmailCampaignStatus {

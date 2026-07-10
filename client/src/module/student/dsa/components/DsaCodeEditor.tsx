@@ -1,18 +1,16 @@
 import { useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
-import { cpp } from "@codemirror/lang-cpp";
-import { java } from "@codemirror/lang-java";
+import { javascript } from "@codemirror/lang-javascript";
 import { keymap } from "@codemirror/view";
 import { Play, Loader2 } from "lucide-react";
 import type { DsaLanguage } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
 
-const LANG_EXTENSIONS = { python: python(), cpp: cpp(), java: java() };
+const LANG_EXTENSIONS = { python: python(), javascript: javascript() };
 const LANG_LABELS: Record<DsaLanguage, string> = {
   python: "Python 3",
-  cpp: "C++ 17",
-  java: "Java",
+  javascript: "JavaScript (Node 18)",
 };
 
 interface Props {

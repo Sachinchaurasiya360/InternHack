@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { Application, ExternalApplication } from "../../../lib/types";
+import type { ExternalApplication } from "../../../lib/types";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import toast from "@/components/ui/toast";
@@ -12,27 +12,19 @@ const NOTES_LIMIT = 4000;
 const NOTES_WARNING_AT = 3500;
 
 type ApplicationsCache = {
-  applications: Application[];
   externalApplications: ExternalApplication[];
 };
 
 type ApplicationNotesProps = {
   applicationId: number;
-  kind: "internal" | "external";
   notes: string | null;
-  progressKeyId?: string | number;
 };
 
 export function ApplicationNotes({
   applicationId,
-  kind,
   notes,
-  progressKeyId,
 }: ApplicationNotesProps) {
   const queryClient = useQueryClient();
-  const progressQueryKey = progressKeyId
-    ? queryKeys.applications.progress(String(progressKeyId))
-    : undefined;
   const [value, setValue] = useState(notes ?? "");
   const [isEditing, setIsEditing] = useState(false);
   const [savedVisible, setSavedVisible] = useState(false);
@@ -57,34 +49,18 @@ export function ApplicationNotes({
 
   const mutation = useMutation({
     mutationFn: async (variables: { notes: string; requestId: number }) => {
-      const endpoint =
-        kind === "internal"
-          ? `/student/applications/${applicationId}/notes`
-          : `/student/external-applications/${applicationId}/notes`;
-      const res = await api.patch(endpoint, { notes: variables.notes });
+      const res = await api.patch(`/student/external-applications/${applicationId}/notes`, {
+        notes: variables.notes,
+      });
       return res.data as { notes: string; updatedAt: string };
     },
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.applications.mine() });
-      if (kind === "internal" && progressQueryKey) {
-        await queryClient.cancelQueries({ queryKey: progressQueryKey });
-      }
 
       const previousMine = queryClient.getQueryData<ApplicationsCache>(queryKeys.applications.mine());
-      const previousProgress = progressQueryKey
-        ? queryClient.getQueryData<Application>(progressQueryKey)
-        : undefined;
 
       queryClient.setQueryData<ApplicationsCache>(queryKeys.applications.mine(), (old) => {
         if (!old) return old;
-        if (kind === "internal") {
-          return {
-            ...old,
-            applications: old.applications.map((app) =>
-              app.id === applicationId ? { ...app, studentNotes: variables.notes } : app
-            ),
-          };
-        }
         return {
           ...old,
           externalApplications: old.externalApplications.map((app) =>
@@ -93,21 +69,12 @@ export function ApplicationNotes({
         };
       });
 
-      if (kind === "internal" && progressQueryKey) {
-        queryClient.setQueryData<Application>(progressQueryKey, (old) =>
-          old ? { ...old, studentNotes: variables.notes } : old
-        );
-      }
-
-      return { previousMine, previousProgress };
+      return { previousMine };
     },
     onError: (_error, variables, context) => {
       if (variables.requestId !== saveSeqRef.current) return;
       if (context?.previousMine) {
         queryClient.setQueryData(queryKeys.applications.mine(), context.previousMine);
-      }
-      if (progressQueryKey && context?.previousProgress) {
-        queryClient.setQueryData(progressQueryKey, context.previousProgress);
       }
       setValue(lastSavedRef.current);
       toast.error("Failed to save notes");
@@ -115,11 +82,6 @@ export function ApplicationNotes({
     onSuccess: (data, variables) => {
       if (variables.requestId !== saveSeqRef.current) return;
       lastSavedRef.current = data.notes;
-      if (kind === "internal" && progressQueryKey) {
-        queryClient.setQueryData<Application>(progressQueryKey, (old) =>
-          old ? { ...old, studentNotes: data.notes, updatedAt: data.updatedAt } : old
-        );
-      }
       setSavedVisible(true);
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       savedTimerRef.current = setTimeout(() => setSavedVisible(false), 1800);

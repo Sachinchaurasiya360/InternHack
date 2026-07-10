@@ -1,11 +1,130 @@
 import { prisma } from "../../database/db.js";
-import type { MockInterviewTopic, peerMockInterview } from "@prisma/client";
+import type { MockInterviewTopic } from "@prisma/client";
 import { getGenericPrepMaterial } from "./peer-mock-interview.prep.js";
+import { getPlanTier, type PlanTier } from "../../config/usage-limits.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+import { escapeHtml } from "../../utils/email-templates.js";
 
-export interface ScoredPair {
-  u1: any;
-  u2: any;
+/**
+ * Skill tests that signal readiness for each interview topic. A candidate with
+ * a verified skill from this list ranks first for that topic. Extend when
+ * admins add new skill tests.
+ */
+const TOPIC_RELEVANT_SKILLS: Record<MockInterviewTopic, string[]> = {
+  DSA: ["javascript", "python", "java", "cpp", "c++"],
+  SYSTEM_DESIGN: ["sql", "python", "typescript", "javascript"],
+  FRONTEND: ["react", "javascript", "typescript"],
+  BACKEND: ["python", "sql", "typescript", "javascript", "java"],
+  // Behavioral rounds have no technical skill test; ranking falls back to
+  // roadmap progress and availability.
+  BEHAVIORAL: [],
+  DEVOPS: ["python", "sql"],
+  DATA_SCIENCE: ["python", "sql"],
+  // Free-text topics can't map to a skill test; the custom-topic match bonus
+  // takes the skill slot instead (see computeRankedMatches).
+  OTHER: [],
+};
+
+/**
+ * Two OTHER students naming the same free-text topic ("Android" == "android ")
+ * get the equivalent of the verified-skill bonus, since no skill test can back
+ * a custom topic. Different custom topics still rank (the student sees the
+ * candidate's topic on the card and decides), just far lower.
+ */
+const CUSTOM_TOPIC_MATCH_BONUS = 80;
+
+function normalizeCustomTopic(value?: string | null): string {
+  return (value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+// Score weights. Skill verification (80 + up to 40 closeness) intentionally
+// outweighs the full roadmap block (50 + 30 + 20) so verified candidates rank
+// first, per product decision.
+const SKILL_VERIFIED_BONUS = 80;
+const SKILL_CLOSENESS_MAX = 40;
+const ROADMAP_MATCH_BONUS = 50;
+const PROGRESS_CLOSENESS_MAX = 30;
+const EXPERIENCE_MATCH_BONUS = 20;
+const AVAILABILITY_BONUS = 10;
+const PAST_PARTNER_PENALTY = 50;
+const MAX_MATCH_SCORE =
+  SKILL_VERIFIED_BONUS +
+  SKILL_CLOSENESS_MAX +
+  ROADMAP_MATCH_BONUS +
+  PROGRESS_CLOSENESS_MAX +
+  EXPERIENCE_MATCH_BONUS +
+  AVAILABILITY_BONUS;
+
+/**
+ * Seed account shown as a last-resort match when the real candidate pool is
+ * empty. The platform is early-stage with very few opted-in students, so a
+ * topic with no other candidates would otherwise dead-end new users straight
+ * to the expert-session upsell; this guarantees at least one live match.
+ */
+const FALLBACK_SEED_EMAIL = "mrsachinchaurasiya@gmail.com";
+
+/** Free students can view and pair with this many top matches; the rest are premium-locked. */
+const FREE_TIER_VISIBLE_MATCHES = 2;
+/** Short TTL: the pool shifts whenever someone opts in or pairs up. */
+const MATCH_LIST_TTL_SECONDS = 60;
+// Keyed per viewer, so no response is ever shared across users or tiers (the
+// viewer's own tier shapes the cached payload).
+const matchListCacheKey = (userId: number) => `peer-match:list:${userId}`;
+
+type MatchStrength = "STRONG" | "GOOD" | "FAIR";
+
+// The number shown to students is rescaled into a 52-98 band: a raw "0% match"
+// (possible when two students share nothing but the topic) kills confidence in
+// the pairing, so even the weakest candidate reads above 50%. Raw scores still
+// drive the ranking order and the free-tier gate; only the display changes.
+const DISPLAY_PERCENT_MIN = 52;
+const DISPLAY_PERCENT_MAX = 98;
+
+function scoreRatio(score: number): number {
+  return Math.max(0, Math.min(1, score / MAX_MATCH_SCORE));
+}
+
+function toDisplayPercent(score: number): number {
+  return Math.round(
+    DISPLAY_PERCENT_MIN + scoreRatio(score) * (DISPLAY_PERCENT_MAX - DISPLAY_PERCENT_MIN),
+  );
+}
+
+function matchStrengthOf(score: number): MatchStrength {
+  const ratio = scoreRatio(score);
+  if (ratio >= 0.55) return "STRONG";
+  if (ratio >= 0.3) return "GOOD";
+  return "FAIR";
+}
+
+interface RankedCandidate {
+  userId: number;
+  name: string;
+  college: string | null;
+  profilePic: string | null;
+  availability: string[];
+  email: string;
   score: number;
+  customTopic: string | null;
+  sharedAvailability: string[];
+  hasRoadmapMatch: boolean;
+  verifiedSkills: { skillName: string; score: number }[];
+}
+
+interface RankedMatchesResult {
+  optedIn: boolean;
+  activePairing: boolean;
+  tier: PlanTier;
+  topic?: MockInterviewTopic;
+  viewer?: {
+    userId: number;
+    name: string;
+    email: string;
+    availability: string[];
+    experienceLevel: string | null;
+    customTopic: string | null;
+  };
+  ranked: RankedCandidate[];
 }
 
 /**
@@ -21,6 +140,33 @@ function formatUtc(d: Date): string {
       timeStyle: "short",
     }) + " UTC"
   );
+}
+
+/**
+ * Topic-specific preparation block for the pairing emails. DSA pairs get their
+ * assigned problem link; every other topic embeds its practice prompt and
+ * requirements (from the same prep bank the dashboard shows) so the pair can
+ * start preparing straight from the inbox. Prep content is static server-side
+ * text, so it is safe to interpolate into HTML.
+ */
+function buildPrepEmailSection(
+  topic: MockInterviewTopic,
+  assignedProblem: { slug: string; title: string } | null,
+): string {
+  if (assignedProblem) {
+    return `<p>Assigned DSA problem: <a href="https://www.internhack.xyz/learn/dsa/problem/${assignedProblem.slug}">${assignedProblem.title}</a></p>
+      <p>Attempt it before the session: one of you interviews while the other solves, then swap roles.</p>`;
+  }
+  if (topic === "OTHER") {
+    return `<p>You picked a custom topic, so there is no assigned material: agree on the questions and format together before the session.</p>`;
+  }
+  const prep = getGenericPrepMaterial(topic);
+  if (!prep) return "";
+  const topicLabel = topic.replace(/_/g, " ");
+  return `<p>Your ${topicLabel} practice prompt:</p>
+    <p><strong>${prep.prompt}</strong></p>
+    <ul>${prep.requirements.map((r) => `<li>${r}</li>`).join("")}</ul>
+    <p>Objectives and follow-up questions are on the preparation card in your dashboard.</p>`;
 }
 
 export class PeerMockInterviewService {
@@ -44,6 +190,45 @@ export class PeerMockInterviewService {
     return { ...pairing, preparationMaterial };
   }
 
+  private async invalidateMatchCaches(...userIds: number[]) {
+    await Promise.all(userIds.map((id) => cacheDel(matchListCacheKey(id))));
+  }
+
+  /**
+   * Looks up the fallback seed account for when the real candidate pool is
+   * empty. Bypasses the topic filter (that's exactly why the pool came up
+   * empty) but still excludes the viewer themselves and anyone already paired.
+   */
+  private async getFallbackCandidate(
+    userId: number,
+    pairedUserIds: Set<number>,
+    viewerAvailability: string[],
+  ): Promise<RankedCandidate | null> {
+    const seedPref = await prisma.peerMockInterviewPreference.findFirst({
+      where: { enabled: true, user: { email: FALLBACK_SEED_EMAIL } },
+      include: {
+        user: { select: { id: true, name: true, email: true, college: true, profilePic: true } },
+      },
+    });
+    if (!seedPref || seedPref.userId === userId || pairedUserIds.has(seedPref.userId)) {
+      return null;
+    }
+
+    return {
+      userId: seedPref.userId,
+      name: seedPref.user.name,
+      college: seedPref.user.college,
+      profilePic: seedPref.user.profilePic,
+      availability: seedPref.availability,
+      email: seedPref.user.email,
+      score: 0,
+      customTopic: seedPref.customTopic ?? null,
+      sharedAvailability: viewerAvailability.filter((slot) => seedPref.availability.includes(slot)),
+      hasRoadmapMatch: false,
+      verifiedSkills: [],
+    };
+  }
+
   /**
    * Retrieves the peer mock interview preferences for a user.
    */
@@ -62,12 +247,15 @@ export class PeerMockInterviewService {
     topic: MockInterviewTopic,
     availability: string[],
     enabled: boolean,
-    prep?: { targetRole?: string; experienceLevel?: string; focusAreas?: string[] },
+    prep?: { targetRole?: string; experienceLevel?: string; focusAreas?: string[]; customTopic?: string },
   ) {
     const prepFields = {
       targetRole: prep?.targetRole,
       experienceLevel: prep?.experienceLevel,
       focusAreas: prep?.focusAreas ?? [],
+      // Only OTHER carries free text; clear it when switching back to a listed
+      // topic so a stale custom topic never influences matching.
+      customTopic: topic === "OTHER" ? prep?.customTopic ?? null : null,
     };
     const preference = await prisma.peerMockInterviewPreference.upsert({
       where: { userId },
@@ -109,17 +297,17 @@ export class PeerMockInterviewService {
           const emailUtils = await import("../../utils/email.utils.js");
           const html = `<h3>Upcoming Mock Interview Cancelled</h3>
             <p>Your upcoming mock interview with <strong>${canceller.name}</strong> has been cancelled because they opted out of mock interviews.</p>
-            <p>You will be paired with a new student in the next weekly matching cycle.</p>`;
+            <p>You are back in the matching pool: log in to your dashboard to pick a new partner.</p>`;
           await emailUtils.sendEmail({ to: partner.email, subject: "Upcoming Mock Interview Cancelled", html });
         } catch (err) {
           console.error("Failed to send cancellation email:", err);
         }
       }
     }
-    // Note: matching runs on the scheduled match cron. We deliberately do not
-    // fire runMatchingJob() here: on Vercel serverless the function can freeze
-    // after responding, so a fire-and-forget job would not reliably finish, and
-    // running the full matching engine inline would make this endpoint slow.
+    // Matching is live: the student browses /matches and pairs instantly, so
+    // there is no batch job to trigger here. Drop any cached match list since
+    // topic/availability changes shift the ranking.
+    await this.invalidateMatchCaches(userId);
 
     return preference;
   }
@@ -401,7 +589,7 @@ export class PeerMockInterviewService {
     try {
       const { createGoogleMeetEvent } = await import("../../utils/google-calendar.utils.js");
       const event = await createGoogleMeetEvent({
-        summary: `InternHack Mock Interview (${pairing.topic})`,
+        summary: `InternHack Mock Interview (${pairing.customTopic || pairing.topic})`,
         description: "Peer mock interview practice session, scheduled via InternHack.",
         startTime: new Date(pairing.proposedTime),
         attendeeEmails,
@@ -485,252 +673,438 @@ export class PeerMockInterviewService {
   }
 
   /**
-   * Core pairing engine. Finds compatible opted-in students, computes compatibility
-   * scores, pairs them greedily, assigns problems for DSA, and dispatches email confirmations.
+   * Decline a pairing that has not been scheduled yet. Either participant can
+   * decline; both students return to the live matching pool.
    */
-  async runMatchingJob() {
-    const { withAdvisoryLock } = await import("../../utils/cron-lock.js");
-    const result = await withAdvisoryLock("peer_mock_interview_match_service", async () => {
-      // 1. Get active preferences for actively-enrolled PREMIUM users only.
-      // The candidate pool must match what the API gates on (requirePremium /
-      // getPlanTier), otherwise a lapsed user gets matched by the cron and then
-      // hits 403 viewing their own pairing. This mirrors getPlanTier's PREMIUM
-      // condition at the query level (plan in {MONTHLY,YEARLY} + ACTIVE + not
-      // past subscriptionEndDate).
-      const prefs = await prisma.peerMockInterviewPreference.findMany({
-        where: {
-          enabled: true,
-          user: {
-            subscriptionStatus: "ACTIVE",
-            subscriptionPlan: { in: ["MONTHLY", "YEARLY"] },
-            OR: [
-              { subscriptionEndDate: null },
-              { subscriptionEndDate: { gt: new Date() } },
-            ],
-            roadmapEnrollments: {
-              some: { status: "ACTIVE" },
-            },
+  async declinePairing(userId: number, pairingId: number) {
+    const pairing = await this.getPairingDetails(userId, pairingId);
+    if (pairing.status !== "PENDING_SCHEDULE") {
+      throw Object.assign(new Error("Only pairings that are not scheduled yet can be declined"), { status: 400 });
+    }
+
+    // Status guard in the where clause so a concurrent accept/decline cannot
+    // double-transition the pairing.
+    const updateResult = await prisma.peerMockInterview.updateMany({
+      where: { id: pairingId, status: "PENDING_SCHEDULE" },
+      data: { status: "CANCELLED" },
+    });
+    if (updateResult.count === 0) {
+      throw Object.assign(new Error("Pairing is no longer pending"), { status: 409 });
+    }
+
+    const otherId = pairing.studentAId === userId ? pairing.studentBId : pairing.studentAId;
+    const decliner = pairing.studentAId === userId ? pairing.studentA : pairing.studentB;
+    const other = pairing.studentAId === userId ? pairing.studentB : pairing.studentA;
+
+    if (other?.email && decliner?.name) {
+      try {
+        const emailUtils = await import("../../utils/email.utils.js");
+        const html = `<h3>Pairing Declined</h3>
+          <p><strong>${decliner.name}</strong> declined the practice pairing.</p>
+          <p>You are back in the matching pool: log in to your dashboard to pick a new partner instantly.</p>`;
+        await emailUtils.sendEmail({ to: other.email, subject: "Mock Interview Pairing Declined", html });
+      } catch (err) {
+        console.error("Failed to send decline email:", err);
+      }
+    }
+
+    await this.invalidateMatchCaches(userId, ...(otherId ? [otherId] : []));
+
+    return { ...pairing, status: "CANCELLED" };
+  }
+
+  /**
+   * Computes the viewer's ranked candidate list. Shared by the match-list
+   * endpoint (display) and selectMatch (authorization: a free user may only
+   * pair within their visible top matches).
+   */
+  private async computeRankedMatches(userId: number): Promise<RankedMatchesResult> {
+    const enrollmentSelect = {
+      where: { status: "ACTIVE" as const },
+      select: {
+        roadmapId: true,
+        experienceLevel: true,
+        roadmap: { select: { topicCount: true } },
+        _count: {
+          select: {
+            topicProgress: { where: { status: "COMPLETED" as const } },
           },
         },
-        include: {
-          user: {
-            select: {
-              id: true,
+      },
+    };
+
+    const viewerPref = await prisma.peerMockInterviewPreference.findUnique({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            id: true,
             name: true,
             email: true,
-            college: true,
-            roadmapEnrollments: {
-              where: { status: "ACTIVE" },
-              select: {
-                roadmapId: true,
-                experienceLevel: true,
-                roadmap: { select: { topicCount: true } },
-                _count: {
-                  select: {
-                    topicProgress: {
-                      where: { status: "COMPLETED" },
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+            subscriptionPlan: true,
+            subscriptionStatus: true,
+            subscriptionEndDate: true,
+            roadmapEnrollments: enrollmentSelect,
+          },
+        },
+      },
     });
 
-    // 2. Filter out users who already have a SCHEDULED or PENDING_SCHEDULE pairing
-    const scheduledPairings = await prisma.peerMockInterview.findMany({
+    if (!viewerPref || !viewerPref.enabled) {
+      return { optedIn: false, activePairing: false, tier: "FREE", ranked: [] };
+    }
+
+    const tier = getPlanTier(
+      viewerPref.user.subscriptionPlan,
+      viewerPref.user.subscriptionStatus,
+      viewerPref.user.subscriptionEndDate,
+    );
+    const topic = viewerPref.topic;
+    const viewer = {
+      userId,
+      name: viewerPref.user.name,
+      email: viewerPref.user.email,
+      availability: viewerPref.availability,
+      experienceLevel: viewerPref.user.roadmapEnrollments[0]?.experienceLevel ?? null,
+      customTopic: viewerPref.customTopic ?? null,
+    };
+
+    // One query covers both "is the viewer already paired" and "which
+    // candidates are already paired".
+    const activePairings = await prisma.peerMockInterview.findMany({
       where: { status: { in: ["SCHEDULED", "PENDING_SCHEDULE"] } },
       select: { studentAId: true, studentBId: true },
     });
     const pairedUserIds = new Set<number>();
-    for (const p of scheduledPairings) {
+    for (const p of activePairings) {
       if (p.studentAId) pairedUserIds.add(p.studentAId);
       if (p.studentBId) pairedUserIds.add(p.studentBId);
     }
+    if (pairedUserIds.has(userId)) {
+      return { optedIn: true, activePairing: true, tier, topic, viewer, ranked: [] };
+    }
 
-    const pool = prefs.filter(p => !pairedUserIds.has(p.userId));
+    // Candidate pool: opted-in students on the same topic with an active
+    // roadmap enrollment. Deliberately not premium-gated: the feature is open
+    // to all students, premium only widens how many matches are unlocked.
+    const pool = await prisma.peerMockInterviewPreference.findMany({
+      where: {
+        enabled: true,
+        topic,
+        userId: { not: userId },
+        user: {
+          roadmapEnrollments: { some: { status: "ACTIVE" } },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            college: true,
+            profilePic: true,
+            roadmapEnrollments: enrollmentSelect,
+          },
+        },
+      },
+    });
+    const candidates = pool.filter((p) => !pairedUserIds.has(p.userId));
+    if (candidates.length === 0) {
+      const fallback = await this.getFallbackCandidate(userId, pairedUserIds, viewerPref.availability);
+      return { optedIn: true, activePairing: false, tier, topic, viewer, ranked: fallback ? [fallback] : [] };
+    }
 
-    // Group by topic
-    const byTopic: Record<MockInterviewTopic, typeof pool> = {
-      DSA: [],
-      SYSTEM_DESIGN: [],
-      FRONTEND: [],
+    // Verified skills relevant to the topic, for the viewer and all candidates
+    // in one batch.
+    const relevantSkills = TOPIC_RELEVANT_SKILLS[topic] ?? [];
+    const verifiedSkills = relevantSkills.length
+      ? await prisma.verifiedSkill.findMany({
+          where: {
+            skillName: { in: relevantSkills },
+            studentId: { in: [userId, ...candidates.map((c) => c.userId)] },
+          },
+          select: { studentId: true, skillName: true, score: true },
+        })
+      : [];
+    const skillsByStudent = new Map<number, { skillName: string; score: number }[]>();
+    for (const vs of verifiedSkills) {
+      const list = skillsByStudent.get(vs.studentId) ?? [];
+      list.push({ skillName: vs.skillName, score: vs.score });
+      skillsByStudent.set(vs.studentId, list);
+    }
+    const viewerSkills = skillsByStudent.get(userId) ?? [];
+
+    // Past partners of the viewer (completed or cancelled, including declines)
+    // are penalised so fresh partners rank first.
+    const pastPairings = await prisma.peerMockInterview.findMany({
+      where: {
+        status: { in: ["COMPLETED", "CANCELLED"] },
+        OR: [{ studentAId: userId }, { studentBId: userId }],
+      },
+      select: { studentAId: true, studentBId: true },
+    });
+    const pastPartnerIds = new Set<number>();
+    for (const p of pastPairings) {
+      const partnerId = p.studentAId === userId ? p.studentBId : p.studentAId;
+      if (partnerId) pastPartnerIds.add(partnerId);
+    }
+
+    const viewerEnrollments = viewerPref.user.roadmapEnrollments;
+
+    const viewerCustomTopic = normalizeCustomTopic(viewerPref.customTopic);
+
+    const ranked: RankedCandidate[] = candidates.map((candidate) => {
+      let score = 0;
+
+      // For OTHER, agreeing on the same free-text topic is the strongest
+      // signal, standing in for the verified-skill bonus.
+      if (
+        topic === "OTHER" &&
+        viewerCustomTopic &&
+        normalizeCustomTopic(candidate.customTopic) === viewerCustomTopic
+      ) {
+        score += CUSTOM_TOPIC_MATCH_BONUS;
+      }
+
+      // First priority: the candidate holds a verified skill relevant to the
+      // topic, with a closeness bonus when the viewer verified the same skill.
+      const candidateSkills = skillsByStudent.get(candidate.userId) ?? [];
+      if (candidateSkills.length > 0) {
+        score += SKILL_VERIFIED_BONUS;
+        let bestCloseness = 0;
+        for (const mine of viewerSkills) {
+          const theirs = candidateSkills.find((s) => s.skillName === mine.skillName);
+          if (theirs) {
+            const closeness = SKILL_CLOSENESS_MAX * (1 - Math.abs(mine.score - theirs.score) / 100);
+            bestCloseness = Math.max(bestCloseness, closeness);
+          }
+        }
+        score += bestCloseness;
+      }
+
+      // Roadmap compatibility, best across shared roadmaps (as before).
+      let bestRoadmapScore = 0;
+      for (const mine of viewerEnrollments) {
+        for (const theirs of candidate.user.roadmapEnrollments) {
+          if (mine.roadmapId !== theirs.roadmapId) continue;
+          let roadmapScore = ROADMAP_MATCH_BONUS;
+
+          const myTotal = mine.roadmap.topicCount;
+          const myPct = myTotal === 0 ? 0 : Math.round((mine._count.topicProgress / myTotal) * 100);
+          const theirTotal = theirs.roadmap.topicCount;
+          const theirPct = theirTotal === 0 ? 0 : Math.round((theirs._count.topicProgress / theirTotal) * 100);
+          roadmapScore += (1 - Math.abs(myPct - theirPct) / 100) * PROGRESS_CLOSENESS_MAX;
+
+          if (mine.experienceLevel === theirs.experienceLevel) {
+            roadmapScore += EXPERIENCE_MATCH_BONUS;
+          }
+          bestRoadmapScore = Math.max(bestRoadmapScore, roadmapScore);
+        }
+      }
+      score += bestRoadmapScore;
+
+      const sharedAvailability = viewerPref.availability.filter((slot) =>
+        candidate.availability.includes(slot),
+      );
+      if (sharedAvailability.length > 0) {
+        score += AVAILABILITY_BONUS;
+      }
+
+      if (pastPartnerIds.has(candidate.userId)) {
+        score -= PAST_PARTNER_PENALTY;
+      }
+
+      return {
+        userId: candidate.userId,
+        name: candidate.user.name,
+        college: candidate.user.college,
+        profilePic: candidate.user.profilePic,
+        availability: candidate.availability,
+        email: candidate.user.email,
+        score,
+        customTopic: candidate.customTopic ?? null,
+        sharedAvailability,
+        hasRoadmapMatch: bestRoadmapScore > 0,
+        verifiedSkills: candidateSkills,
+      };
+    });
+
+    // Deterministic order: score desc, then userId for stable ties.
+    ranked.sort((a, b) => b.score - a.score || a.userId - b.userId);
+
+    return { optedIn: true, activePairing: false, tier, topic, viewer, ranked };
+  }
+
+  /**
+   * Live match list for the peer page. Free students get their top matches
+   * fully rendered and the rest as locked placeholders; premium unlocks all.
+   * Locked entries intentionally carry no identifying data (the blur happens
+   * server-side, not just in CSS).
+   */
+  async getLiveMatches(userId: number) {
+    const cacheKey = matchListCacheKey(userId);
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
+    const result = await this.computeRankedMatches(userId);
+    const { optedIn, activePairing, tier, topic, viewer, ranked } = result;
+    const customTopic = viewer?.customTopic ?? null;
+
+    if (!optedIn || activePairing) {
+      return { optedIn, activePairing, tier, topic, customTopic, matches: [], lockedMatches: [], totalCandidates: 0 };
+    }
+
+    const visibleCount = tier === "PREMIUM" ? ranked.length : FREE_TIER_VISIBLE_MATCHES;
+    const response = {
+      optedIn: true,
+      activePairing: false,
+      tier,
+      topic,
+      customTopic,
+      matches: ranked.slice(0, visibleCount).map((c) => ({
+        userId: c.userId,
+        name: c.name,
+        college: c.college,
+        profilePic: c.profilePic,
+        matchPercent: toDisplayPercent(c.score),
+        matchStrength: matchStrengthOf(c.score),
+        customTopic: c.customTopic,
+        sharedAvailability: c.sharedAvailability,
+        hasRoadmapMatch: c.hasRoadmapMatch,
+        verifiedSkills: c.verifiedSkills,
+      })),
+      lockedMatches: ranked.slice(visibleCount).map((c) => ({
+        nameInitial: (c.name || "?").charAt(0).toUpperCase(),
+        matchStrength: matchStrengthOf(c.score),
+      })),
+      totalCandidates: ranked.length,
     };
 
-    for (const item of pool) {
-      byTopic[item.topic].push(item);
+    await cacheSet(cacheKey, response, MATCH_LIST_TTL_SECONDS);
+    return response;
+  }
+
+  /**
+   * Instantly pair the viewer with a candidate from their live match list.
+   * Free-tier viewers may only pick from their visible top matches.
+   */
+  async selectMatch(userId: number, candidateUserId: number) {
+    // Recompute fresh (no cache) so the tier gate and availability checks run
+    // against current data.
+    const { optedIn, activePairing, tier, topic, viewer, ranked } =
+      await this.computeRankedMatches(userId);
+
+    if (!optedIn || !viewer || !topic) {
+      throw Object.assign(new Error("Enable peer mock interview matching first"), { status: 400 });
+    }
+    if (activePairing) {
+      throw Object.assign(new Error("You already have an active pairing"), { status: 409 });
     }
 
-    const matchesCreated: peerMockInterview[] = [];
+    const index = ranked.findIndex((c) => c.userId === candidateUserId);
+    if (index === -1) {
+      throw Object.assign(new Error("This student is no longer available for matching"), { status: 404 });
+    }
+    if (tier !== "PREMIUM" && index >= FREE_TIER_VISIBLE_MATCHES) {
+      throw Object.assign(
+        new Error("Upgrade to Premium to pair beyond your top matches"),
+        { status: 403 },
+      );
+    }
+    const candidate = ranked[index]!;
 
-    // Process each topic group separately
-    for (const topic of Object.keys(byTopic) as MockInterviewTopic[]) {
-      const candidates = byTopic[topic];
-      if (candidates.length < 2) continue;
-
-      // Find all past matches to apply penalty
-      const pastPairings = await prisma.peerMockInterview.findMany({
-        where: {
-          topic,
-          status: { in: ["COMPLETED", "CANCELLED"] },
-        },
-        select: { studentAId: true, studentBId: true },
-      });
-
-      const arePastPartners = (u1: number, u2: number) => {
-        return pastPairings.some(
-          p => (p.studentAId === u1 && p.studentBId === u2) || (p.studentAId === u2 && p.studentBId === u1)
-        );
+    // Assign a DSA problem sized to the viewer's experience level, outside the
+    // transaction to keep it short.
+    let assignedProblemId: number | null = null;
+    if (topic === "DSA") {
+      const difficultyMap: Record<string, string> = {
+        NEW: "Easy",
+        SOME: "Medium",
+        EXPERIENCED: "Hard",
       };
-
-      const pairsList: ScoredPair[] = [];
-
-      for (let i = 0; i < candidates.length; i++) {
-        for (let j = i + 1; j < candidates.length; j++) {
-          const c1 = candidates[i];
-          const c2 = candidates[j];
-
-          let score = 0;
-
-          // Topic match is guaranteed because they are grouped by topic
-          score += 40;
-
-          // Check roadmap compatibility
-          const r1 = c1.user.roadmapEnrollments;
-          const r2 = c2.user.roadmapEnrollments;
-
-          let bestRoadmapScore = 0;
-
-          for (const enroll1 of r1) {
-            for (const enroll2 of r2) {
-              if (enroll1.roadmapId === enroll2.roadmapId) {
-                let roadmapScore = 50; // roadmap match
-
-                // Progress match
-                const total1 = enroll1.roadmap.topicCount;
-                const completed1 = enroll1._count.topicProgress;
-                const pct1 = total1 === 0 ? 0 : Math.round((completed1 / total1) * 100);
-
-                const total2 = enroll2.roadmap.topicCount;
-                const completed2 = enroll2._count.topicProgress;
-                const pct2 = total2 === 0 ? 0 : Math.round((completed2 / total2) * 100);
-
-                const pctDiff = Math.abs(pct1 - pct2);
-                roadmapScore += (1 - pctDiff / 100) * 30;
-
-                // Experience level match
-                if (enroll1.experienceLevel === enroll2.experienceLevel) {
-                  roadmapScore += 20;
-                }
-
-                if (roadmapScore > bestRoadmapScore) {
-                  bestRoadmapScore = roadmapScore;
-                }
-              }
-            }
-          }
-
-          score += bestRoadmapScore;
-
-          // Availability match
-          const hasAvailabilityMatch = c1.availability.some(slot => c2.availability.includes(slot));
-          if (hasAvailabilityMatch) {
-            score += 10;
-          }
-
-          // Past partner penalty
-          if (arePastPartners(c1.userId, c2.userId)) {
-            score -= 50;
-          }
-
-          pairsList.push({ u1: c1, u2: c2, score });
-        }
-      }
-
-      // Sort descending by score
-      pairsList.sort((a, b) => b.score - a.score);
-
-      const matchedIds = new Set<number>();
-
-      for (const pair of pairsList) {
-        if (matchedIds.has(pair.u1.userId) || matchedIds.has(pair.u2.userId)) continue;
-
-        // Assign problem if DSA
-        let assignedProblemId: number | null = null;
-        if (topic === "DSA") {
-          const expLevel = pair.u1.user.roadmapEnrollments[0]?.experienceLevel || "SOME";
-          const difficultyMap: Record<string, string> = {
-            NEW: "Easy",
-            SOME: "Medium",
-            EXPERIENCED: "Hard",
-          };
-          const difficulty = difficultyMap[expLevel] || "Medium";
-
-          const problems = await prisma.dsaProblem.findMany({
-            where: { difficulty },
-            select: { id: true },
-            take: 10,
-          });
-
-          if (problems.length > 0) {
-            const randomProblem = problems[Math.floor(Math.random() * problems.length)];
-            assignedProblemId = randomProblem.id;
-          }
-        }
-
-        const sharedAvailability = pair.u1.availability.filter((slot: string) => pair.u2.availability.includes(slot));
-
-        const match = await prisma.peerMockInterview.create({
-          data: {
-            topic,
-            studentAId: pair.u1.userId,
-            studentBId: pair.u2.userId,
-            assignedProblemId,
-            status: "PENDING_SCHEDULE",
-            sharedAvailability,
-            scheduledAt: null,
-          },
-          include: {
-            studentA: { select: { id: true, name: true, email: true } },
-            studentB: { select: { id: true, name: true, email: true } },
-            assignedProblem: true,
-          }
-        });
-
-        matchedIds.add(pair.u1.userId);
-        matchedIds.add(pair.u2.userId);
-        matchesCreated.push(match);
-
-        // Send match notifications
-        try {
-          const emailUtils = await import("../../utils/email.utils.js");
-          const problemInfo = match.assignedProblem
-            ? `<p>Assigned DSA Problem: <a href="https://www.internhack.xyz/learn/dsa/problem/${match.assignedProblem.slug}">${match.assignedProblem.title}</a></p>`
-            : "";
-          
-          const htmlA = `<h3>You've been matched!</h3>
-            <p>You have been matched with <strong>${pair.u2.user.name}</strong> for a ${topic} practice mock interview.</p>
-            <p>Their college: ${pair.u2.user.college || "N/A"}</p>
-            ${problemInfo}
-            <p>Log in to your dashboard to propose a time to meet.</p>`;
-
-          const htmlB = `<h3>You've been matched!</h3>
-            <p>You have been matched with <strong>${pair.u1.user.name}</strong> for a ${topic} practice mock interview.</p>
-            <p>Their college: ${pair.u1.user.college || "N/A"}</p>
-            ${problemInfo}
-            <p>Log in to your dashboard to propose a time to meet.</p>`;
-
-          await emailUtils.sendEmail({ to: pair.u1.user.email, subject: `Peer Mock Interview Match - ${topic}`, html: htmlA });
-          await emailUtils.sendEmail({ to: pair.u2.user.email, subject: `Peer Mock Interview Match - ${topic}`, html: htmlB });
-        } catch (err) {
-          console.error("Failed to send match notifications:", err);
-        }
+      const difficulty = difficultyMap[viewer.experienceLevel ?? "SOME"] || "Medium";
+      const problems = await prisma.dsaProblem.findMany({
+        where: { difficulty },
+        select: { id: true },
+        take: 10,
+      });
+      if (problems.length > 0) {
+        assignedProblemId = problems[Math.floor(Math.random() * problems.length)]!.id;
       }
     }
-    return matchesCreated;
+
+    // The pairing records what the pair actually practices: the shared custom
+    // topic when both named the same thing, otherwise both topics combined so
+    // neither student's intent is lost.
+    let pairingCustomTopic: string | null = null;
+    if (topic === "OTHER") {
+      const sameTopic =
+        normalizeCustomTopic(viewer.customTopic) === normalizeCustomTopic(candidate.customTopic);
+      pairingCustomTopic = sameTopic
+        ? viewer.customTopic
+        : [viewer.customTopic, candidate.customTopic].filter(Boolean).join(" / ") || null;
+    }
+
+    // Re-check inside the transaction that neither student got paired in the
+    // meantime (two students can select concurrently).
+    const match = await prisma.$transaction(async (tx) => {
+      const conflict = await tx.peerMockInterview.findFirst({
+        where: {
+          status: { in: ["SCHEDULED", "PENDING_SCHEDULE"] },
+          OR: [
+            { studentAId: { in: [userId, candidateUserId] } },
+            { studentBId: { in: [userId, candidateUserId] } },
+          ],
+        },
+        select: { id: true },
+      });
+      if (conflict) {
+        throw Object.assign(new Error("One of you was just paired with someone else"), { status: 409 });
+      }
+
+      return tx.peerMockInterview.create({
+        data: {
+          topic,
+          customTopic: pairingCustomTopic,
+          studentAId: userId,
+          studentBId: candidateUserId,
+          assignedProblemId,
+          status: "PENDING_SCHEDULE",
+          sharedAvailability: candidate.sharedAvailability,
+          scheduledAt: null,
+        },
+        include: {
+          studentA: { select: { id: true, name: true, email: true } },
+          studentB: { select: { id: true, name: true, email: true } },
+          assignedProblem: true,
+        },
+      });
     });
-    return result ?? [];
+
+    await this.invalidateMatchCaches(userId, candidateUserId);
+
+    try {
+      const emailUtils = await import("../../utils/email.utils.js");
+      const prepInfo = buildPrepEmailSection(topic, match.assignedProblem);
+      // The custom topic is student-entered free text headed into HTML email.
+      const topicLabel = pairingCustomTopic ? escapeHtml(pairingCustomTopic) : topic.replace(/_/g, " ");
+
+      const htmlForViewer = `<h3>You're paired!</h3>
+        <p>You picked <strong>${candidate.name}</strong> for a ${topicLabel} practice mock interview.</p>
+        ${prepInfo}
+        <p>Log in to your dashboard to propose a time to meet.</p>`;
+      const htmlForCandidate = `<h3>You've been matched!</h3>
+        <p><strong>${viewer.name}</strong> picked you for a ${topicLabel} practice mock interview.</p>
+        ${prepInfo}
+        <p>Log in to your dashboard to propose a time, or decline if it doesn't fit.</p>`;
+
+      await emailUtils.sendEmail({ to: viewer.email, subject: `Peer Mock Interview Match - ${topicLabel}`, html: htmlForViewer });
+      await emailUtils.sendEmail({ to: candidate.email, subject: `Peer Mock Interview Match - ${topicLabel}`, html: htmlForCandidate });
+    } catch (err) {
+      console.error("Failed to send match notifications:", err);
+    }
+
+    return this.attachPreparationMaterial(match);
   }
 }

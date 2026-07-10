@@ -3,10 +3,56 @@ import { PeerMockInterviewService } from "./peer-mock-interview.service.js";
 
 const service = new PeerMockInterviewService();
 
-// Premium gating + body validation are handled by route middleware
-// (requirePremium + validateBody), so these handlers assume an authenticated
-// premium STUDENT and an already-parsed req.body.
+// Body validation is handled by route middleware (validateBody), so these
+// handlers assume an authenticated STUDENT and an already-parsed req.body.
+// The feature is open to all students; the service tier-gates how many live
+// matches are unlocked (premium sees all, free sees the top ones).
 export class PeerMockInterviewController {
+  async getMatches(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const matches = await service.getLiveMatches(req.user.id);
+      res.json(matches);
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to fetch matches" });
+    }
+  }
+
+  async selectMatch(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const { candidateUserId } = req.body;
+      const pairing = await service.selectMatch(req.user.id, candidateUserId);
+      res.json({ message: "Matched successfully", pairing });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to create pairing" });
+    }
+  }
+
+  async declinePairing(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const pairingId = parseInt(String(req.params["id"] || ""), 10);
+      if (isNaN(pairingId)) {
+        res.status(400).json({ message: "Invalid pairing ID" });
+        return;
+      }
+      const pairing = await service.declinePairing(req.user.id, pairingId);
+      res.json({ message: "Pairing declined", pairing });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to decline pairing" });
+    }
+  }
+
   async getPreference(req: Request, res: Response) {
     try {
       if (!req.user) {
@@ -26,11 +72,12 @@ export class PeerMockInterviewController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const { topic, availability, enabled, targetRole, experienceLevel, focusAreas } = req.body;
+      const { topic, availability, enabled, targetRole, experienceLevel, focusAreas, customTopic } = req.body;
       const pref = await service.upsertPreference(req.user.id, topic, availability, enabled, {
         targetRole,
         experienceLevel,
         focusAreas,
+        customTopic,
       });
       res.json(pref);
     } catch (err: any) {

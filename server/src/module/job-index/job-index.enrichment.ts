@@ -1,6 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]!);
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
 
 interface EnrichmentResult {
   skills: string[];
@@ -21,7 +20,7 @@ const FALLBACK: EnrichmentResult = {
 };
 
 export async function enrichJobWithAI(title: string, description: string): Promise<EnrichmentResult> {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+  const provider = getProviderForService("JOB_ENRICHMENT");
 
   const prompt = `You are a job data extractor. Given a job posting, extract structured data.
 
@@ -47,10 +46,11 @@ Rules:
 - domain: pick the closest one`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await provider.generateText(prompt);
+    const text = response.text;
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const parsed = JSON.parse(cleaned);
+    logAIRequest("JOB_ENRICHMENT", response, true);
     return {
       skills: Array.isArray(parsed.skills) ? parsed.skills.slice(0, 15) : [],
       experienceLevel: parsed.experienceLevel || null,

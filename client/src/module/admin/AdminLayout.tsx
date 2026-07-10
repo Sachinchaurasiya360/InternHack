@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Cpu, ExternalLink, Menu, X, Radar, MessageCircle, TrendingUp, CalendarClock } from "lucide-react";
+import { LayoutDashboard, Users, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Code2, Brain, BadgeCheck, Cpu, ExternalLink, Menu, X, Radar, MessageCircle, CalendarClock } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -69,10 +69,6 @@ export default function AdminLayout() {
           <Users className="w-4 h-4" />
           Users
         </NavLink>
-        <NavLink to="/admin/jobs" className={linkClass} onClick={() => setSidebarOpen(false)}>
-          <Briefcase className="w-4 h-4" />
-          Jobs
-        </NavLink>
         <NavLink to="/admin/errors" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <AlertTriangle className="w-4 h-4" />
           Error Logs
@@ -134,14 +130,6 @@ export default function AdminLayout() {
         <NavLink to="/admin/broadcast-email" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <Mail className="w-4 h-4" />
           Broadcast Email
-        </NavLink>
-        <NavLink to="/admin/blog" className={linkClass} onClick={() => setSidebarOpen(false)}>
-          <BookOpen className="w-4 h-4" />
-          Blog
-        </NavLink>
-        <NavLink to="/admin/guide-feedback" className={linkClass} onClick={() => setSidebarOpen(false)}>
-          <TrendingUp className="w-4 h-4" />
-          Guide Analytics
         </NavLink>
       </nav>
 

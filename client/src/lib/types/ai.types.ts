@@ -5,7 +5,13 @@ export type AIServiceType =
   | "RESUME_GEN"
   | "LATEX_CHAT"
   | "EMAIL_CHAT"
-  | "AI_ROADMAP_GENERATION";
+  | "AI_ROADMAP_GENERATION"
+  | "DSA_CODE_REVIEW"
+  | "DSA_TESTCASE_GEN"
+  | "BEHAVIORAL_EVALUATION"
+  | "GSOC_REVIEW"
+  | "JOB_ENRICHMENT"
+  | "LEARN_READINESS";
 
 export interface AIServiceConfig {
   id: number;
