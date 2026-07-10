@@ -1,4 +1,5 @@
 import { DodoPayments } from "dodopayments";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { premiumConfirmationEmailHtml } from "../../utils/email-templates.js";
@@ -256,6 +257,8 @@ export class PaymentService {
           subscriptionEndDate: endDate,
         },
       });
+    }, {
+      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
     });
 
     // Invalidate cache after transaction succeeds
