@@ -3,7 +3,17 @@ import type { MockInterviewTopic } from "@prisma/client";
 import { getGenericPrepMaterial } from "./peer-mock-interview.prep.js";
 import { getPlanTier, type PlanTier } from "../../config/usage-limits.js";
 import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
-import { escapeHtml } from "../../utils/email-templates.js";
+import {
+  escapeHtml,
+  peerMockMatchedEmailHtml,
+  peerMockScheduledEmailHtml,
+  peerMockTimeProposedEmailHtml,
+  peerMockTimeRejectedEmailHtml,
+  peerMockDeclinedEmailHtml,
+  peerMockCancelledEmailHtml,
+  peerMockCompletedEmailHtml,
+} from "../../utils/email-templates.js";
+import { generateICS } from "../../utils/calendar.utils.js";
 
 /**
  * Skill tests that signal readiness for each interview topic. A candidate with
@@ -149,28 +159,76 @@ function formatUtc(d: Date): string {
  * start preparing straight from the inbox. Prep content is static server-side
  * text, so it is safe to interpolate into HTML.
  */
+const INTERVIEW_PREP_LIBRARY_LINK =
+  `<p>For more practice, browse the <a href="https://www.internhack.xyz/learn/interview">Interview Preparation</a> section on the Learn page: 300+ curated questions across JS, React, Node, Python, SQL, system design, and behavioral.</p>`;
+
+/**
+ * Whether this pairing's status still has a live round ahead of it, where
+ * withholding the exact question list from the interviewee still matters.
+ * Once a session is over (completed or cancelled), there's nothing left to
+ * protect, so both partners get the full material for review.
+ */
+function isRoundStillLive(status: string): boolean {
+  return status === "PENDING_SCHEDULE" || status === "SCHEDULED";
+}
+
+/**
+ * Topic-specific preparation block for the pairing emails. DSA pairs get their
+ * assigned problem link; every other topic embeds its practice prompt and
+ * requirements (from the same prep bank the dashboard shows) so the pair can
+ * start preparing straight from the inbox. Prep content is static server-side
+ * text, so it is safe to interpolate into HTML.
+ *
+ * `isDesignatedInterviewer` gates the exact question list: studentA interviews
+ * first, so only they get the full set pre-session. Handing the same fixed
+ * list to both sides would let the interviewee read the answer key before
+ * their own round, which is what this split prevents.
+ */
 function buildPrepEmailSection(
   topic: MockInterviewTopic,
   assignedProblem: { slug: string; title: string } | null,
+  isDesignatedInterviewer: boolean,
 ): string {
   if (assignedProblem) {
     return `<p>Assigned DSA problem: <a href="https://www.internhack.xyz/learn/dsa/problem/${assignedProblem.slug}">${assignedProblem.title}</a></p>
-      <p>Attempt it before the session: one of you interviews while the other solves, then swap roles.</p>`;
+      <p>Attempt it before the session: one of you interviews while the other solves, then swap roles.</p>
+      ${INTERVIEW_PREP_LIBRARY_LINK}`;
   }
   if (topic === "OTHER") {
-    return `<p>You picked a custom topic, so there is no assigned material: agree on the questions and format together before the session.</p>`;
+    return `<p>You picked a custom topic, so there is no assigned material: agree on the questions and format together before the session.</p>
+      ${INTERVIEW_PREP_LIBRARY_LINK}`;
   }
   const prep = getGenericPrepMaterial(topic);
   if (!prep) return "";
   const topicLabel = topic.replace(/_/g, " ");
+  if (!isDesignatedInterviewer) {
+    return `<p>You're the candidate for this ${topicLabel} round.</p>
+      <p>Your partner is interviewing you first and holds the exact question list, so it stays a real interview instead of a rehearsed script. Study the ${topicLabel} fundamentals broadly, then swap so you interview them next.</p>
+      <p>The full question set unlocks on your dashboard once the session is marked complete, for review.</p>
+      ${INTERVIEW_PREP_LIBRARY_LINK}`;
+  }
   return `<p>Your ${topicLabel} practice prompt:</p>
     <p><strong>${prep.prompt}</strong></p>
     <ul>${prep.requirements.map((r) => `<li>${r}</li>`).join("")}</ul>
-    <p>Objectives and follow-up questions are on the preparation card in your dashboard.</p>`;
+    <p>Follow-up questions are on the preparation card in your dashboard. You're interviewing first this round, ask these to your partner, then swap.</p>
+    ${INTERVIEW_PREP_LIBRARY_LINK}`;
 }
 
 export class PeerMockInterviewService {
-  private attachPreparationMaterial(pairing: any) {
+  /**
+   * Attaches the prep material this viewer should see for a pairing.
+   *
+   * DSA already has an intentional swap-roles flow (both solve the assigned
+   * problem, then take turns interviewing), so both sides see the same
+   * problem. For every other topic the prep bank is a small, static, fixed
+   * list per topic: showing it to both partners before the round is the
+   * equivalent of handing out the exam paper early. So studentA interviews
+   * first and is the only one who gets the exact question list pre-session;
+   * studentB gets topic-level guidance instead. Once the round is over
+   * (completed or cancelled) there's nothing left to protect, so both get the
+   * full material back for review.
+   */
+  private attachPreparationMaterial(pairing: any, viewerUserId: number) {
     if (!pairing) return null;
     let preparationMaterial = null;
     if (pairing.topic === "DSA" && pairing.assignedProblem) {
@@ -181,10 +239,21 @@ export class PeerMockInterviewService {
     } else {
       const genericPrep = getGenericPrepMaterial(pairing.topic as MockInterviewTopic);
       if (genericPrep) {
-        preparationMaterial = {
-          type: pairing.topic,
-          generic: genericPrep
-        };
+        const isDesignatedInterviewer = viewerUserId === pairing.studentAId;
+        if (!isRoundStillLive(pairing.status) || isDesignatedInterviewer) {
+          preparationMaterial = {
+            type: pairing.topic,
+            generic: genericPrep,
+          };
+        } else {
+          const topicLabel = String(pairing.topic).replace(/_/g, " ");
+          preparationMaterial = {
+            type: pairing.topic,
+            redacted: true,
+            generic: { prompt: genericPrep.prompt },
+            note: `Your partner is interviewing you first this round and holds the exact ${topicLabel} question list, so it stays a real interview. Study the fundamentals broadly, you'll get the full set to review once the session is marked complete.`,
+          };
+        }
       }
     }
     return { ...pairing, preparationMaterial };
@@ -295,9 +364,7 @@ export class PeerMockInterviewService {
         if (!partner || !canceller) continue;
         try {
           const emailUtils = await import("../../utils/email.utils.js");
-          const html = `<h3>Upcoming Mock Interview Cancelled</h3>
-            <p>Your upcoming mock interview with <strong>${canceller.name}</strong> has been cancelled because they opted out of mock interviews.</p>
-            <p>You are back in the matching pool: log in to your dashboard to pick a new partner.</p>`;
+          const html = peerMockCancelledEmailHtml({ recipientName: partner.name, cancellerName: canceller.name });
           await emailUtils.sendEmail({ to: partner.email, subject: "Upcoming Mock Interview Cancelled", html });
         } catch (err) {
           console.error("Failed to send cancellation email:", err);
@@ -362,7 +429,7 @@ export class PeerMockInterviewService {
         assignedProblem: true,
       }
     });
-    return this.attachPreparationMaterial(pairing);
+    return this.attachPreparationMaterial(pairing, userId);
   }
 
   /**
@@ -404,7 +471,7 @@ export class PeerMockInterviewService {
       throw Object.assign(new Error("Unauthorized access to pairing"), { status: 403 });
     }
 
-    return this.attachPreparationMaterial(pairing);
+    return this.attachPreparationMaterial(pairing, userId);
   }
 
   /**
@@ -447,7 +514,7 @@ export class PeerMockInterviewService {
       }
     });
 
-    return pairings.map(p => this.attachPreparationMaterial(p));
+    return pairings.map(p => this.attachPreparationMaterial(p, userId));
   }
 
   /**
@@ -471,11 +538,12 @@ export class PeerMockInterviewService {
     // Send notifications
     try {
       const emailUtils = await import("../../utils/email.utils.js");
-      const html = `<h3>Mock Interview Completed!</h3><p>Your practice mock interview session has been marked as completed. Please rate your session and provide feedback to your partner.</p>`;
       if (pairing.studentA?.email) {
+        const html = peerMockCompletedEmailHtml({ recipientName: pairing.studentA.name });
         await emailUtils.sendEmail({ to: pairing.studentA.email, subject: "Mock Interview Completed", html });
       }
       if (pairing.studentB?.email) {
+        const html = peerMockCompletedEmailHtml({ recipientName: pairing.studentB.name });
         await emailUtils.sendEmail({ to: pairing.studentB.email, subject: "Mock Interview Completed", html });
       }
     } catch (err) {
@@ -541,10 +609,11 @@ export class PeerMockInterviewService {
     if (partner?.email && proposer?.name) {
       try {
         const emailUtils = await import("../../utils/email.utils.js");
-        const html = `<h3>New Time Proposed</h3>
-          <p><strong>${proposer.name}</strong> has proposed a time for your upcoming practice session:</p>
-          <p><strong>${formatUtc(proposedTime)}</strong></p>
-          <p>Please log in to your dashboard to accept or reject this proposed time.</p>`;
+        const html = peerMockTimeProposedEmailHtml({
+          recipientName: partner.name,
+          proposerName: proposer.name,
+          whenUtc: formatUtc(proposedTime),
+        });
         await emailUtils.sendEmail({ to: partner.email, subject: "Mock Interview Time Proposed", html });
       } catch (err) {
         console.error("Failed to send proposal email:", err);
@@ -616,14 +685,56 @@ export class PeerMockInterviewService {
     });
 
     const emailUtils = await import("../../utils/email.utils.js");
-    const html = `<h3>Mock Interview Scheduled!</h3>
-      <p>Your mock interview has been scheduled for <strong>${formatUtc(pairing.proposedTime)}</strong>.</p>
-      ${resolvedMeetingLink ? `<p>Meeting Link: <a href="${resolvedMeetingLink}">${resolvedMeetingLink}</a></p>` : ""}
-      <p>Please mark your calendar!</p>`;
+    const topicLabel = pairing.customTopic
+      ? escapeHtml(pairing.customTopic)
+      : pairing.topic
+        ? pairing.topic.replace(/_/g, " ")
+        : "practice";
+    const prepHtmlForA = buildPrepEmailSection(pairing.topic as MockInterviewTopic, pairing.assignedProblem ?? null, true);
+    const prepHtmlForB = buildPrepEmailSection(pairing.topic as MockInterviewTopic, pairing.assignedProblem ?? null, false);
+    const whenUtc = formatUtc(pairing.proposedTime);
+
+    // Attached directly to the email so the invite works regardless of
+    // whether the Google Calendar integration is configured (createGoogleMeetEvent
+    // above only adds the event to the dedicated InternHack calendar, it does
+    // not put anything on the students' own calendars).
+    const icsContent = generateICS({
+      uid: `peer-mock-interview-${pairingId}`,
+      title: `InternHack Mock Interview (${topicLabel})`,
+      description: `Peer mock interview practice session, scheduled via InternHack.${resolvedMeetingLink ? ` Meeting link: ${resolvedMeetingLink}` : ""}`,
+      start: new Date(pairing.proposedTime),
+      end: new Date(new Date(pairing.proposedTime).getTime() + 60 * 60 * 1000),
+      ...(resolvedMeetingLink ? { location: resolvedMeetingLink } : {}),
+    });
+    const icsAttachment = {
+      filename: "mock-interview.ics",
+      content: Buffer.from(icsContent, "utf-8"),
+      contentType: "text/calendar; charset=utf-8; method=PUBLISH",
+    };
 
     try {
-      if (updated.studentA?.email) await emailUtils.sendEmail({ to: updated.studentA.email, subject: "Mock Interview Scheduled", html });
-      if (updated.studentB?.email) await emailUtils.sendEmail({ to: updated.studentB.email, subject: "Mock Interview Scheduled", html });
+      if (updated.studentA?.email) {
+        const html = peerMockScheduledEmailHtml({
+          recipientName: updated.studentA.name,
+          partnerName: updated.studentB?.name ?? "your partner",
+          topicLabel,
+          whenUtc,
+          meetingLink: resolvedMeetingLink,
+          prepHtml: prepHtmlForA,
+        });
+        await emailUtils.sendEmail({ to: updated.studentA.email, subject: "Mock Interview Scheduled", html, attachments: [icsAttachment] });
+      }
+      if (updated.studentB?.email) {
+        const html = peerMockScheduledEmailHtml({
+          recipientName: updated.studentB.name,
+          partnerName: updated.studentA?.name ?? "your partner",
+          topicLabel,
+          whenUtc,
+          meetingLink: resolvedMeetingLink,
+          prepHtml: prepHtmlForB,
+        });
+        await emailUtils.sendEmail({ to: updated.studentB.email, subject: "Mock Interview Scheduled", html, attachments: [icsAttachment] });
+      }
     } catch (err) {
       console.error("Failed to send scheduled emails:", err);
     }
@@ -660,9 +771,7 @@ export class PeerMockInterviewService {
     if (proposer?.email && rejecter?.name) {
       try {
         const emailUtils = await import("../../utils/email.utils.js");
-        const html = `<h3>Proposed Time Rejected</h3>
-          <p><strong>${rejecter.name}</strong> was unable to meet at your proposed time.</p>
-          <p>Please log in to your dashboard to propose a different time, or reach out to them directly.</p>`;
+        const html = peerMockTimeRejectedEmailHtml({ recipientName: proposer.name, rejecterName: rejecter.name });
         await emailUtils.sendEmail({ to: proposer.email, subject: "Mock Interview Time Rejected", html });
       } catch (err) {
         console.error("Failed to send rejection email:", err);
@@ -699,9 +808,7 @@ export class PeerMockInterviewService {
     if (other?.email && decliner?.name) {
       try {
         const emailUtils = await import("../../utils/email.utils.js");
-        const html = `<h3>Pairing Declined</h3>
-          <p><strong>${decliner.name}</strong> declined the practice pairing.</p>
-          <p>You are back in the matching pool: log in to your dashboard to pick a new partner instantly.</p>`;
+        const html = peerMockDeclinedEmailHtml({ recipientName: other.name, declinerName: decliner.name });
         await emailUtils.sendEmail({ to: other.email, subject: "Mock Interview Pairing Declined", html });
       } catch (err) {
         console.error("Failed to send decline email:", err);
@@ -1086,18 +1193,26 @@ export class PeerMockInterviewService {
 
     try {
       const emailUtils = await import("../../utils/email.utils.js");
-      const prepInfo = buildPrepEmailSection(topic, match.assignedProblem);
+      // The viewer is always studentA (see the create() call above), so they
+      // interview first and are the only one who gets the exact question list.
+      const prepInfoForViewer = buildPrepEmailSection(topic, match.assignedProblem, true);
+      const prepInfoForCandidate = buildPrepEmailSection(topic, match.assignedProblem, false);
       // The custom topic is student-entered free text headed into HTML email.
       const topicLabel = pairingCustomTopic ? escapeHtml(pairingCustomTopic) : topic.replace(/_/g, " ");
 
-      const htmlForViewer = `<h3>You're paired!</h3>
-        <p>You picked <strong>${candidate.name}</strong> for a ${topicLabel} practice mock interview.</p>
-        ${prepInfo}
-        <p>Log in to your dashboard to propose a time to meet.</p>`;
-      const htmlForCandidate = `<h3>You've been matched!</h3>
-        <p><strong>${viewer.name}</strong> picked you for a ${topicLabel} practice mock interview.</p>
-        ${prepInfo}
-        <p>Log in to your dashboard to propose a time, or decline if it doesn't fit.</p>`;
+      const htmlForViewer = peerMockMatchedEmailHtml({
+        recipientName: viewer.name,
+        partnerName: candidate.name,
+        partnerCollege: candidate.college,
+        topicLabel,
+        prepHtml: prepInfoForViewer,
+      });
+      const htmlForCandidate = peerMockMatchedEmailHtml({
+        recipientName: candidate.name,
+        partnerName: viewer.name,
+        topicLabel,
+        prepHtml: prepInfoForCandidate,
+      });
 
       await emailUtils.sendEmail({ to: viewer.email, subject: `Peer Mock Interview Match - ${topicLabel}`, html: htmlForViewer });
       await emailUtils.sendEmail({ to: candidate.email, subject: `Peer Mock Interview Match - ${topicLabel}`, html: htmlForCandidate });
@@ -1105,6 +1220,6 @@ export class PeerMockInterviewService {
       console.error("Failed to send match notifications:", err);
     }
 
-    return this.attachPreparationMaterial(match);
+    return this.attachPreparationMaterial(match, userId);
   }
 }

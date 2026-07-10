@@ -182,6 +182,34 @@ describe("PeerMockInterviewService", () => {
       });
       expect(res).toEqual({ ...mockPairing, preparationMaterial: null });
     });
+
+    it("should give studentA (the round-1 interviewer) the full question list for a live generic-topic pairing", async () => {
+      const mockPairing = { id: 5, studentAId: 1, studentBId: 2, status: "PENDING_SCHEDULE", topic: "SYSTEM_DESIGN" };
+      vi.mocked(prisma.peerMockInterview.findFirst).mockResolvedValue(mockPairing as any);
+
+      const res: any = await service.getUpcomingPairing(1);
+      expect(res.preparationMaterial.redacted).toBeUndefined();
+      expect(res.preparationMaterial.generic.requirements.length).toBeGreaterThan(0);
+    });
+
+    it("should redact the exact question list for studentB while the round is still live", async () => {
+      const mockPairing = { id: 5, studentAId: 1, studentBId: 2, status: "PENDING_SCHEDULE", topic: "SYSTEM_DESIGN" };
+      vi.mocked(prisma.peerMockInterview.findFirst).mockResolvedValue(mockPairing as any);
+
+      const res: any = await service.getUpcomingPairing(2);
+      expect(res.preparationMaterial.redacted).toBe(true);
+      expect(res.preparationMaterial.generic.requirements).toBeUndefined();
+      expect(res.preparationMaterial.note).toBeDefined();
+    });
+
+    it("should reveal the full question list to both once the pairing is completed", async () => {
+      const mockPairing = { id: 5, studentAId: 1, studentBId: 2, status: "COMPLETED", topic: "SYSTEM_DESIGN" };
+      vi.mocked(prisma.peerMockInterview.findFirst).mockResolvedValue(mockPairing as any);
+
+      const res: any = await service.getUpcomingPairing(2);
+      expect(res.preparationMaterial.redacted).toBeUndefined();
+      expect(res.preparationMaterial.generic.requirements.length).toBeGreaterThan(0);
+    });
   });
 
   describe("getHistoryPairings", () => {
@@ -603,7 +631,7 @@ describe("PeerMockInterviewService", () => {
       expect(prisma.peerMockInterview.create).not.toHaveBeenCalled();
     });
 
-    it("should embed the practice prompt in the pairing emails for non-DSA topics", async () => {
+    it("should give the round-1 interviewer the full practice prompt and redact it for the interviewee in the pairing emails", async () => {
       const sdViewer = { ...viewerPref("PREMIUM"), topic: "SYSTEM_DESIGN" };
       vi.mocked(prisma.peerMockInterviewPreference.findUnique).mockResolvedValue(sdViewer as any);
       vi.mocked(prisma.peerMockInterview.findMany)
@@ -622,6 +650,8 @@ describe("PeerMockInterviewService", () => {
         studentB: { id: 2, name: "Bob", email: "bob@test.com" },
       } as any);
 
+      // userId 1 (Alice) initiates the pairing, so she is studentA / the
+      // round-1 interviewer; Bob (studentB) is the round-1 candidate.
       await service.selectMatch(1, 2);
 
       // No DSA problem lookup for a non-DSA topic.
@@ -629,11 +659,19 @@ describe("PeerMockInterviewService", () => {
       const prep = getGenericPrepMaterial("SYSTEM_DESIGN")!;
       const calls = vi.mocked(sendEmail).mock.calls;
       expect(calls).toHaveLength(2);
-      for (const [args] of calls) {
-        expect((args as any).subject).toContain("SYSTEM DESIGN");
-        expect((args as any).html).toContain(prep.prompt);
-        expect((args as any).html).toContain(prep.requirements[0]);
-      }
+
+      const viewerEmail = calls.find(([args]) => (args as any).to === "alice@test.com")![0] as any;
+      const candidateEmail = calls.find(([args]) => (args as any).to === "bob@test.com")![0] as any;
+
+      expect(viewerEmail.subject).toContain("SYSTEM DESIGN");
+      expect(viewerEmail.html).toContain(prep.prompt);
+      expect(viewerEmail.html).toContain(prep.requirements[0]);
+
+      // Bob is interviewed first, so his email must not leak the exact
+      // question list, that would defeat the point of a mock interview.
+      expect(candidateEmail.subject).toContain("SYSTEM DESIGN");
+      expect(candidateEmail.html).not.toContain(prep.requirements[0]);
+      expect(candidateEmail.html).toContain("interviewing you first");
     });
 
     it("should record the shared custom topic on an OTHER pairing and use it in emails", async () => {

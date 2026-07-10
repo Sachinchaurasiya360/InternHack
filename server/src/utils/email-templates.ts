@@ -1600,3 +1600,194 @@ You received this because you clicked "Email me these jobs" in your InternHack c
 Manage email preferences: ${args.settingsUrl}
 `;
 }
+
+const PEER_MOCK_DASHBOARD_URL = "https://www.internhack.xyz/student/mock-interview/peer";
+
+function peerMockLayout(heading: string, bodyHtml: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+    </td></tr>
+    <tr><td style="padding:32px 24px;">
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">${heading}</h2>
+      ${bodyHtml}
+    </td></tr>
+    <tr><td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function peerMockCard(label: string, contentHtml: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;">
+    <tr><td style="padding:16px 18px;background-color:#f7fee7;border:1px solid #d9f99d;border-radius:8px;">
+      <p style="margin:0 0 6px;font-size:12px;font-weight:700;color:#3f6212;text-transform:uppercase;letter-spacing:0.4px;">${label}</p>
+      <div style="font-size:14px;color:#365314;line-height:1.65;">${contentHtml}</div>
+    </td></tr>
+  </table>`;
+}
+
+function peerMockCta(label: string, url: string = PEER_MOCK_DASHBOARD_URL): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0 0;">
+    <tr><td style="background-color:#0a0a0a;border-radius:8px;">
+      <a href="${url}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">${label}</a>
+    </td></tr>
+  </table>`;
+}
+
+/**
+ * Sent to both students the moment one picks the other from the live match
+ * list. `prepHtml` is the pre-built prep section (DSA problem link, generic
+ * practice prompt, or custom-topic note) so the same content that seeds the
+ * dashboard prep card also lands in the inbox.
+ */
+export function peerMockMatchedEmailHtml(args: {
+  recipientName: string;
+  partnerName: string;
+  partnerCollege?: string | null;
+  topicLabel: string;
+  prepHtml: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const collegeLine = args.partnerCollege ? ` from ${escapeHtml(args.partnerCollege)}` : "";
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      You've been matched with <strong>${escapeHtml(args.partnerName)}</strong>${collegeLine} for a <strong>${args.topicLabel}</strong> practice mock interview.
+    </p>
+    ${peerMockCard("What to prepare", args.prepHtml)}
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Log in and propose a time that works for both of you. Sessions go best when you've both looked at the material beforehand: one of you interviews while the other answers, then swap roles.
+    </p>
+    ${peerMockCta("Propose a time")}
+  `;
+  return peerMockLayout(`You're paired up, ${firstName}!`, body);
+}
+
+/**
+ * Sent to both students once a proposed time is accepted. Carries the full
+ * session detail (not just the confirmation line the old plain-text version
+ * had) plus the prep reminder, and pairs with an .ics attachment the caller
+ * attaches separately so the event lands on each student's calendar even
+ * when Google Calendar isn't wired up.
+ */
+export function peerMockScheduledEmailHtml(args: {
+  recipientName: string;
+  partnerName: string;
+  topicLabel: string;
+  whenUtc: string;
+  meetingLink?: string | null;
+  prepHtml?: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const detailsHtml = `
+    <p style="margin:0 0 6px;">Date &amp; time: <strong>${args.whenUtc}</strong></p>
+    <p style="margin:0;">Partner: <strong>${escapeHtml(args.partnerName)}</strong></p>
+    ${
+      args.meetingLink
+        ? `<p style="margin:6px 0 0;">Meeting link: <a href="${args.meetingLink}" style="color:#365314;">${args.meetingLink}</a></p>`
+        : `<p style="margin:6px 0 0;">No meeting link yet, coordinate one with your partner before the session.</p>`
+    }
+  `;
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      Your <strong>${args.topicLabel}</strong> mock interview is confirmed.
+    </p>
+    ${peerMockCard("Session details", detailsHtml)}
+    ${args.prepHtml ? peerMockCard("What to prepare", args.prepHtml) : ""}
+    <p style="margin:0;font-size:13px;line-height:1.6;color:#71717a;">
+      A calendar invite (.ics) is attached to this email, add it to your calendar so neither of you misses it.
+    </p>
+    ${peerMockCta("View pairing")}
+  `;
+  return peerMockLayout(`You're all set, ${firstName}`, body);
+}
+
+export function peerMockTimeProposedEmailHtml(args: {
+  recipientName: string;
+  proposerName: string;
+  whenUtc: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      <strong>${escapeHtml(args.proposerName)}</strong> proposed a time for your upcoming practice session.
+    </p>
+    ${peerMockCard("Proposed time", `<p style="margin:0;"><strong>${args.whenUtc}</strong></p>`)}
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Log in to accept or reject this time. If you accept, you'll both get a confirmation with a calendar invite.
+    </p>
+    ${peerMockCta("Review proposed time")}
+  `;
+  return peerMockLayout(`New time proposed, ${firstName}`, body);
+}
+
+export function peerMockTimeRejectedEmailHtml(args: {
+  recipientName: string;
+  rejecterName: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      <strong>${escapeHtml(args.rejecterName)}</strong> couldn't make your proposed time.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Log in to propose a different time, or reach out to them directly to sort out a slot that works for both of you.
+    </p>
+    ${peerMockCta("Propose a new time")}
+  `;
+  return peerMockLayout(`Time didn't work, ${firstName}`, body);
+}
+
+export function peerMockDeclinedEmailHtml(args: {
+  recipientName: string;
+  declinerName: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      <strong>${escapeHtml(args.declinerName)}</strong> declined the practice pairing before it was scheduled.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      You're back in the matching pool: log in to pick a new partner instantly.
+    </p>
+    ${peerMockCta("Find a new match")}
+  `;
+  return peerMockLayout(`Pairing declined, ${firstName}`, body);
+}
+
+export function peerMockCancelledEmailHtml(args: {
+  recipientName: string;
+  cancellerName: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      Your upcoming mock interview with <strong>${escapeHtml(args.cancellerName)}</strong> was cancelled because they opted out of mock interviews.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      You're back in the matching pool: log in to pick a new partner.
+    </p>
+    ${peerMockCta("Find a new match")}
+  `;
+  return peerMockLayout(`Session cancelled, ${firstName}`, body);
+}
+
+export function peerMockCompletedEmailHtml(args: { recipientName: string }): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      Your practice mock interview session has been marked as completed. Great work showing up and putting in the reps.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Rate your session and leave feedback for your partner, it helps them improve and keeps the matching pool healthy for everyone.
+    </p>
+    ${peerMockCta("Rate your session")}
+  `;
+  return peerMockLayout(`Nicely done, ${firstName}`, body);
+}

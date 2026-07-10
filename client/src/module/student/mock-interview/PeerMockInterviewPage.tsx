@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, BadgeCheck, ExternalLink, Loader2, Lock, Star, Users, Check } from "lucide-react";
+import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, ShieldCheck, Star, Users, Check } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type { AxiosError } from "axios";
@@ -105,15 +105,28 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
     );
   }
 
+  if (material.generic && material.redacted) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-400">
+          <ShieldCheck className="w-3.5 h-3.5 text-lime-500" />
+          You're the candidate this round
+        </span>
+        <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
+        <p className="text-xs text-stone-500 dark:text-stone-400">{material.note}</p>
+      </div>
+    );
+  }
+
   if (material.generic) {
     return (
       <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-3">
         <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Preparation Material</span>
         <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
 
-        {material.generic.requirements.length > 0 && (
+        {material.generic.requirements && material.generic.requirements.length > 0 && (
           <div>
-            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Requirements:</h5>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Sample Questions:</h5>
             <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
               {material.generic.requirements.map((req, i) => <li key={i}>{req}</li>)}
             </ul>
@@ -557,8 +570,11 @@ export default function PeerMockInterviewPage() {
   });
 
   const acceptTimeMutation = useMutation({
-    mutationFn: async ({ pairingId }: { pairingId: number }) => {
-      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/accept-time`, {});
+    mutationFn: async ({ pairingId, meetingLink }: { pairingId: number; meetingLink?: string }) => {
+      const res = await api.post(
+        `/student/peer-mock-interview/pairings/${pairingId}/accept-time`,
+        meetingLink ? { meetingLink } : {},
+      );
       return res.data;
     },
     onSuccess: () => {
@@ -633,7 +649,9 @@ export default function PeerMockInterviewPage() {
   const [rating, setRating] = useState(5);
   const [feedbackText, setFeedbackText] = useState("");
 
-  const [proposedDate, setProposedDate] = useState("");
+  const [proposedDateStr, setProposedDateStr] = useState("");
+  const [proposedTimeStr, setProposedTimeStr] = useState("");
+  const [manualMeetingLink, setManualMeetingLink] = useState("");
 
   const [activeTab, setActiveTab] = useState<"upcoming" | "history">("upcoming");
 
@@ -763,6 +781,7 @@ export default function PeerMockInterviewPage() {
   }
 
   const currentUserId = useAuthStore.getState().user?.id;
+  const todayStr = new Date().toISOString().slice(0, 10);
   const isA = pairing && pairing.studentAId === currentUserId;
   const partner = pairing ? (isA ? pairing.studentB : pairing.studentA) : null;
   const alreadyRated = pairing ? (isA ? pairing.ratingAForB !== null : pairing.ratingBForA !== null) : false;
@@ -873,25 +892,50 @@ export default function PeerMockInterviewPage() {
 
                   <div className="flex flex-col gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
                     {pairing.status === "PENDING_SCHEDULE" && !pairing.proposedTime && (
-                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10">
-                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Propose a meeting time</p>
-                        <div className="flex flex-wrap gap-2">
-                          <input
-                            type="datetime-local"
-                            value={proposedDate}
-                            onChange={(e) => setProposedDate(e.target.value)}
-                            className="text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1"
-                          />
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            disabled={!proposedDate || proposeTimeMutation.isPending}
-                            onClick={() => proposeTimeMutation.mutate({ pairingId: pairing.id, proposedTime: new Date(proposedDate).toISOString() })}
-                            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
-                          >
-                            Propose Time
-                          </Button>
+                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-4 rounded-md border border-stone-200 dark:border-white/10">
+                        <div className="flex items-center gap-2">
+                          <CalendarClock className="w-4 h-4 text-lime-500 shrink-0" />
+                          <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Propose a meeting time</p>
                         </div>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                              Date
+                            </label>
+                            <input
+                              type="date"
+                              value={proposedDateStr}
+                              min={todayStr}
+                              onChange={(e) => setProposedDateStr(e.target.value)}
+                              className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                              Time
+                            </label>
+                            <input
+                              type="time"
+                              value={proposedTimeStr}
+                              onChange={(e) => setProposedTimeStr(e.target.value)}
+                              className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                            />
+                          </div>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={!proposedDateStr || !proposedTimeStr || proposeTimeMutation.isPending}
+                          onClick={() =>
+                            proposeTimeMutation.mutate({
+                              pairingId: pairing.id,
+                              proposedTime: new Date(`${proposedDateStr}T${proposedTimeStr}`).toISOString(),
+                            })
+                          }
+                          className="w-full bg-lime-400 text-stone-950 hover:bg-lime-300"
+                        >
+                          Propose Time
+                        </Button>
                       </div>
                     )}
 
@@ -912,14 +956,32 @@ export default function PeerMockInterviewPage() {
                         </div>
                         <div className="space-y-2">
                           <p className="text-xs text-stone-400 dark:text-stone-500">
-                            Accepting creates a Google Meet link automatically and emails it to both of you.
+                            Accepting tries to auto-generate a Google Meet link. If that is not set up, paste your own
+                            below (Meet, Zoom, anything) so it still goes out in the confirmation email.
                           </p>
-                          <div className="flex gap-2">
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                              Meeting link (optional)
+                            </label>
+                            <input
+                              type="url"
+                              value={manualMeetingLink}
+                              onChange={(e) => setManualMeetingLink(e.target.value)}
+                              placeholder="https://meet.google.com/..."
+                              className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                            />
+                          </div>
+                          <div className="flex gap-2 pt-1">
                             <Button
                               variant="primary"
                               size="sm"
                               disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
-                              onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id })}
+                              onClick={() =>
+                                acceptTimeMutation.mutate({
+                                  pairingId: pairing.id,
+                                  meetingLink: manualMeetingLink.trim() || undefined,
+                                })
+                              }
                               className="bg-lime-400 text-stone-950 hover:bg-lime-300"
                             >
                               Accept Time

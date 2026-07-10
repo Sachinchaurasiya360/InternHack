@@ -171,10 +171,13 @@ export interface MockInterviewPreparationMaterial {
   dsaProblem?: { id: number; title: string; slug: string; difficulty: string } | null;
   generic?: {
     prompt: string;
-    requirements: string[];
+    requirements?: string[];
     objectives?: string[];
-    followUpQuestions: string[];
+    followUpQuestions?: string[];
   };
+  /** True when the viewer is the interviewee for this round: the exact question list is withheld so the interview stays live. */
+  redacted?: boolean;
+  note?: string;
 }
 
 // Live peer matching

@@ -8,128 +8,98 @@ export interface MockInterviewGenericPrep {
 }
 
 export const SYSTEM_DESIGN_PREP: MockInterviewGenericPrep = {
-  prompt: "Design a URL shortening service like Bitly.",
+  prompt: "Here are some sample System Design interview questions to run through.",
   requirements: [
-    "Users should be able to enter a long URL and get a short URL back.",
-    "Clicking the short URL should redirect to the original long URL.",
-    "Links should expire after a configurable default timespan.",
-    "The system should be highly available and handle high read volume."
-  ],
-  objectives: [
-    "Identify read vs. write heavy characteristics (e.g. 100:1 read/write ratio).",
-    "Estimate storage size for 5 years.",
-    "Discuss the tradeoffs between Base62 vs. MD5 for URL encoding.",
-    "Explain caching layers (e.g. Redis/Memcached) for fast redirects."
+    "How would you design a URL shortening service like Bitly? Walk through the core components.",
+    "What's the difference between horizontal and vertical scaling, and when would you choose each?",
+    "How would you design a rate limiter that works correctly across multiple servers?",
+    "Explain the CAP theorem and how it shapes database choice for a distributed system.",
+    "How would you design a notification system that fans out to millions of users?"
   ],
   followUpQuestions: [
-    "How would you handle malicious or spam URLs?",
-    "How does your design change if users want custom vanity aliases?",
-    "How would you shard the database as the data grows?"
+    "How would you shard a database as it grows, and how do you handle resharding?",
+    "What's the difference between a message queue and a pub/sub system? When would you use each?",
+    "How would you design a caching layer, and what invalidation strategy would you use?"
   ]
 };
 
 export const FRONTEND_PREP: MockInterviewGenericPrep = {
-  prompt: "Implement an auto-complete search component.",
+  prompt: "Here are some sample Frontend interview questions to run through.",
   requirements: [
-    "The component should accept user input and fetch suggestions asynchronously.",
-    "Display a dropdown of results as the user types.",
-    "Handle loading states, empty results, and error handling gracefully.",
-    "Ensure keyboard navigation (Up, Down, Enter, Escape) works for the dropdown."
-  ],
-  objectives: [
-    "Implement debouncing to limit API calls during rapid typing.",
-    "Address potential race conditions from out-of-order API responses.",
-    "Ensure semantic HTML (e.g. ARIA roles) is used for screen readers.",
-    "Discuss how you would style the component to be responsive."
+    "What's the difference between let, const, and var, and how does hoisting affect each?",
+    "Explain how the virtual DOM works and why it improves rendering performance.",
+    "What triggers a component to re-render in React, and how would you prevent unnecessary re-renders?",
+    "How does event delegation work in the DOM, and when would you use it?",
+    "What's the difference between flexbox and grid, and when would you reach for each?"
   ],
   followUpQuestions: [
-    "How would you optimize performance if the list of results is very large (e.g., thousands of items)?",
-    "What strategies would you use to test this component (Unit vs E2E)?",
-    "How would you extract this into a reusable UI library?"
+    "How would you debug a memory leak in a long-running single-page app?",
+    "What's the difference between debouncing and throttling? Give an example use case for each.",
+    "How do you make a custom dropdown or modal accessible to screen readers and keyboard users?"
   ]
 };
 
 export const BACKEND_PREP: MockInterviewGenericPrep = {
-  prompt: "Design and implement a rate limiter for a public REST API.",
+  prompt: "Here are some sample Backend interview questions to run through.",
   requirements: [
-    "Limit requests per API key (e.g. 100 requests per minute).",
-    "Return HTTP 429 with a Retry-After header when the limit is exceeded.",
-    "Allow different limits per endpoint or subscription plan.",
-    "The limiter must keep working correctly when the API runs on multiple servers."
-  ],
-  objectives: [
-    "Compare fixed window, sliding window, and token bucket algorithms.",
-    "Discuss where the counters live (in-memory vs. Redis) and the tradeoffs.",
-    "Handle race conditions when two requests hit the limit at the same time.",
-    "Explain how to test the limiter under burst traffic."
+    "What's the difference between SQL and NoSQL databases, and how would you choose between them for a given system?",
+    "Explain the difference between authentication and authorization, and how JWTs fit in.",
+    "How would you design a database schema for a many-to-many relationship, e.g. students enrolled in courses?",
+    "What happens when two requests try to update the same row at the same time? How do you prevent that race condition?",
+    "How would you paginate an API that returns millions of rows efficiently?"
   ],
   followUpQuestions: [
-    "How would you exempt internal services or health checks from the limit?",
-    "What changes if you need per-user limits across a fleet of 50 servers?",
-    "How do you keep latency low when the rate-limit store is remote?"
+    "How would you design a rate limiter for a public API?",
+    "What's the N+1 query problem, and how do you fix it?",
+    "How do you keep a cache consistent with the source of truth when data changes frequently?"
   ]
 };
 
 export const BEHAVIORAL_PREP: MockInterviewGenericPrep = {
-  prompt: "Run a behavioral interview using the STAR method (Situation, Task, Action, Result).",
+  prompt: "Here are some sample Behavioral interview questions to run through.",
   requirements: [
-    "Prepare 4-5 questions covering teamwork, conflict, failure, and deadlines.",
-    "As the interviewer, probe for specifics: what did YOU do, not the team.",
-    "As the candidate, structure every answer as Situation, Task, Action, Result.",
-    "Take notes so you can give concrete feedback at the end."
-  ],
-  objectives: [
-    "Practice keeping answers under 2-3 minutes without losing the story.",
-    "Spot vague answers and ask one follow-up that forces a concrete example.",
-    "Evaluate ownership: does the candidate describe their own contribution?",
-    "End with actionable feedback: one strength, one thing to improve."
-  ],
-  followUpQuestions: [
     "Tell me about a time you disagreed with a teammate. How was it resolved?",
     "Describe a project that failed. What would you do differently?",
-    "Tell me about a time you had to deliver with an impossible deadline."
+    "Tell me about a time you had to deliver under an impossible deadline.",
+    "Describe a situation where you had to convince others to adopt your idea.",
+    "Tell me about a time you made a mistake at work. How did you handle it?"
+  ],
+  followUpQuestions: [
+    "Tell me about a time you received tough feedback. How did you respond?",
+    "Describe a time you had to make a decision with incomplete information.",
+    "Tell me about a time you had to manage competing priorities."
   ]
 };
 
 export const DEVOPS_PREP: MockInterviewGenericPrep = {
-  prompt: "Design a CI/CD pipeline for a web application deployed to the cloud.",
+  prompt: "Here are some sample DevOps interview questions to run through.",
   requirements: [
-    "Cover build, automated tests, and deploy stages triggered on every merge.",
-    "Support separate staging and production environments.",
-    "Deploys must be reversible: describe your rollback strategy.",
-    "Secrets (API keys, DB credentials) must never live in the repository."
-  ],
-  objectives: [
-    "Compare rolling, blue-green, and canary deployment strategies.",
-    "Discuss containerization and why reproducible builds matter.",
-    "Explain how monitoring and alerts decide when a deploy is 'done'.",
-    "Touch on infrastructure-as-code for keeping environments identical."
+    "Walk through what happens in a CI/CD pipeline from a merged PR to a production deploy.",
+    "What's the difference between blue-green, canary, and rolling deployments?",
+    "How do you handle secrets (API keys, DB credentials) in a deployment pipeline without committing them to the repo?",
+    "What's the difference between a container and a virtual machine?",
+    "How would you roll back a bad deploy that's already serving production traffic?"
   ],
   followUpQuestions: [
-    "How do you ship an urgent hotfix while a long pipeline run is in progress?",
-    "How would you handle a database migration with zero downtime?",
-    "What do you do about flaky tests that block the pipeline?"
+    "How would you debug a service that's healthy in staging but crashing in production?",
+    "What's infrastructure as code, and why does it matter for keeping environments identical?",
+    "How do you handle a database migration with zero downtime?"
   ]
 };
 
 export const DATA_SCIENCE_PREP: MockInterviewGenericPrep = {
-  prompt: "Walk through an end-to-end ML approach to predict which students will drop out of an online course.",
+  prompt: "Here are some sample Data Science interview questions to run through.",
   requirements: [
-    "Frame the problem: what exactly is the prediction target and when is it made?",
-    "Propose features from activity data (logins, submissions, watch time).",
-    "Pick an evaluation metric and justify it for an imbalanced dataset.",
-    "Start with a simple baseline model before anything complex."
-  ],
-  objectives: [
-    "Identify data leakage risks in the proposed features.",
-    "Discuss the precision/recall tradeoff for an intervention use case.",
-    "Explain train/validation/test splits when data has a time dimension.",
-    "Consider how the model's predictions would actually be used by the product."
+    "What's the difference between precision and recall, and when would you optimize for one over the other?",
+    "How do you detect and prevent data leakage when building a training pipeline?",
+    "Walk through how you'd evaluate a classification model on an imbalanced dataset.",
+    "What's the bias-variance tradeoff, and how do you diagnose which one you're dealing with?",
+    "How would you design an A/B test to measure whether a new feature improves retention?"
   ],
   followUpQuestions: [
-    "How would you detect the model degrading after deployment (drift)?",
-    "What would you do for brand-new students with no activity history?",
-    "How do you check the model is not unfair to a subgroup of students?"
+    "How would you detect a model degrading in production (drift)?",
+    "How do you handle a feature that's highly predictive in training but leaks the label?",
+    "How would you explain a black-box model's prediction to a non-technical stakeholder?"
   ]
 };
 
