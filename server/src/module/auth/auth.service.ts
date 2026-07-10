@@ -691,7 +691,7 @@ export class AuthService {
       to: user.email,
       subject: "Reset your InternHack password",
       html: resetPasswordEmailHtml(user.name, otp),
-    });
+    }).catch((err) => console.error("Failed to send password reset email:", err));
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {
@@ -918,4 +918,3 @@ export class AuthService {
     return data;
   }
 }
-
