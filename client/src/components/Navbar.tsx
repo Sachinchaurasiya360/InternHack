@@ -96,6 +96,8 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                   return (
                     location.pathname === "/jobs" ||
                     location.pathname.startsWith("/jobs/") ||
+                    location.pathname === "/student/jobs" ||
+                    location.pathname.startsWith("/student/jobs/") ||
                     location.pathname === "/internships" ||
                     location.pathname.startsWith("/internships/") ||
                     location.pathname === "/student/internships" ||
@@ -123,7 +125,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               })();
               const targetHref = (() => {
                 if (isAuthenticated && user?.role === "STUDENT") {
-                  if (item.href === "/jobs") return "/student/jobs";
+                  if (item.href === "/external-jobs") return "/student/jobs";
                   if (item.href === "/companies") return "/student/companies";
                 }
                 return item.href;
@@ -350,7 +352,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 {NAV_ITEMS.map((item) => {
                   const targetHref = (() => {
                     if (isAuthenticated && user?.role === "STUDENT") {
-                      if (item.href === "/jobs") return "/student/jobs";
+                      if (item.href === "/external-jobs") return "/student/jobs";
                       if (item.href === "/companies") return "/student/companies";
                     }
                     return item.href;
