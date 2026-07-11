@@ -92,15 +92,13 @@ function sendVerificationEmail(to: string, name: string, otp: string) {
   }).catch((err) => console.error("Failed to send OTP email:", err));
 }
 
-/** Rotate tokenVersion (single-device enforcement), bust the version cache, return a fresh JWT. */
-async function rotateSession(user: { id: number; email: string; role: User["role"] }) {
-  const { tokenVersion } = await prisma.user.update({
-    where: { id: user.id },
-    data: { tokenVersion: { increment: 1 } },
-    select: { tokenVersion: true },
-  });
-  invalidateVersionCache(user.id);
-  return generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion });
+/**
+ * Sign a session JWT for the user's current tokenVersion. Login no longer rotates
+ * the version, so multiple devices can stay signed in at once; tokenVersion is only
+ * bumped by explicit revocation (password reset, account delete, admin ban/delete).
+ */
+function issueToken(user: { id: number; email: string; role: User["role"]; tokenVersion: number }): string {
+  return generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion });
 }
 
 /** Replace stored S3 keys with presigned URLs, in place. */
@@ -263,8 +261,7 @@ export class AuthService {
       }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
-    // Rotate session to invalidate all previous sessions (single-device enforcement)
-    const token = await rotateSession(user);
+    const token = issueToken(user);
 
     return {
       user: buildAuthUser(user),
@@ -301,8 +298,7 @@ export class AuthService {
       throw new Error("EMAIL_NOT_VERIFIED");
     }
 
-    // Rotate session to invalidate all previous sessions (single-device enforcement)
-    const token = await rotateSession(user);
+    const token = issueToken(user);
 
     return {
       user: buildAuthUser(user),
@@ -570,8 +566,7 @@ export class AuthService {
       html: welcomeEmailHtml(user.name),
     }).catch((err) => console.error("Failed to send welcome email:", err));
 
-    // Rotate session, first real login after email verification
-    const token = await rotateSession(updated);
+    const token = issueToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: user.tokenVersion });
 
     return { user: buildAuthUser(updated), token };
   }

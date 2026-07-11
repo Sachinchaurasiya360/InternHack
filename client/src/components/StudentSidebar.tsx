@@ -59,7 +59,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "discover",
     items: [
-      { to: "/student/grants", icon: Award, label: "Grants" },
+      { to: "/student/grants", icon: Award, label: "Startup Grants" },
       { to: "/student/opensource", icon: Globe, label: "Open Source" },
     ],
   },
