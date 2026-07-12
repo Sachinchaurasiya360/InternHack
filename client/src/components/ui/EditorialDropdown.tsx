@@ -44,10 +44,14 @@ export function EditorialDropdown({
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
+        setQuery("");
       }
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setQuery("");
+      }
     };
     document.addEventListener("mousedown", handler);
     document.addEventListener("keydown", onKeyDown);
@@ -57,17 +61,19 @@ export function EditorialDropdown({
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) setQuery("");
-  }, [open]);
-
   return (
     <div ref={containerRef} className={cn("relative", className)}>
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          setOpen((o) => {
+            const next = !o;
+            if (!next) setQuery("");
+            return next;
+          });
+        }}
         className="inline-flex items-center gap-2 h-10 px-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer"
       >
         <span className="text-stone-400">{icon}</span>
@@ -123,6 +129,7 @@ export function EditorialDropdown({
                 onClick={() => {
                   onChange(opt.value);
                   setOpen(false);
+                  setQuery("");
                 }}
                 className={cn(
                   "flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors",

@@ -49,7 +49,9 @@ export function useSearchWithDebounce({
   const debouncedValue = useDebounce(inputValue, delay);
 
   const resetParamsRef = useRef(resetParams);
-  resetParamsRef.current = resetParams;
+  useEffect(() => {
+    resetParamsRef.current = resetParams;
+  }, [resetParams]);
 
   useEffect(() => {
     if (!paramName) return;
