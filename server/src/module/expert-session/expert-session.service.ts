@@ -75,6 +75,11 @@ function generateSlotCandidates(now: Date): Date[] {
   return slots;
 }
 
+/** Cutoff before which a PENDING_PAYMENT hold is treated as abandoned. */
+function pendingHoldCutoff(now: Date): Date {
+  return new Date(now.getTime() - PENDING_HOLD_TTL_MINUTES * 60 * 1000);
+}
+
 export class ExpertSessionService {
   /**
    * Business-hours slots minus admin blocks, existing bookings, and the minimum lead time.
@@ -98,7 +103,7 @@ export class ExpertSessionService {
     // as free again. The partial unique index still protects against a
     // genuinely-concurrent double booking even if a stale hold slips through
     // this window.
-    const holdCutoff = new Date(now.getTime() - PENDING_HOLD_TTL_MINUTES * 60 * 1000);
+    const holdCutoff = pendingHoldCutoff(now);
 
     const [blocks, booked] = await Promise.all([
       db.expertAvailabilityBlock.findMany({
@@ -158,6 +163,21 @@ export class ExpertSessionService {
       // in case this method is ever called outside a Serializable transaction.
       return await prisma.$transaction(
         async (tx) => {
+          // The availability check below treats a PENDING_PAYMENT hold older
+          // than PENDING_HOLD_TTL_MINUTES as abandoned and ignores it — but
+          // the partial unique index doesn't know about that TTL, it just
+          // sees an existing active row and rejects the insert. Without this
+          // delete, a slot could show as available and then always 409 on
+          // create. Clear out any stale hold for *this exact slot* first so
+          // the two checks agree.
+          await tx.expertSession.deleteMany({
+            where: {
+              scheduledAt: input.scheduledAt,
+              status: "PENDING_PAYMENT",
+              createdAt: { lt: pendingHoldCutoff(now) },
+            },
+          });
+
           const available = await this.getAvailableSlots(now, tx);
           const isAvailable = available.some((slot) => slot.getTime() === input.scheduledAt.getTime());
           if (!isAvailable) {

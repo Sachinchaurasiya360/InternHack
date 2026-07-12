@@ -104,13 +104,25 @@ describe("ExpertSessionService.getAvailableSlots", () => {
     expect(sameDaySlots.some((s) => istTime(s) === "12:00")).toBe(true);
   });
 
-  it("excludes a slot already booked by a SCHEDULED session", async () => {
+ it("excludes a slot already booked by a SCHEDULED session", async () => {
     const all = await service.getAvailableSlots(REFERENCE_NOW);
     const target = all[0]!;
     vi.mocked(prisma.expertSession.findMany).mockResolvedValue([{ scheduledAt: target }] as any);
 
     const filtered = await service.getAvailableSlots(REFERENCE_NOW);
     expect(filtered.some((s) => s.getTime() === target.getTime())).toBe(false);
+  });
+
+  it("queries for SCHEDULED sessions plus only recent (non-stale) PENDING_PAYMENT holds", async () => {
+    await service.getAvailableSlots(REFERENCE_NOW);
+
+    const call = vi.mocked(prisma.expertSession.findMany).mock.calls[0]![0] as any;
+    expect(call.where.OR).toEqual([
+      { status: "SCHEDULED" },
+      { status: "PENDING_PAYMENT", createdAt: { gte: expect.any(Date) } },
+    ]);
+    const cutoff = call.where.OR[1].createdAt.gte as Date;
+    expect(REFERENCE_NOW.getTime() - cutoff.getTime()).toBe(15 * 60 * 1000);
   });
 });
 
@@ -206,7 +218,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
   // 20260712000000_add_expert_session_slot_unique_index) so we can drive a
   // genuine two-requests-race-for-one-slot scenario without a real database.
   function makeInMemoryDb() {
-    const sessions: { scheduledAt: Date; status: string }[] = [];
+    const sessions: { scheduledAt: Date; status: string; createdAt: Date }[] = [];
     let queue: Promise<unknown> = Promise.resolve();
 
     const client = {
@@ -222,6 +234,20 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
             )
             .map((s) => ({ scheduledAt: s.scheduledAt }));
         }),
+        deleteMany: vi.fn(async ({ where }: any) => {
+          const before = sessions.length;
+          for (let i = sessions.length - 1; i >= 0; i--) {
+            const s = sessions[i]!;
+            if (
+              s.scheduledAt.getTime() === where.scheduledAt.getTime() &&
+              s.status === where.status &&
+              s.createdAt.getTime() < where.createdAt.lt.getTime()
+            ) {
+              sessions.splice(i, 1);
+            }
+          }
+          return { count: before - sessions.length };
+        }),
         create: vi.fn(async ({ data }: any) => {
           const clash = sessions.some(
             (s) =>
@@ -233,7 +259,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
               code: "P2002",
             });
           }
-          const record = { id: sessions.length + 1, ...data };
+          const record = { id: sessions.length + 1, createdAt: new Date(), ...data };
           sessions.push(record);
           return record;
         }),
@@ -298,5 +324,34 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
     ]);
 
     expect(results.every((r) => r.status === "fulfilled")).toBe(true);
+  });
+
+  it("reclaims a slot whose only holder is a stale (TTL-expired) PENDING_PAYMENT hold", async () => {
+    const { client, sessions } = makeInMemoryDb();
+    vi.mocked(prisma.$transaction).mockImplementation(client.$transaction as any);
+    vi.mocked(prisma.expertAvailabilityBlock.findMany).mockImplementation(
+      client.expertAvailabilityBlock.findMany as any,
+    );
+    vi.mocked(prisma.expertSession.findMany).mockImplementation(client.expertSession.findMany as any);
+    vi.mocked(prisma.expertSession.deleteMany).mockImplementation(client.expertSession.deleteMany as any);
+    vi.mocked(prisma.expertSession.create).mockImplementation(client.expertSession.create as any);
+
+    const service = new ExpertSessionService();
+    const [slot] = await service.getAvailableSlots(REFERENCE_NOW);
+
+    sessions.push({
+      scheduledAt: slot!,
+      status: "PENDING_PAYMENT",
+      createdAt: new Date(REFERENCE_NOW.getTime() - 20 * 60 * 1000),
+    });
+
+    const result = await service.bookSession(1, { scheduledAt: slot!, focusAreas: [] }, REFERENCE_NOW);
+
+    expect(result).toBeTruthy();
+    expect(client.expertSession.deleteMany).toHaveBeenCalled();
+    const activeForSlot = sessions.filter(
+      (s) => s.scheduledAt.getTime() === slot!.getTime() && s.status === "PENDING_PAYMENT",
+    );
+    expect(activeForSlot).toHaveLength(1);
   });
 });
