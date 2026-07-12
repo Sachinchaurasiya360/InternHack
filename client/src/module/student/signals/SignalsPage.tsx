@@ -20,43 +20,13 @@ import type {
   FundingSignal,
   FundingSignalListResponse,
 } from "../../../lib/types";
-import { querySignals, type SignalKind } from "./signals-api";
+import { querySignals } from "./signals-api";
 
-const KIND_TABS: { id: SignalKind; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "funding", label: "Funding" },
-  { id: "hiring", label: "Hiring" },
-  { id: "product_launch", label: "Product Launch" },
-];
-
-const PAGE_COPY: Record<
-  SignalKind,
-  { seoTitle: string; kicker: string; description: string }
-> = {
-  all: {
-    seoTitle: "Company Signals",
-    kicker: "discover / company signals",
-    description:
-      "Funding rounds and founders posting roles directly, before listings hit LinkedIn. Sourced from Y Combinator, TechCrunch Venture, Hacker News, and manual curation.",
-  },
-  funding: {
-    seoTitle: "Funding Signals",
-    kicker: "discover / funding signals",
-    description:
-      "Startups that just raised money, often hiring next. Sourced from Y Combinator, TechCrunch Venture, Exa Funding, and manual curation.",
-  },
-  hiring: {
-    seoTitle: "Hiring Signals",
-    kicker: "discover / hiring signals",
-    description:
-      "Founders and teams posting open roles directly, especially from Hacker News Who is Hiring and YC launches.",
-  },
-  product_launch: {
-    seoTitle: "Product Launch Signals",
-    kicker: "discover / product launches",
-    description:
-      "New products and YC launches hitting the market — companies building in public before they make the news.",
-  },
+const PAGE_COPY = {
+  seoTitle: "Company Signals",
+  kicker: "discover / company signals",
+  description:
+    "Funding rounds and founders posting roles directly, before listings hit LinkedIn. Sourced from Y Combinator, TechCrunch Venture, Hacker News, and manual curation.",
 };
 
 function timeAgo(iso: string): string {
@@ -84,27 +54,22 @@ function Kicker({ children }: { children: React.ReactNode }) {
 }
 
 export default function SignalsPage() {
-  const [kind, setKind] = useState<SignalKind>("all");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [source, setSource] = useState("");
   const [sort, setSort] = useState<"recent" | "amount">("recent");
   const [page, setPage] = useState(1);
 
-  const copy = PAGE_COPY[kind];
-  const showAmountSort = kind !== "hiring" && kind !== "product_launch";
-
   const queryParams = useMemo(() => {
     const params: Record<string, string | number | boolean> = {
       page,
       limit: 12,
       sort,
-      kind,
     };
     if (search) params["search"] = search;
     if (source) params["source"] = source;
     return params;
-  }, [page, search, source, sort, kind]);
+  }, [page, search, source, sort]);
 
   const { data, isLoading, isError, refetch } = useQuery<FundingSignalListResponse>({
     queryKey: queryKeys.signals.list(queryParams),
@@ -113,7 +78,6 @@ export default function SignalsPage() {
         page,
         limit: 12,
         sort,
-        kind,
         search: search || undefined,
         source: source || undefined,
       }),
@@ -136,14 +100,6 @@ export default function SignalsPage() {
     () => setPage(1),
   ]);
 
-  const changeKind = (next: SignalKind) => {
-    setKind(next);
-    setPage(1);
-    if ((next === "hiring" || next === "product_launch") && sort === "amount") {
-      setSort("recent");
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -151,87 +107,25 @@ export default function SignalsPage() {
       // FIX: Added max-w-6xl mx-auto px-4 sm:px-8 to align with the rest of the site
       className="max-w-6xl mx-auto px-4 sm:px-8 py-8 pb-16"
     >
-      <SEO title={copy.seoTitle} noIndex />
+      <SEO title={PAGE_COPY.seoTitle} noIndex />
 
       <div className="mb-10">
-        <Kicker>{copy.kicker}</Kicker>
+        <Kicker>{PAGE_COPY.kicker}</Kicker>
         <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
-          {kind === "hiring" ? (
-            <>
-              Find roles{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">before the crowd.</span>
-                <motion.span
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-                  aria-hidden
-                  className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
-                />
-              </span>
-            </>
-          ) : kind === "product_launch" ? (
-            <>
-              Built by founders,{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">shipped today.</span>
-                <motion.span
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-                  aria-hidden
-                  className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
-                />
-              </span>
-            </>
-          ) : (
-            <>
-              Catch companies{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">early.</span>
-                <motion.span
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-                  aria-hidden
-                  className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
-                />
-              </span>
-            </>
-          )}
+          Catch companies{" "}
+          <span className="relative inline-block">
+            <span className="relative z-10">early.</span>
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+              aria-hidden
+              className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
+            />
+          </span>
         </h1>
-        <p className="mt-3 text-sm text-stone-500 max-w-lg">{copy.description}</p>
+        <p className="mt-3 text-sm text-stone-500 max-w-lg">{PAGE_COPY.description}</p>
       </div>
-
-      {/* Kind tabs */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        role="tablist"
-        aria-label="Signal type"
-        className="flex flex-wrap gap-2 mb-6"
-      >
-        {KIND_TABS.map((tab) => {
-          const active = kind === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => changeKind(tab.id)}
-              className={`px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
-                active
-                  ? "bg-lime-400 border-lime-400 text-stone-900"
-                  : "bg-white dark:bg-stone-900 border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30"
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </motion.div>
 
       {/* Search + filters */}
       <motion.div
@@ -303,7 +197,7 @@ export default function SignalsPage() {
             className="px-3 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors"
           >
             <option value="recent">Most recent</option>
-            {showAmountSort ? <option value="amount">Largest raise</option> : null}
+            <option value="amount">Largest raise</option>
           </select>
         </motion.div>
         <motion.div
@@ -356,7 +250,7 @@ export default function SignalsPage() {
           </p>
           <p className="text-stone-500 text-sm max-w-xs mx-auto leading-relaxed mb-5">
             {hasActiveFilters
-              ? "Try clearing filters or switching the signal type tab."
+              ? "Try clearing filters."
               : "Check back after the next ingest run, usually every few hours."}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">

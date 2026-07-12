@@ -58,7 +58,6 @@
     "react-syntax-highlighter": "^16.1.1",
     "react-to-print": "^3.3.0",
     "react-tooltip": "^6.0.7",
-    "reactflow": "^11.11.4",
     "recharts": "^3.8.1",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",

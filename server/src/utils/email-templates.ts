@@ -26,7 +26,7 @@ export function welcomeEmailHtml(name: string): string {
             <td style="padding:16px 18px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
               <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#3730a3;">Learning Hub</p>
               <p style="margin:0;font-size:13px;color:#4338ca;line-height:1.5;">
-                Curated questions and study material crafted by engineers from Google, Amazon, and Meta, 3,300+ DSA problems, interview prep, SQL practice, aptitude, and 500+ lessons across 12 technologies.
+                Curated questions and study material crafted by engineers from Google, Amazon, and Meta: 3,300+ DSA problems, interview prep, and aptitude practice across 12 technologies.
               </p>
             </td>
           </tr>
@@ -39,20 +39,8 @@ export function welcomeEmailHtml(name: string): string {
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;width:50%;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI ATS Resume Scorer</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Score your resume against real ATS systems instantly</p>
-            </td>
-          </tr>
-          <tr><td colspan="3" style="height:4px;"></td></tr>
-          <tr>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI Cover Letter Gen</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Tailored cover letters for any job in seconds</p>
-            </td>
-            <td style="width:4px;"></td>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI Resume Builder</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Build a LaTeX-quality resume with AI assistance</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI Resume Tools</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">ATS scorer, cover letter generator, and AI resume builder</p>
             </td>
           </tr>
           <tr><td colspan="3" style="height:4px;"></td></tr>
@@ -64,7 +52,7 @@ export function welcomeEmailHtml(name: string): string {
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
               <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Mock Interviews</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">AI-powered mock interview practice sessions</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">AI-powered and peer practice sessions with structured feedback</p>
             </td>
           </tr>
           <tr><td colspan="3" style="height:4px;"></td></tr>
@@ -75,18 +63,6 @@ export function welcomeEmailHtml(name: string): string {
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">SQL Practice</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">188 interactive exercises running in your browser</p>
-            </td>
-          </tr>
-          <tr><td colspan="3" style="height:4px;"></td></tr>
-          <tr>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">500+ Lessons</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">JS, Python, React, Node.js, TypeScript, and more</p>
-            </td>
-            <td style="width:4px;"></td>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
               <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Company Research</p>
               <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Reviews, salaries, and insider info on companies</p>
             </td>
@@ -94,13 +70,13 @@ export function welcomeEmailHtml(name: string): string {
           <tr><td colspan="3" style="height:4px;"></td></tr>
           <tr>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Skill Verification</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Get verified badges for your technical skills</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Startup Grants</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Fund your startup: curated grants, deadline alerts, and application tracking</p>
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Mock Interviews</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Practice with peers and get structured feedback</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Open Source</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">First PR guides, GSoC prep, repo discovery, and many more features</p>
             </td>
           </tr>
         </table>
@@ -1616,6 +1592,109 @@ export function grantDeadlineAlertEmailHtml(
   </a>
 </td></tr>
 </table>
+</body>
+</html>`;
+}
+
+export interface NewFundingSignalEmailItem {
+  companyName: string;
+  companyWebsite?: string | null | undefined;
+  fundingRound?: string | null | undefined;
+  fundingAmount?: string | null | undefined;
+  amountUsd?: bigint | null | undefined;
+  industry?: string | null | undefined;
+  hqLocation?: string | null | undefined;
+  investors?: string[] | undefined;
+  sourceUrl: string;
+  source: string;
+  announcedAt: Date;
+}
+
+function formatAmountLabel(
+  fundingAmount?: string | null,
+  amountUsd?: bigint | null,
+): string | null {
+  if (fundingAmount) return fundingAmount;
+  if (amountUsd !== undefined && amountUsd !== null) {
+    return `$${amountUsd.toLocaleString("en-US")}`;
+  }
+  return null;
+}
+
+export function newFundingSignalsEmailHtml(
+  signals: NewFundingSignalEmailItem[],
+): string {
+  const rows = signals
+    .map((s) => {
+      const safeName = escapeHtml(s.companyName);
+      const amount = formatAmountLabel(s.fundingAmount, s.amountUsd);
+      const roundAmountParts = [s.fundingRound, amount]
+        .filter((v): v is string => Boolean(v))
+        .map(escapeHtml)
+        .join(" &middot; ");
+      const metaParts = [s.industry, s.hqLocation]
+        .filter((v): v is string => Boolean(v))
+        .map(escapeHtml)
+        .join(" &middot; ");
+      const investors = (s.investors ?? []).filter(Boolean);
+      const announced = s.announcedAt.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      const safeUrl = escapeHtml(s.sourceUrl);
+
+      return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px;border:1px solid #e4e4e7;border-radius:8px;background-color:#ffffff;">
+          <tr>
+            <td style="padding:18px 18px 16px;">
+              <p style="margin:0 0 4px;font-size:17px;font-weight:700;color:#18181b;line-height:1.35;">${safeName}</p>
+              ${roundAmountParts ? `<p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#65a30d;">${roundAmountParts}</p>` : ""}
+              ${metaParts ? `<p style="margin:0 0 8px;font-size:13px;color:#71717a;">${metaParts}</p>` : ""}
+              ${investors.length > 0 ? `<p style="margin:0 0 10px;font-size:13px;color:#52525b;"><strong>Investors:</strong> ${escapeHtml(investors.join(", "))}</p>` : ""}
+              <p style="margin:0 0 12px;font-size:12px;color:#a1a1aa;">Announced ${announced} &middot; via ${escapeHtml(s.source)}</p>
+              <a href="${safeUrl}" target="_blank" style="display:inline-block;font-size:13px;font-weight:700;color:#18181b;text-decoration:underline;">View source &rarr;</a>
+            </td>
+          </tr>
+        </table>`;
+    })
+    .join("");
+
+  const count = signals.length;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New funding signals</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;">
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;">InternHack</h1>
+        <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">funding signals</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#ffffff;padding:30px 24px;">
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">${count} new funding signal${count === 1 ? "" : "s"} detected</h2>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:#52525b;">
+          The signals cron just picked up ${count === 1 ? "this company" : "these companies"} raising money. Details below for your LinkedIn post.
+        </p>
+        ${rows}
+        <p style="margin:20px 0 0;font-size:12px;color:#a1a1aa;line-height:1.6;text-align:center;">
+          Manage these in the <a href="https://internhack.xyz/admin/signals" style="color:#18181b;text-decoration:underline;">admin signals dashboard</a>.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 }

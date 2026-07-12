@@ -2,12 +2,22 @@ import cron from "node-cron";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import { withAdvisoryLock } from "../../utils/cron-lock.js";
+import { sendEmail } from "../../utils/email.utils.js";
+import { newFundingSignalsEmailHtml } from "../../utils/email-templates.js";
+import type { NewFundingSignalEmailItem } from "../../utils/email-templates.js";
 import { BaseSignalSource } from "./sources/base.source.js";
 import type { FundingSignalData } from "./sources/base.source.js";
 import { YcLaunchesSource } from "./sources/yc-launches.source.js";
 import { TechCrunchSource } from "./sources/techcrunch.source.js";
 import { HnHiringSource } from "./sources/hn-hiring.source.js";
 import { ExaFundingSource } from "./sources/exa-funding.source.js";
+
+const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "";
+
+/** True when a signal carries real funding data and isn't a hiring-only post. */
+function isFundingSignal(source: string, s: FundingSignalData): boolean {
+  return source !== "hn-hiring" && Boolean(s.fundingAmount || s.amountUsd || s.fundingRound);
+}
 
 interface SignalsQuery {
   page: number;
@@ -16,10 +26,7 @@ interface SignalsQuery {
   source?: string | undefined;
   round?: string | undefined;
   industry?: string | undefined;
-  kind?: "funding" | "hiring" | "product_launch" | "all" | undefined;
   status?: "ACTIVE" | "STALE" | "ARCHIVED" | "ALL" | undefined;
-  hiringOnly?: boolean | undefined;
-  minAmountUsd?: bigint | undefined;
   sort?: "recent" | "amount" | undefined;
 }
 
@@ -125,6 +132,7 @@ export class SignalsService {
       error?: string | undefined;
       duration: number;
     }> = [];
+    const allNewFundingSignals: NewFundingSignalEmailItem[] = [];
 
     for (const src of this.sources) {
       const startTime = Date.now();
@@ -141,7 +149,11 @@ export class SignalsService {
         ]);
         clearTimeout(abortTimeoutId);
         if (raceTimeoutId) clearTimeout(raceTimeoutId);
-        const { created, updated } = await this.upsertSignals(result.source, result.signals);
+        const { created, updated, newFundingSignals } = await this.upsertSignals(
+          result.source,
+          result.signals,
+        );
+        allNewFundingSignals.push(...newFundingSignals);
         const duration = Date.now() - startTime;
 
         results.push({
@@ -200,18 +212,30 @@ export class SignalsService {
       await this.markStaleSignals();
     } catch (err) {
       console.error("[Signals] Failed to mark stale signals:", err);
-    } finally {
-      this.isRunning = false;
-      console.log("[Signals] Ingest run completed");
     }
+
+    if (allNewFundingSignals.length > 0 && ADMIN_ALERT_EMAIL) {
+      try {
+        await sendEmail({
+          to: ADMIN_ALERT_EMAIL,
+          subject: `${allNewFundingSignals.length} new funding signal${allNewFundingSignals.length === 1 ? "" : "s"} found`,
+          html: newFundingSignalsEmailHtml(allNewFundingSignals),
+        });
+      } catch (err) {
+        console.error("[Signals] Failed to send new-funding-signals alert email:", err);
+      }
+    }
+
+    this.isRunning = false;
+    console.log("[Signals] Ingest run completed");
     return { results };
   }
 
   private async upsertSignals(
     source: string,
     signals: FundingSignalData[],
-  ): Promise<{ created: number; updated: number }> {
-    if (signals.length === 0) return { created: 0, updated: 0 };
+  ): Promise<{ created: number; updated: number; newFundingSignals: NewFundingSignalEmailItem[] }> {
+    if (signals.length === 0) return { created: 0, updated: 0, newFundingSignals: [] };
 
     const dedupedMap = new Map<string, FundingSignalData>();
     for (const s of signals) dedupedMap.set(s.sourceId, s);
@@ -252,6 +276,7 @@ export class SignalsService {
 
     let created = 0;
     let updated = 0;
+    const newFundingSignals: NewFundingSignalEmailItem[] = [];
 
     const BATCH_SIZE = 15;
     for (let i = 0; i < uniqueSignals.length; i += BATCH_SIZE) {
@@ -313,11 +338,26 @@ export class SignalsService {
             }),
           );
           created++;
+          if (isFundingSignal(source, s)) {
+            newFundingSignals.push({
+              companyName: s.companyName,
+              companyWebsite: s.companyWebsite ?? null,
+              fundingRound: s.fundingRound ?? null,
+              fundingAmount: s.fundingAmount ?? null,
+              amountUsd: s.amountUsd ?? null,
+              industry: s.industry ?? null,
+              hqLocation: s.hqLocation ?? null,
+              investors: s.investors ?? [],
+              sourceUrl: s.sourceUrl,
+              source,
+              announcedAt: s.announcedAt,
+            });
+          }
         }
       }
       await Promise.all(ops);
     }
-    return { created, updated };
+    return { created, updated, newFundingSignals };
   }
 
   /** Mark signals not seen in 14 days as STALE */
@@ -344,35 +384,6 @@ export class SignalsService {
     if (query.source) where.source = query.source;
     if (query.round) where.fundingRound = { contains: query.round, mode: "insensitive" };
     if (query.industry) where.industry = { contains: query.industry, mode: "insensitive" };
-    if (query.hiringOnly) where.hiringSignal = true;
-    if (query.minAmountUsd !== undefined) where.amountUsd = { gte: query.minAmountUsd };
-
-    // kind=funding: rows that carry funding data (amount or round)
-    // kind=hiring: hiring-only signals (HN posts etc.) with no funding info
-    if (query.kind === "funding") {
-      where.AND = [
-        ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
-        {
-          OR: [
-            { fundingAmount: { not: null } },
-            { amountUsd: { not: null } },
-            { fundingRound: { not: null } },
-          ],
-        },
-        { source: { not: "hn-hiring" } },
-      ];
-    } else if (query.kind === "hiring") {
-      where.hiringSignal = true;
-      where.fundingAmount = null;
-      where.amountUsd = null;
-    } else if (query.kind === "product_launch") {
-      // Product launch: YC launches that are not pure funding rounds and not hiring-only
-      where.source = "yc-launches";
-      where.hiringSignal = false;
-      where.fundingAmount = null;
-      where.amountUsd = null;
-      where.fundingRound = null;
-    }
 
     const orderBy: Prisma.fundingSignalOrderByWithRelationInput =
       query.sort === "amount" ? { amountUsd: "desc" } : { announcedAt: "desc" };
