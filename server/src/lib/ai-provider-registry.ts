@@ -81,6 +81,11 @@ export function getServiceConfigId(service: AIServiceType): number | null {
   return serviceCache.get(service)?.configId ?? null;
 }
 
+/** Get the configured model name for a service (used by logger). */
+export function getServiceModelName(service: AIServiceType): string | null {
+  return serviceCache.get(service)?.modelName ?? null;
+}
+
 /** Switch a specific service to a different provider/model. Updates DB + refreshes cache. */
 export async function switchServiceProvider(
   service: AIServiceType,

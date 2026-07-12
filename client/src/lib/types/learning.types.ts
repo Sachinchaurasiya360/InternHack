@@ -259,55 +259,6 @@ export interface DsaRunTestCase {
   label: string | null;
 }
 
-export interface DsaCodeReview {
-  timeComplexity: string;
-  spaceComplexity: string;
-  readability: {
-    score: number;
-    feedback: string;
-  };
-  edgeCases: string[];
-  suggestions: string[];
-}
-
-export interface DsaStreak {
-  currentStreak: number;
-  longestStreak: number;
-  solvedToday: boolean;
-  lastSolvedDate: string | null;
-  activeDays: string[];
-}
-
-export interface DsaTopicAccuracy {
-  topic: string;
-  total: number;
-  solved: number;
-  percentage: number;
-}
-
-export interface DsaWeeklyTrend {
-  weekStart: string;
-  count: number;
-}
-
-export interface DsaMonthlyTrend {
-  month: string;
-  count: number;
-}
-
-export interface DsaAnalytics {
-  totalSolved: number;
-  totalProblems: number;
-  byDifficulty: {
-    easy: { total: number; solved: number };
-    medium: { total: number; solved: number };
-    hard: { total: number; solved: number };
-  };
-  topicAccuracy: DsaTopicAccuracy[];
-  weeklyTrend: DsaWeeklyTrend[];
-  monthlyTrend: DsaMonthlyTrend[];
-}
-
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
@@ -318,45 +269,6 @@ export interface DsaSubmissionSummary {
   timeMs: number | null;
   memoryKb: number | null;
   createdAt: string;
-}
-
-// LeetCode Import
-export interface LeetcodeImportPreviewItem {
-  problemId: number;
-  title: string;
-  difficulty: string;
-  slug: string;
-  solvedAt: string | null;
-}
-
-export interface LeetcodeImportPreview {
-  matched: number;
-  unmatched: number;
-  alreadySolved: number;
-  newSolves: number;
-  token: string;
-  preview: LeetcodeImportPreviewItem[];
-  lastImport?: {
-    importedAt: string;
-    username: string | null;
-    source: string;
-  } | null;
-}
-
-export interface LeetcodeImportResult {
-  imported: number;
-  skipped: number;
-  importedAt: string;
-}
-
-export interface LeetcodeImportStatus {
-  lastImport: {
-    importedAt: string;
-    username: string | null;
-    source: string;
-    matched: number;
-    imported: number;
-  } | null;
 }
 
 // Aptitude Practice

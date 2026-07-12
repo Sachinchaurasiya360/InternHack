@@ -17,7 +17,7 @@ const LEARN_LANGUAGES = [
 
 const LEARN_EXTRAS = [
   "/learn/sql", "/learn/sql/playground",
-  "/learn/dsa", "/learn/dsa/companies", "/learn/dsa/patterns",
+  "/learn/dsa", "/learn/dsa/companies",
   "/learn/aptitude", "/learn/aptitude/companies",
   "/learn/interview",
 ];

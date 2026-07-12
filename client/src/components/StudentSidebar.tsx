@@ -108,19 +108,30 @@ export function useStudentSidebar() {
   const avatar = (size: "sm" | "md") => {
     const dim = size === "sm" ? "w-8 h-8" : "w-9 h-9";
     const icon = size === "sm" ? "w-4 h-4" : "w-5 h-5";
-    if (user?.profilePic && !imgError) {
-      return (
+    const inner =
+      user?.profilePic && !imgError ? (
         <img
           src={user.profilePic}
           alt={user.name}
           className={`${dim} rounded-md object-cover border border-stone-200 dark:border-white/10`}
           onError={() => setImgError(true)}
         />
+      ) : (
+        <div className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}>
+          <User className={`${icon} text-stone-500`} />
+        </div>
       );
-    }
     return (
-      <div className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}>
-        <User className={`${icon} text-stone-500`} />
+      <div className="relative shrink-0">
+        {inner}
+        {isPremium && (
+          <span
+            className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-white/10"
+            title="Premium"
+          >
+            <Crown className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" fill="currentColor" />
+          </span>
+        )}
       </div>
     );
   };
@@ -187,14 +198,17 @@ export function useStudentSidebar() {
           >
             {avatar("md")}
             {!collapsed && (
-              <>
-                <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight flex-1">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight">
                   {user?.name}
                 </h2>
                 {isPremium && (
-                  <span className="shrink-0 h-1.5 w-1.5 bg-lime-400" title="Premium" />
+                  <span className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-amber-500 dark:text-amber-400">
+                    <Crown className="w-2.5 h-2.5 shrink-0" fill="currentColor" />
+                    Premium
+                  </span>
                 )}
-              </>
+              </div>
             )}
           </Link>
           {!collapsed && (

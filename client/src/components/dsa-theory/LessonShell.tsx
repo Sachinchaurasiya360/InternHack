@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, ChevronDown, Trophy, XCircle } from "lucide-react";
 
@@ -8,6 +8,20 @@ export interface LessonTabDef {
   icon?: ReactNode;
   content: ReactNode;
 }
+
+export interface LessonStepperState {
+  hasNextTab: boolean;
+  nextTabLabel?: string;
+  advanceTab: () => void;
+}
+
+/** Lets the page shell (which renders the "Next" nav card below the lesson)
+ * know whether there is another in-lesson tab to step through before it
+ * should navigate to the next lesson. Set once per lesson page, consumed
+ * here so no per-lesson-file prop threading is needed. */
+export const LessonStepperContext = createContext<
+  ((state: LessonStepperState | null) => void) | null
+>(null);
 
 export interface LessonQuizQuestion {
   question: string;
@@ -40,6 +54,23 @@ export function LessonShell({
 }: LessonShellProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
   const active = tabs.find((t) => t.id === activeTab) ?? tabs[0];
+  const activeIndex = tabs.findIndex((t) => t.id === active?.id);
+  const nextTab = tabs[activeIndex + 1];
+
+  const reportStepper = useContext(LessonStepperContext);
+  useLayoutEffect(() => {
+    if (!reportStepper) return;
+    reportStepper(
+      nextTab
+        ? {
+            hasNextTab: true,
+            nextTabLabel: nextTab.label,
+            advanceTab: () => setActiveTab(nextTab.id),
+          }
+        : { hasNextTab: false, advanceTab: () => {} },
+    );
+    return () => reportStepper(null);
+  }, [reportStepper, nextTab?.id]);
 
   return (
     <div className="text-stone-900 dark:text-stone-50">

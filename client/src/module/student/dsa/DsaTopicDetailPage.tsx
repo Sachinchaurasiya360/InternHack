@@ -19,6 +19,7 @@ import {
   BookOpen,
   TrendingUp,
   Search,
+  ArrowRight,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
@@ -481,9 +482,8 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   onAddLabel: (problemId: number, label: string) => void;
   onRemoveLabel: (problemId: number, label: string) => void;
 }) {
+  // LeetCode is already linked via the icon button in the collapsed row header — don't duplicate it here.
   const links: { href: string; label: string }[] = [];
-  if (problem.leetcodeUrl)
-    links.push({ href: problem.leetcodeUrl, label: "LeetCode" });
   if (problem.gfgUrl) links.push({ href: problem.gfgUrl, label: "GFG" });
   if (problem.hackerrankUrl)
     links.push({ href: problem.hackerrankUrl, label: "HackerRank" });
@@ -639,28 +639,27 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                 </div>
               )}
 
-              {links.length > 0 && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  {links.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      {link.label}
-                    </a>
-                  ))}
-                  <Link
-                    to={`/learn/dsa/problem/${problem.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 dark:bg-stone-50 text-lime-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:opacity-90 transition-opacity no-underline"
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  to={`/learn/dsa/problem/${problem.slug}`}
+                  className="group inline-flex items-center gap-2 px-4 py-2 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-xs font-bold tracking-tight transition-colors no-underline"
+                >
+                  Solve this problem
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+                {links.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
                   >
-                    view details
-                  </Link>
-                </div>
-              )}
+                    <ExternalLink className="w-3 h-3" />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
 
               {user && (
                 <div className="flex items-center gap-2 flex-wrap">

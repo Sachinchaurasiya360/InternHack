@@ -48,11 +48,8 @@ const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/apti
 const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
 const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicsPage"));
-const DsaAnalyticsPage = lazyWithRetry(() => import("./module/student/dsa/DsaAnalyticsPage"));
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
 const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
-const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
-const DsaListsPage = lazyWithRetry(() => import("./module/student/dsa/DsaListsPage"));
 const DsaBookmarksPage = lazyWithRetry(() => import("./module/student/dsa/DsaBookmarksPage"));
 const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaProblemDetailPage"));
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
@@ -368,10 +365,7 @@ function App() {
               <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
               <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
               <Route path="dsa" element={<DsaTopicsPage />} />
-              <Route path="dsa/analytics" element={<ProtectedRoute role="STUDENT"><DsaAnalyticsPage /></ProtectedRoute>} />
               <Route path="dsa/companies" element={<DsaCompaniesPage />} />
-              <Route path="dsa/patterns" element={<DsaPatternsPage />} />
-              <Route path="dsa/lists" element={<DsaListsPage />} />
               <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
               <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
               <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />
