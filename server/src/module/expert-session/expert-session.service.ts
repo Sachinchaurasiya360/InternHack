@@ -1,5 +1,10 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import { sendEmail } from "../../utils/email.utils.js";
+
+/** Anything that exposes the model delegates we need — either the top-level
+ * PrismaClient or a `tx` handed to us inside `prisma.$transaction`. */
+type DbClient = Prisma.TransactionClient | typeof prisma;
 
 const IST_OFFSET_MINUTES = 330; // UTC+5:30, fixed offset (India has no DST)
 const SLOT_DURATION_MINUTES = 30;
@@ -67,8 +72,13 @@ function generateSlotCandidates(now: Date): Date[] {
 }
 
 export class ExpertSessionService {
-  /** Business-hours slots minus admin blocks, existing bookings, and the minimum lead time. */
-  async getAvailableSlots(now: Date = new Date()): Promise<Date[]> {
+  /**
+   * Business-hours slots minus admin blocks, existing bookings, and the minimum lead time.
+   *
+   * Accepts an optional `db` client so `bookSession` can re-run this same check
+   * inside its transaction against a consistent snapshot (see below).
+   */
+  async getAvailableSlots(now: Date = new Date(), db: DbClient = prisma): Promise<Date[]> {
     const minTime = new Date(now.getTime() + MIN_LEAD_HOURS * 60 * 60 * 1000);
     const candidates = generateSlotCandidates(now).filter((slot) => slot >= minTime);
     if (candidates.length === 0) return [];
@@ -77,10 +87,10 @@ export class ExpertSessionService {
     const rangeEnd = candidates[candidates.length - 1]!;
 
     const [blocks, booked] = await Promise.all([
-      prisma.expertAvailabilityBlock.findMany({
+      db.expertAvailabilityBlock.findMany({
         where: { date: { gte: rangeStart, lte: rangeEnd } },
       }),
-      prisma.expertSession.findMany({
+      db.expertSession.findMany({
         where: { status: "SCHEDULED", scheduledAt: { gte: rangeStart, lte: rangeEnd } },
         select: { scheduledAt: true },
       }),
@@ -121,23 +131,54 @@ export class ExpertSessionService {
     },
     now: Date = new Date(),
   ) {
-    const available = await this.getAvailableSlots(now);
-    const isAvailable = available.some((slot) => slot.getTime() === input.scheduledAt.getTime());
-    if (!isAvailable) {
-      throw Object.assign(new Error("That slot is no longer available"), { status: 409 });
-    }
+    try {
+      // Serializable transaction closes the TOCTOU gap between the
+      // availability check and the insert: if two requests race for the same
+      // slot, Postgres aborts the loser with a P2034 serialization failure
+      // instead of letting both reads see the slot as free (same pattern as
+      // usageLimit middleware). The partial unique index added in migration
+      // 20260712000000_add_expert_session_slot_unique_index is the backstop
+      // in case this method is ever called outside a Serializable transaction.
+      return await prisma.$transaction(
+        async (tx) => {
+          const available = await this.getAvailableSlots(now, tx);
+          const isAvailable = available.some((slot) => slot.getTime() === input.scheduledAt.getTime());
+          if (!isAvailable) {
+            throw Object.assign(new Error("That slot is no longer available"), { status: 409 });
+          }
 
-    return prisma.expertSession.create({
-      data: {
-        userId,
-        scheduledAt: input.scheduledAt,
-        targetRole: input.targetRole,
-        experienceLevel: input.experienceLevel,
-        focusAreas: input.focusAreas,
-        notes: input.notes,
-        status: "PENDING_PAYMENT",
-      },
-    });
+          return tx.expertSession.create({
+            data: {
+              userId,
+              scheduledAt: input.scheduledAt,
+              targetRole: input.targetRole,
+              experienceLevel: input.experienceLevel,
+              focusAreas: input.focusAreas,
+              notes: input.notes,
+              status: "PENDING_PAYMENT",
+            },
+          });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
+    } catch (err) {
+      // Our own "not available" check above already carries a `.status`, so
+      // just propagate it as-is.
+      if (typeof err === "object" && err !== null && "status" in err) {
+        throw err;
+      }
+
+      const code = typeof err === "object" && err !== null && "code" in err ? (err as { code: unknown }).code : undefined;
+      // P2034 = Prisma serialization failure (lost the Serializable race).
+      // P2002 = unique constraint violation on the partial index below.
+      // Both mean a concurrent request booked this exact slot first.
+      if (code === "P2034" || code === "P2002") {
+        throw Object.assign(new Error("This slot has just been booked. Please choose another available slot."), {
+          status: 409,
+        });
+      }
+      throw err;
+    }
   }
 
   async attachCheckout(id: number, dodoPaymentId: string, dodoCheckoutUrl: string) {
