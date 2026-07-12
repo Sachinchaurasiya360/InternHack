@@ -12,6 +12,10 @@ const BUSINESS_START_HOUR = 10; // 10:00 IST
 const BUSINESS_END_HOUR = 18; // last slot starts 17:30, ends 18:00 IST
 const LOOKAHEAD_DAYS = 14;
 const MIN_LEAD_HOURS = 12;
+// How long a PENDING_PAYMENT hold blocks a slot's availability before it's
+// treated as abandoned. Checkout sessions are expected to complete or fail
+// within a couple minutes; this is deliberately generous.
+const PENDING_HOLD_TTL_MINUTES = 15;
 
 const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "";
 
@@ -83,15 +87,28 @@ export class ExpertSessionService {
     const candidates = generateSlotCandidates(now).filter((slot) => slot >= minTime);
     if (candidates.length === 0) return [];
 
-    const rangeStart = candidates[0]!;
+   const rangeStart = candidates[0]!;
     const rangeEnd = candidates[candidates.length - 1]!;
+    // A PENDING_PAYMENT row is an active hold on a slot, so it should make
+    // that slot look unavailable too — not just SCHEDULED ones. But there's
+    // no cleanup job for abandoned checkouts (user closes the tab, no
+    // success/failure webhook ever fires), so an unbounded hold could
+    // permanently lock a slot. Cap how long a pending hold blocks
+    // availability; past that, treat it as abandoned and let the slot show
+    // as free again. The partial unique index still protects against a
+    // genuinely-concurrent double booking even if a stale hold slips through
+    // this window.
+    const holdCutoff = new Date(now.getTime() - PENDING_HOLD_TTL_MINUTES * 60 * 1000);
 
     const [blocks, booked] = await Promise.all([
       db.expertAvailabilityBlock.findMany({
         where: { date: { gte: rangeStart, lte: rangeEnd } },
       }),
       db.expertSession.findMany({
-        where: { status: "SCHEDULED", scheduledAt: { gte: rangeStart, lte: rangeEnd } },
+        where: {
+          scheduledAt: { gte: rangeStart, lte: rangeEnd },
+          OR: [{ status: "SCHEDULED" }, { status: "PENDING_PAYMENT", createdAt: { gte: holdCutoff } }],
+        },
         select: { scheduledAt: true },
       }),
     ]);

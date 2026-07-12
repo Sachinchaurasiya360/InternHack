@@ -17,9 +17,10 @@ vi.mock("../database/db.js", () => ({
       delete: vi.fn(),
       deleteMany: vi.fn(),
     },
-    // Default: run the callback with the same mocked client as its `tx`,
-    // matching the "tx === prisma" shape most tests rely on. The concurrency
-    // test below overrides this with a stateful in-memory DB instead.
+    // No default implementation here — each describe block below wires its
+    // own $transaction behavior in beforeEach (or per-test for the
+    // concurrency suite), since "tx === prisma" vs. a stateful in-memory DB
+    // are both valid depending on what's being tested.
     $transaction: vi.fn(),
   },
 }));
