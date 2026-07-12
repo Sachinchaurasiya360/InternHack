@@ -108,30 +108,19 @@ export function useStudentSidebar() {
   const avatar = (size: "sm" | "md") => {
     const dim = size === "sm" ? "w-8 h-8" : "w-9 h-9";
     const icon = size === "sm" ? "w-4 h-4" : "w-5 h-5";
-    const inner =
-      user?.profilePic && !imgError ? (
+    if (user?.profilePic && !imgError) {
+      return (
         <img
           src={user.profilePic}
           alt={user.name}
           className={`${dim} rounded-md object-cover border border-stone-200 dark:border-white/10`}
           onError={() => setImgError(true)}
         />
-      ) : (
-        <div className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}>
-          <User className={`${icon} text-stone-500`} />
-        </div>
       );
+    }
     return (
-      <div className="relative shrink-0">
-        {inner}
-        {isPremium && (
-          <span
-            className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-white/10"
-            title="Premium"
-          >
-            <Crown className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" fill="currentColor" />
-          </span>
-        )}
+      <div className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}>
+        <User className={`${icon} text-stone-500`} />
       </div>
     );
   };

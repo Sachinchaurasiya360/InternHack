@@ -49,7 +49,6 @@ model user {
   verificationAttempts     Int                            @default(0)
   verificationLockedUntil  DateTime?
   adminProfile             adminProfile?                  @relation("AdminProfile")
-  blogPosts                blogPost[]                     @relation("BlogAuthor")
   coachAdvice              coachAdvice[]                  @relation("UserCoachAdvice")
   createdCompanies         company[]                      @relation("UserCreatedCompanies")
   addedContacts            companyContact[]               @relation("UserAddedContacts")
@@ -492,31 +491,6 @@ model repoRequest {
   @@index([userId, status])
   @@index([userId, status, createdAt])
   @@index([repoId])
-}
-
-model blogPost {
-  id            Int          @id @default(autoincrement())
-  title         String
-  slug          String       @unique
-  content       String
-  excerpt       String?
-  category      BlogCategory
-  tags          String[]     @default([])
-  authorId      Int
-  status        BlogStatus   @default(DRAFT)
-  featuredImage String?
-  readingTime   Int          @default(0)
-  viewCount     Int          @default(0)
-  isFeatured    Boolean      @default(false)
-  publishedAt   DateTime?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  author        user         @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-
-  @@index([authorId])
-  @@index([status])
-  @@index([category])
-  @@index([publishedAt])
 }
 
 model gsocOrganization {
@@ -1411,20 +1385,6 @@ enum RepoDomain {
   OTHER
 }
 
-enum BlogCategory {
-  CAREER_ADVICE
-  INTERVIEW_TIPS
-  SALARY_GUIDE
-  INDUSTRY_INSIGHTS
-  RESUME_TIPS
-  TECH_TRENDS
-}
-
-enum BlogStatus {
-  DRAFT
-  PUBLISHED
-}
-
 enum TestDifficulty {
   BEGINNER
   INTERMEDIATE
@@ -1449,6 +1409,7 @@ enum UsageAction {
   ROADMAP_GENERATION
   BEHAVIORAL_EVAL
   DSA_EXECUTE
+  GSOC_REVIEW
 }
 
 enum EmailCampaignStatus {

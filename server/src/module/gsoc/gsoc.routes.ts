@@ -17,7 +17,7 @@ gsocRouter.post(
   "/proposal-review",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("ATS_SCORE", "monthly"),
+  usageLimit("GSOC_REVIEW", "monthly"),
   async (req, res, next) => {
     try {
       if (!req.user) {

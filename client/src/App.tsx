@@ -42,8 +42,6 @@ const PublicAtsTryPage = lazyWithRetry(() => import("./module/student/ats/Public
 const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
 const RepoPublicPage = lazyWithRetry(() => import("./module/student/opensource/RepoPublicPage"));
-const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
-const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
 const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
 const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
@@ -73,7 +71,6 @@ const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("./module/legal/PrivacyPage"));
 const ShippingPage = lazyWithRetry(() => import("./module/legal/ShippingPage"));
 const ContactPage = lazyWithRetry(() => import("./module/legal/ContactPage"));
-const AboutPage = lazyWithRetry(() => import("./module/legal/AboutPage"));
 const RefundPage = lazyWithRetry(() => import("./module/legal/RefundPage"));
 
 // Student pages
@@ -316,15 +313,12 @@ function App() {
             <Route path="/learn/roadmaps/certificates/:slug/:shareToken" element={<RoadmapCertificatePage />}/>
             <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
-            <Route path="/blog" element={<BlogListPage />} />
             <Route path="/contributors" element={<ContributorsPage />} />
-            <Route path="/blog/:slug" element={<BlogPostPage />} />
             {/* Legal Pages */}
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/shipping" element={<ShippingPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/about" element={<AboutPage />} />
             <Route path="/refund" element={<RefundPage />} />
             {/* Learning Hub - all learning content under /learn */}
             <Route path="/learn" element={<LearnLayout />}>

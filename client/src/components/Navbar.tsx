@@ -30,8 +30,6 @@ const NAV_ITEMS = [
   { label: "Jobs", href: "/external-jobs" },
   { label: "Learn", href: "/learn" },
   { label: "Companies", href: "/companies" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
 ];
 
 export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {

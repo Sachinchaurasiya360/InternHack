@@ -1034,7 +1034,8 @@ export class DsaService {
     if (!problem.description)
       throw new Error("Cannot generate test cases, problem has no description");
 
-    const testCases = await this.generateTestCasesWithAI(problem);
+    const generated = await this.generateTestCasesWithAI(problem);
+    const testCases = await this.verifyTestCasesWithAI(problem, generated);
 
     return Promise.all(
       testCases.map((tc, idx) =>
@@ -1049,6 +1050,31 @@ export class DsaService {
         }),
       ),
     );
+  }
+
+  /** Parses a JSON array of `{input, expected, label}` out of a raw AI response, tolerating markdown fences/surrounding prose. */
+  private parseTestCaseArray(text: string): { input: string; expected: string; label: string }[] {
+    let cleaned = text.trim();
+    if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      const arrMatch = cleaned.match(/\[[\s\S]*\]/);
+      if (!arrMatch) throw new Error("Failed to parse AI-generated test cases");
+      parsed = JSON.parse(arrMatch[0]);
+    }
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error("AI returned empty or non-array result");
+    }
+    return parsed.map((tc: Record<string, unknown>) => ({
+      input: String(tc.input ?? ""),
+      expected: String(tc.expected ?? ""),
+      label: String(tc.label ?? "Test case"),
+    }));
   }
 
   private async generateTestCasesWithAI(problem: {
@@ -1085,42 +1111,75 @@ RULES:
 4. For string inputs: just the string on one line
 5. For arrays as output: space-separated values on one line
 6. For booleans: output "true" or "false"
+7. For the 2 basic cases, copy the "expected" value verbatim from the EXAMPLES block above, do not recompute it
+8. For the 4 invented cases (edge/larger), work through the problem's logic step by step before writing "expected" — these are the ones most likely to be wrong
 
 Return ONLY a JSON array, no markdown fences:
 [{"input":"...","expected":"...","label":"Basic case 1"},...]`;
 
     const response = await provider.generateText(prompt);
-    const text = response.text.trim();
-
-    let cleaned = text;
-    if (cleaned.startsWith("```")) {
-      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    try {
+      const testCases = this.parseTestCaseArray(response.text);
+      logAIRequest("DSA_TESTCASE_GEN", response, true);
+      return testCases;
+    } catch (err) {
+      logAIRequest("DSA_TESTCASE_GEN", response, false, "Failed to parse AI-generated test cases");
+      throw err;
     }
+  }
+
+  /**
+   * Second, independent pass: re-derives each test case's expected output from
+   * scratch and corrects it if it disagrees with the first pass. Generation
+   * asks the model to invent edge/larger cases and state their answers in the
+   * same breath, which is exactly the setup where it hallucinates a wrong
+   * answer (e.g. forced-decode problems); a fresh pass with no memory of how
+   * "expected" was produced catches those. Falls back to the original cases
+   * if verification fails or comes back malformed, so a flaky AI call never
+   * blocks test case generation.
+   */
+  private async verifyTestCasesWithAI(
+    problem: {
+      title: string;
+      description: string | null;
+      examples: string | null;
+      constraints: string | null;
+      difficulty: string;
+    },
+    testCases: { input: string; expected: string; label: string }[],
+  ): Promise<{ input: string; expected: string; label: string }[]> {
+    const provider = getProviderForService("DSA_TESTCASE_GEN");
+
+    const prompt = `You are an independent verifier for a competitive programming judge. You did not write the test cases below — check each one from scratch.
+
+PROBLEM: ${problem.title}
+
+DESCRIPTION:
+${problem.description ?? ""}
+
+${problem.constraints ? `CONSTRAINTS:\n${problem.constraints}` : ""}
+
+For each test case, work through the problem's logic step by step against its "input", and determine the true correct output. If the given "expected" value is wrong, replace it with the correct one. Never change "input" or "label".
+
+TEST CASES:
+${JSON.stringify(testCases)}
+
+Return ONLY a JSON array with exactly ${testCases.length} items in the same order, same shape as the input:
+[{"input":"...","expected":"...","label":"..."},...]`;
 
     try {
-      const parsed = JSON.parse(cleaned);
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        throw new Error("AI returned empty or non-array result");
+      const response = await provider.generateText(prompt);
+      const verified = this.parseTestCaseArray(response.text);
+      if (verified.length !== testCases.length) {
+        throw new Error("Verifier returned a different number of test cases");
       }
       logAIRequest("DSA_TESTCASE_GEN", response, true);
-      return parsed.map((tc: Record<string, unknown>) => ({
-        input: String(tc.input ?? ""),
-        expected: String(tc.expected ?? ""),
-        label: String(tc.label ?? "Test case"),
-      }));
-    } catch {
-      const arrMatch = cleaned.match(/\[[\s\S]*\]/);
-      if (arrMatch) {
-        const parsed = JSON.parse(arrMatch[0]);
-        logAIRequest("DSA_TESTCASE_GEN", response, true);
-        return parsed.map((tc: Record<string, unknown>) => ({
-          input: String(tc.input ?? ""),
-          expected: String(tc.expected ?? ""),
-          label: String(tc.label ?? "Test case"),
-        }));
-      }
-      logAIRequest("DSA_TESTCASE_GEN", response, false, "Failed to parse AI-generated test cases");
-      throw new Error("Failed to parse AI-generated test cases");
+      // Trust the verifier only for "expected" — keep the original input/label
+      // so a drifting verifier can't corrupt what's actually being tested.
+      return testCases.map((tc, i) => ({ ...tc, expected: verified[i]?.expected ?? tc.expected }));
+    } catch (err) {
+      console.warn("[DSA] Test case verification failed, using unverified cases:", err);
+      return testCases;
     }
   }
 
