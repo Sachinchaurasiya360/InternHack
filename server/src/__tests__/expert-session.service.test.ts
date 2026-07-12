@@ -217,7 +217,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
   // the partial unique index added in
   // 20260712000000_add_expert_session_slot_unique_index) so we can drive a
   // genuine two-requests-race-for-one-slot scenario without a real database.
-  function makeInMemoryDb() {
+  function makeInMemoryDb(now: Date) {
     const sessions: { scheduledAt: Date; status: string; createdAt: Date }[] = [];
     let queue: Promise<unknown> = Promise.resolve();
 
@@ -259,7 +259,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
               code: "P2002",
             });
           }
-          const record = { id: sessions.length + 1, createdAt: new Date(), ...data };
+          const record = { id: sessions.length + 1, createdAt: now, ...data };
           sessions.push(record);
           return record;
         }),
@@ -278,7 +278,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
   }
 
   it("lets only one of two concurrent bookings for the same slot succeed", async () => {
-    const { client } = makeInMemoryDb();
+    const { client } = makeInMemoryDb(REFERENCE_NOW);;
     vi.mocked(prisma.$transaction).mockImplementation(client.$transaction as any);
     vi.mocked(prisma.expertAvailabilityBlock.findMany).mockImplementation(
       client.expertAvailabilityBlock.findMany as any,
@@ -307,7 +307,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
   });
 
   it("lets two concurrent bookings for different slots both succeed", async () => {
-    const { client } = makeInMemoryDb();
+    const { client } = makeInMemoryDb(REFERENCE_NOW);
     vi.mocked(prisma.$transaction).mockImplementation(client.$transaction as any);
     vi.mocked(prisma.expertAvailabilityBlock.findMany).mockImplementation(
       client.expertAvailabilityBlock.findMany as any,
@@ -327,7 +327,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
   });
 
   it("reclaims a slot whose only holder is a stale (TTL-expired) PENDING_PAYMENT hold", async () => {
-    const { client, sessions } = makeInMemoryDb();
+    const { client, sessions } = makeInMemoryDb(REFERENCE_NOW);
     vi.mocked(prisma.$transaction).mockImplementation(client.$transaction as any);
     vi.mocked(prisma.expertAvailabilityBlock.findMany).mockImplementation(
       client.expertAvailabilityBlock.findMany as any,
