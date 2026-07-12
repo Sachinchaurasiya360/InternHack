@@ -98,6 +98,7 @@ model user {
   firstPrProgress          studentFirstPrProgress?        @relation("StudentFirstPrProgress")
   studentNotes             studentNote[]                  @relation("StudentNotes")
   sqlProgress              studentSqlProgress[]           @relation("StudentSqlProgress")
+  trackedGrants            trackedGrant[]                 @relation("StudentTrackedGrants")
   usageLogs                usageLog[]                     @relation("UserUsageLogs")
   interviewProgress        userInterviewProgress?         @relation("StudentInterviewProgress")
   interviewQuestionStates  UserInterviewQuestionState[]   @relation("StudentInterviewQuestionStates")
@@ -441,6 +442,28 @@ model programInterest {
   @@unique([userId, programId])
   @@index([userId, active])
   @@index([programId, active])
+}
+
+/// Server-synced grant application tracker (paid-plan perk — free users keep the
+/// localStorage-only tracker on the client). grantName+organization is the join
+/// key back to the static grant catalog in grantsData.ts, since grants aren't
+/// stored in the DB.
+model trackedGrant {
+  id           Int                @id @default(autoincrement())
+  userId       Int
+  grantName    String
+  organization String
+  status       TrackedGrantStatus @default(INTERESTED)
+  notes        String             @default("")
+  deadline     DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  user user @relation("StudentTrackedGrants", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, grantName, organization])
+  @@index([userId])
+  @@index([deadline])
 }
 
 model repoRequest {
@@ -1313,6 +1336,14 @@ enum SubscriptionStatus {
   ACTIVE
   EXPIRED
   CANCELLED
+}
+
+enum TrackedGrantStatus {
+  INTERESTED
+  PREPARING
+  APPLIED
+  ACCEPTED
+  REJECTED
 }
 
 enum AIProviderType {

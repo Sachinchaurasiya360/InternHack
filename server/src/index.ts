@@ -42,6 +42,7 @@ import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
+import { grantsRouter } from "./module/grants/grants.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { emailPrefsRouter } from "./module/email-prefs/email-prefs.routes.js";
@@ -67,6 +68,7 @@ import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
 import { startOpensourceRepoStatsCron, stopOpensourceRepoStatsCron } from "./cron/opensource-repo-stats.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
+import { startGrantDeadlineAlertCron, stopGrantDeadlineAlertCron } from "./cron/grant-deadline-alerts.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
@@ -251,6 +253,7 @@ app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/internships", internshipRouter);
 app.use("/api/leetcode", leetcodeRouter);
+app.use("/api/grants", grantsRouter);
 
 // ── InternHack AI Routes ──
 app.use("/api/job-feed", jobFeedRouter);
@@ -423,6 +426,14 @@ const server = app.listen(PORT, async () => {
     name: "Deadline Alert Cron",
     priority: 10,
     fn: () => stopDeadlineAlertCron(),
+  });
+
+  // Start grant tracker deadline alert cron (daily at 9 AM)
+  startGrantDeadlineAlertCron();
+  shutdownManager.register({
+    name: "Grant Deadline Alert Cron",
+    priority: 10,
+    fn: () => stopGrantDeadlineAlertCron(),
   });
 
   // Peer mock interview matching is live (students browse and pair via the

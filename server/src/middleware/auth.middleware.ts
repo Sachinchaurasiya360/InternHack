@@ -2,8 +2,11 @@ import type { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.utils.js";
 import { prisma } from "../database/db.js";
 
-// ── In-memory tokenVersion cache (5-minute TTL, 10 000-entry size cap) ──
-const TOKEN_VERSION_TTL_MS = 5 * 60 * 1000;
+// ── In-memory tokenVersion cache (60s TTL, 10 000-entry size cap) ──
+// tokenVersion is now only bumped by explicit revocation (password reset, account
+// delete, admin ban/delete) — not on every login — so a short TTL keeps those rare
+// events propagating quickly without putting a DB read on every request.
+const TOKEN_VERSION_TTL_MS = 60 * 1000;
 const VERSION_CACHE_MAX_SIZE = 10_000;
 
 // insertion-ordered Map: oldest entries are at the front (Map preserves insertion order)
@@ -121,7 +124,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     return;
   }
 
-  // Single-device enforcement: check tokenVersion (cached, with stampede protection)
+  // Forced-revocation check: tokenVersion (cached, with stampede protection)
   const dbVersion = await fetchTokenVersion(decoded.id);
 
   if (dbVersion === null) {
