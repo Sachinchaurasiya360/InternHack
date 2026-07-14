@@ -166,7 +166,7 @@ function buildFallback(input: GsocReviewInput): GsocReviewResult {
   const hasDeliverables = /deliver|acceptance\s*criteria|measurable|milestone/i.test(input.draft);
   const hasAboutMe = /github\.com|pr\s*#|pull\s*request|contribution|commit/i.test(input.draft);
   const hasOrgAlign = input.targetStack
-    ? new RegExp(input.targetStack.split(/[\s,]+/)[0] ?? "", "i").test(input.draft)
+    ? new RegExp((input.targetStack.split(/[\s,]+/)[0] ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(input.draft)
     : /tech\s*stack|framework|library/i.test(input.draft);
 
   return {
