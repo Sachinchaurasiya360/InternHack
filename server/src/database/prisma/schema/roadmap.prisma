@@ -319,6 +319,12 @@ model expertAvailabilityBlock {
   @@index([date])
 }
 
+// NOTE: a partial unique index on (scheduledAt) WHERE status IN
+// ('PENDING_PAYMENT', 'SCHEDULED') is added via migration
+// 20260712000000_add_expert_session_slot_unique_index. Prisma's schema DSL
+// can't express a filtered unique constraint, so it isn't declared with
+// @@unique here — see expert-session.service.ts#bookSession for the
+// Serializable-transaction check that backs it up.
 model expertSession {
   id              Int                 @id @default(autoincrement())
   userId          Int
