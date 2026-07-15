@@ -3,7 +3,7 @@ import type { AtsService } from "./ats.service.js";
 import { applySuggestionsSchema, scoreResumeSchema, guestScoreResumeSchema } from "./ats.validation.js";
 import { hashGuestIp } from "../../utils/guest-ip.utils.js";
 import { prisma } from "../../database/db.js";
-import { DAILY_LIMITS, getPlanTier } from "../../config/usage-limits.js";
+import { DAILY_LIMITS, MONTHLY_LIMITS, getPlanTier, type UsageAction } from "../../config/usage-limits.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { atsScoreReportHtml } from "../../utils/email-templates.js";
 import { isPremiumUser } from "../../utils/premium.utils.js";
@@ -170,24 +170,52 @@ export class AtsController {
 
       const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
 
+      const monthlyActions: UsageAction[] = ["ATS_SCORE", "ROADMAP_GENERATION", "GSOC_REVIEW"];
+
       const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
+      startOfDay.setUTCHours(0, 0, 0, 0);
 
-      const counts = await prisma.usageLog.groupBy({
-        by: ["action"],
-        where: { userId: req.user.id, createdAt: { gte: startOfDay } },
-        _count: { id: true },
-      });
+      const startOfMonth = new Date();
+      startOfMonth.setUTCDate(1);
+      startOfMonth.setUTCHours(0, 0, 0, 0);
 
-      const countMap = Object.fromEntries(
-        counts.map((c) => [c.action, c._count.id]),
+      const [dailyCounts, monthlyCounts] = await Promise.all([
+        prisma.usageLog.groupBy({
+          by: ["action"],
+          where: { userId: req.user.id, createdAt: { gte: startOfDay } },
+          _count: { id: true },
+        }),
+        prisma.usageLog.groupBy({
+          by: ["action"],
+          where: { userId: req.user.id, createdAt: { gte: startOfMonth } },
+          _count: { id: true },
+        }),
+      ]);
+
+      const dailyCountMap = Object.fromEntries(
+        dailyCounts.map((c) => [c.action, c._count.id]),
+      );
+      const monthlyCountMap = Object.fromEntries(
+        monthlyCounts.map((c) => [c.action, c._count.id]),
       );
 
-      const usage = Object.entries(DAILY_LIMITS).map(([action, limits]) => ({
-        action,
-        used: (countMap[action] as number) ?? 0,
-        limit: limits[tier],
-      }));
+      const usage = Object.entries(DAILY_LIMITS).map(([action, limits]) => {
+        if (monthlyActions.includes(action as UsageAction)) {
+          const monthlyLimits = MONTHLY_LIMITS[action as UsageAction] ?? limits;
+          return {
+            action,
+            used: (monthlyCountMap[action] as number) ?? 0,
+            limit: monthlyLimits[tier],
+            window: "monthly",
+          };
+        }
+        return {
+          action,
+          used: (dailyCountMap[action] as number) ?? 0,
+          limit: limits[tier],
+          window: "daily",
+        };
+      });
 
       res.json({ tier, usage });
     } catch (err) {
