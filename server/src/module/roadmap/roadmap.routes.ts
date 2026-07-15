@@ -103,5 +103,5 @@ roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapS
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
-roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, postRegenerateSection);
+roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, usageLimit("ROADMAP_GENERATION", "monthly"), postRegenerateSection);
 roadmapRouter.patch("/:slug/share", authMiddleware, toggleShare);
