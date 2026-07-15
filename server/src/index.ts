@@ -287,7 +287,7 @@ app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", in
 
 // ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;
-let isRefreshingStats = false;
+let statsRefreshPromise: Promise<void> | null = null;
 const STATS_TTL = 30 * 60 * 1000;
 
 app.get("/api/stats", async (_req, res) => {
@@ -297,26 +297,28 @@ app.get("/api/stats", async (_req, res) => {
       return res.json(statsCache.data);
     }
 
-    // Stale-while-revalidate pattern: if someone is already fetching, 
-    // serve the stale cache to prevent a database stampede.
-    if (isRefreshingStats && statsCache) {
-      return res.json(statsCache.data);
+    // If a refresh is already in flight, await it rather than
+    // running a duplicate DB query (avoids the TOCTOU that
+    // the previous boolean flag had when statsCache was null).
+    if (statsRefreshPromise) {
+      await statsRefreshPromise;
+      return res.json(statsCache ? statsCache.data : { users: 0, jobs: 0, companies: 0 });
     }
 
-    isRefreshingStats = true;
+    statsRefreshPromise = (async () => {
+      const [users, jobs, companies] = await Promise.all([
+        prisma.user.count({ where: { role: "STUDENT" } }),
+        prisma.scrapedJob.count({ where: { status: "ACTIVE" } }),
+        prisma.company.count(),
+      ]);
+      statsCache = { data: { users, jobs, companies }, expiresAt: Date.now() + STATS_TTL };
+    })();
 
-    const [users, jobs, companies] = await Promise.all([
-      prisma.user.count({ where: { role: "STUDENT" } }),
-      prisma.scrapedJob.count({ where: { status: "ACTIVE" } }),
-      prisma.company.count(),
-    ]);
-
-    const data = { users, jobs, companies };
-    statsCache = { data, expiresAt: Date.now() + STATS_TTL };
-    isRefreshingStats = false;
-    return res.json(data);
+    await statsRefreshPromise;
+    statsRefreshPromise = null;
+    return res.json(statsCache!.data);
   } catch {
-    isRefreshingStats = false;
+    statsRefreshPromise = null;
     return res.json(statsCache ? statsCache.data : { users: 0, jobs: 0, companies: 0 });
   }
 });
