@@ -55,5 +55,8 @@ export const uploadResumeSchema = z.object({
     validateS3Url,
     "File must be from authorized S3 bucket"
   ),
+  originalName: z.string().optional(),
+  size: z.number().optional(),
+  mimeType: z.string().optional(),
 });
 

@@ -266,7 +266,7 @@ export default function RegisterPage() {
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password };
       const { data } = await api.post("/auth/register", payload);
-      if (data.user && !data.user.isVerified) {
+      if (!data.user || !data.user.isVerified) {
         navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
       } else {
         login(data.user);

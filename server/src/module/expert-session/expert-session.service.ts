@@ -92,7 +92,7 @@ export class ExpertSessionService {
     const candidates = generateSlotCandidates(now).filter((slot) => slot >= minTime);
     if (candidates.length === 0) return [];
 
-   const rangeStart = candidates[0]!;
+    const rangeStart = candidates[0]!;
     const rangeEnd = candidates[candidates.length - 1]!;
     // A PENDING_PAYMENT row is an active hold on a slot, so it should make
     // that slot look unavailable too — not just SCHEDULED ones. But there's

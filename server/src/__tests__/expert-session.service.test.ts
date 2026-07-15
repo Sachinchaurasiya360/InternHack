@@ -278,7 +278,7 @@ describe("ExpertSessionService.bookSession concurrency (regression for #2691)", 
   }
 
   it("lets only one of two concurrent bookings for the same slot succeed", async () => {
-    const { client } = makeInMemoryDb(REFERENCE_NOW);;
+    const { client } = makeInMemoryDb(REFERENCE_NOW);
     vi.mocked(prisma.$transaction).mockImplementation(client.$transaction as any);
     vi.mocked(prisma.expertAvailabilityBlock.findMany).mockImplementation(
       client.expertAvailabilityBlock.findMany as any,

@@ -4,6 +4,7 @@ import { prisma } from "../../database/db.js";
 import { contactSchema } from "./contact.validation.js";
 import { contactLimiter } from "../../middleware/rate-limit.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { escapeHtml } from "../../utils/email-templates.js";
 
 const ADMIN_EMAIL = () => process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || "";
 
@@ -20,14 +21,20 @@ contactRouter.post("/", contactLimiter, async (req: Request, res: Response) => {
     const adminEmail = ADMIN_EMAIL();
     if (adminEmail) {
       const { name, email, subject, message } = parsed.data;
+      const safeName = escapeHtml(name);
+      const safeEmail = escapeHtml(email);
+      const safeSubject = escapeHtml(subject);
+      const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+      const emailSubject = subject.replace(/[\r\n]+/g, " ").trim();
+
       sendEmail({
         to: adminEmail,
-        subject: `[Contact Form] ${subject}`,
-        html: `<p><strong>Name:</strong> ${name}</p>
-<p><strong>Email:</strong> ${email}</p>
-<p><strong>Subject:</strong> ${subject}</p>
+        subject: `[Contact Form] ${emailSubject}`,
+        html: `<p><strong>Name:</strong> ${safeName}</p>
+<p><strong>Email:</strong> ${safeEmail}</p>
+<p><strong>Subject:</strong> ${safeSubject}</p>
 <p><strong>Message:</strong></p>
-<p>${message}</p>`,
+<p>${safeMessage}</p>`,
       }).catch((err) => console.error("Failed to send admin notification:", err));
     }
 
