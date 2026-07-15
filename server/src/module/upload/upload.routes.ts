@@ -2,8 +2,8 @@ import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import { UploadController } from "./upload.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { validateBody } from "../../middleware/validation.middleware.js";
 import {
-  validateBody,
   presignRequestSchema,
   guestPresignRequestSchema,
 } from "./upload.validation.js";
