@@ -226,8 +226,22 @@ Links: LinkedIn ${compactText(user.linkedinUrl, 160)}, GitHub ${compactText(user
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    const jsonString = jsonMatch ? jsonMatch[0] : text;
+    let jsonString = text;
+    const startIndex = text.indexOf('{');
+    if (startIndex !== -1) {
+      for (let i = startIndex + 1; i <= text.length; i++) {
+        if (text[i - 1] === '}') {
+          try {
+            const candidate = text.slice(startIndex, i);
+            JSON.parse(candidate);
+            jsonString = candidate;
+            break;
+          } catch {
+            // keep looking for the closing brace that makes it valid JSON
+          }
+        }
+      }
+    }
     try {
       const parsed = JSON.parse(jsonString) as { answer?: string; confidence?: number; needsUserInput?: boolean };
       return {

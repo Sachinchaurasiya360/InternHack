@@ -203,7 +203,8 @@ export class ApplicationTrackerService {
 
   async addEvent(userId: number, id: number, event: { type: string; label: string; metadata?: Record<string, unknown> }) {
     return prisma.$transaction(async (tx) => {
-      const existing = await tx.trackedJobApplication.findUnique({ where: { id } });
+      const locked = await tx.$queryRaw<any[]>`SELECT * FROM "trackedJobApplication" WHERE id = ${id} FOR UPDATE`;
+      const existing = locked[0];
       if (!existing || existing.userId !== userId) return null;
       
       const events = Array.isArray(existing.events) ? existing.events as Prisma.InputJsonValue[] : [];
