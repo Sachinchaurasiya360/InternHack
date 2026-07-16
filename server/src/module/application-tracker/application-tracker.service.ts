@@ -105,8 +105,11 @@ export class ApplicationTrackerService {
 
   async create(userId: number, data: Record<string, any>) {
     const applicationUrl = normalizeText(data.applicationUrl);
-    const existing = applicationUrl
-      ? await prisma.trackedJobApplication.findFirst({ where: { userId, applicationUrl } })
+    const role = normalizeText(data.role);
+    const existing = (applicationUrl && role)
+      ? await prisma.trackedJobApplication.findFirst({
+          where: { userId, applicationUrl, role },
+        })
       : null;
 
     const payload = {
