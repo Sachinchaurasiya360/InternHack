@@ -104,7 +104,7 @@ function profileScore(profile?: ProfilePayload) {
   return Math.round((filled / checks.length) * 100);
 }
 
-function responseRate(applications: ExternalApplication[]) {
+function responseRate(applications: any[]) {
   if (applications.length === 0) return 0;
   const responses = applications.filter((app) => 
     !["SAVED", "APPLIED"].includes(app.status || "APPLIED")
