@@ -14,7 +14,9 @@
   "permissions": ["activeTab", "storage", "scripting"],
   "host_permissions": [
     "http://localhost:3000/*",
+    "https://api.internhack.xyz/*",
     "https://www.internhack.xyz/*",
+    "https://internhack.xyz/*",
     "https://*.linkedin.com/*",
     "https://*.workdayjobs.com/*",
     "https://*.greenhouse.io/*",
@@ -33,6 +35,15 @@
         "https://*.indeed.com/*"
       ],
       "js": ["assets/content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.internhack.xyz/*",
+        "https://internhack.xyz/*",
+        "http://localhost:5173/*"
+      ],
+      "js": ["assets/bridge.js"],
       "run_at": "document_idle"
     }
   ]

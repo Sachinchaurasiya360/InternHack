@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { CheckCircle2, ExternalLink, LogOut, PlugZap, Save, UserCircle } from "lucide-react";
+import { CheckCircle2, ExternalLink, LogOut, PlugZap, UserCircle } from "lucide-react";
 import type { ExtensionProfile } from "../lib/types";
 import "./styles.css";
+
+const APP_URL = "https://www.internhack.xyz/student/applications";
 
 function sendMessage<T>(message: Record<string, unknown>): Promise<T> {
   return chrome.runtime.sendMessage(message) as Promise<T>;
 }
 
 function Popup() {
-  const [token, setToken] = useState("");
   const [profile, setProfile] = useState<ExtensionProfile | null>(null);
   const [status, setStatus] = useState("Checking connection...");
-  const [saving, setSaving] = useState(false);
 
   const loadProfile = async () => {
     setStatus("Checking connection...");
     const result = await sendMessage<ExtensionProfile & { error?: string }>({ type: "GET_PROFILE" });
     if ("error" in result && result.error) {
       setProfile(null);
-      setStatus(result.error);
+      setStatus("Not connected");
       return;
     }
     setProfile(result);
@@ -30,20 +30,8 @@ function Popup() {
     void loadProfile();
   }, []);
 
-  const saveToken = async () => {
-    if (!token.trim()) return;
-    setSaving(true);
-    try {
-      await sendMessage({ type: "SET_TOKEN", token: token.trim() });
-      setToken("");
-      await loadProfile();
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const disconnect = async () => {
-    await sendMessage({ type: "CLEAR_TOKEN" });
+    await sendMessage({ type: "CLEAR_SESSION" });
     setProfile(null);
     setStatus("Disconnected");
   };
@@ -87,22 +75,14 @@ function Popup() {
             <span>{status}</span>
           </div>
           <p className="hint">
-            Create an extension session from InternHack, then paste the token here.
+            Open InternHack while signed in and the extension connects
+            automatically. No token to copy.
           </p>
-          <textarea
-            value={token}
-            onChange={(event) => setToken(event.target.value)}
-            placeholder="Paste extension token"
-          />
-          <button type="button" onClick={saveToken} disabled={saving || !token.trim()}>
-            <Save size={14} />
-            {saving ? "Saving..." : "Save token"}
-          </button>
         </section>
       )}
 
-      <a className="link" href="http://localhost:5173/student/job-hub" target="_blank" rel="noreferrer">
-        Open Job Hub
+      <a className="link" href={APP_URL} target="_blank" rel="noreferrer">
+        Open My Applications
         <ExternalLink size={13} />
       </a>
     </main>
@@ -110,4 +90,3 @@ function Popup() {
 }
 
 createRoot(document.getElementById("root")!).render(<Popup />);
-

@@ -29,10 +29,13 @@ function createPanel(context: JobContext) {
   ].join(";");
 
   panel.innerHTML = `
-    <div style="padding:12px 14px;border-bottom:1px solid #e7e5e4">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#78716c">InternHack / ${context.siteType}</div>
-      <div style="font-size:14px;font-weight:700;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${context.role}</div>
-      <div style="font-size:12px;color:#78716c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${context.company}</div>
+    <div style="padding:12px 14px;border-bottom:1px solid #e7e5e4;display:flex;align-items:flex-start;gap:8px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#78716c">InternHack / ${context.siteType}</div>
+        <div style="font-size:14px;font-weight:700;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${context.role}</div>
+        <div style="font-size:12px;color:#78716c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${context.company}</div>
+      </div>
+      <button data-ih-action="close" aria-label="Close" title="Hide" style="flex:none;border:0;background:transparent;color:#78716c;font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px">&times;</button>
     </div>
     <div style="display:grid;gap:8px;padding:12px">
       <button data-ih-action="fill" style="border:0;border-radius:6px;background:#a3e635;color:#1c1917;font-weight:700;padding:9px;cursor:pointer">Autofill page</button>
@@ -85,12 +88,31 @@ function createPanel(context: JobContext) {
     status.textContent = "Support request sent.";
   });
 
+  panel.querySelector<HTMLButtonElement>("[data-ih-action='close']")?.addEventListener("click", () => {
+    dismissedHref = location.href;
+    panel.remove();
+  });
+
   document.documentElement.appendChild(panel);
 }
 
-function boot() {
+// Set when the user closes the panel, so it stays hidden for that page until
+// they navigate somewhere else.
+let dismissedHref: string | null = null;
+
+function evaluate() {
   const adapter = getAdapter();
-  if (!adapter.detect()) return;
+  const present = document.getElementById("internhack-autofill-panel");
+
+  // Only show on a real job / apply context (adapter.detect()), never on the
+  // feed, messaging, profile, search, etc.
+  if (!adapter.detect()) {
+    if (present) present.remove();
+    return;
+  }
+  if (present) return;
+  if (dismissedHref === location.href) return;
+
   const context = adapter.extractJobContext();
   createPanel(context);
   void sendMessage({
@@ -105,9 +127,41 @@ function boot() {
   });
 }
 
+// Re-check a few times so the panel appears once async job UI has mounted.
+let retryTimers: number[] = [];
+function retryEvaluate() {
+  retryTimers.forEach((t) => clearTimeout(t));
+  retryTimers = [0, 600, 1500, 3000].map((delay) => window.setTimeout(evaluate, delay));
+}
+
+// Job portals are SPAs: route changes don't reload the page, so watch history.
+let lastHref = location.href;
+function handleLocationChange() {
+  if (location.href === lastHref) return;
+  lastHref = location.href;
+  dismissedHref = null; // new page: the panel is allowed again
+  retryEvaluate();
+}
+
+const patchHistory = (method: "pushState" | "replaceState") => {
+  const original = history[method];
+  history[method] = function (
+    this: History,
+    ...args: [data: unknown, unused: string, url?: string | URL | null]
+  ) {
+    const result = original.apply(this, args);
+    window.dispatchEvent(new Event("ih:locationchange"));
+    return result;
+  };
+};
+patchHistory("pushState");
+patchHistory("replaceState");
+window.addEventListener("popstate", handleLocationChange);
+window.addEventListener("ih:locationchange", handleLocationChange);
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", boot, { once: true });
+  document.addEventListener("DOMContentLoaded", retryEvaluate, { once: true });
 } else {
-  boot();
+  retryEvaluate();
 }
 

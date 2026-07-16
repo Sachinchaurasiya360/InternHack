@@ -146,18 +146,21 @@ export function ApplicationNotes({
         </div>
       </div>
 
-      {isEditing || !hasNotes ? (
+      {isEditing ? (
         <Textarea
           value={value}
           maxLength={NOTES_LIMIT}
           rows={4}
+          autoFocus
           placeholder="Add private notes - only you can see these"
           onChange={(event) => handleChange(event.target.value)}
-          onFocus={() => setIsEditing(true)}
-          onBlur={handleBlur}
+          onBlur={() => {
+            handleBlur();
+            setIsEditing(false);
+          }}
           className="min-h-28 resize-y text-sm"
         />
-      ) : (
+      ) : hasNotes ? (
         <div className="space-y-3">
           <p className="whitespace-pre-wrap text-sm leading-6 text-stone-700 dark:text-stone-300">
             {value}
@@ -167,6 +170,11 @@ export function ApplicationNotes({
             Edit
           </Button>
         </div>
+      ) : (
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+          <Pencil className="h-4 w-4" />
+          Add private notes
+        </Button>
       )}
     </section>
   );
