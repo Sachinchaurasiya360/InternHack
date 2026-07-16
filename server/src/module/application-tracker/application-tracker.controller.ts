@@ -9,7 +9,9 @@ import {
 
 function parseId(value: string | string[] | undefined): number | null {
   const raw = Array.isArray(value) ? value[0] : value;
-  const id = Number(raw);
+  if (!raw) return null;
+  const clean = raw.replace(/^(tracked|legacy)-/, "");
+  const id = Number(clean);
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 

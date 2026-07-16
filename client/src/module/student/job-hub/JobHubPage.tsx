@@ -106,7 +106,10 @@ function profileScore(profile?: ProfilePayload) {
 
 function responseRate(applications: ExternalApplication[]) {
   if (applications.length === 0) return 0;
-  return 0;
+  const responses = applications.filter((app) => 
+    !["SAVED", "APPLIED"].includes(app.status || "APPLIED")
+  ).length;
+  return Math.round((responses / applications.length) * 100);
 }
 
 function applicationsThisWeek(applications: ExternalApplication[]) {
