@@ -177,6 +177,7 @@ const DataAnalyticsLessonDetailPage = lazyWithRetry(() => import("./module/stude
 
 // InternHack AI pages
 const JobAgentPage = lazyWithRetry(() => import("./module/student/job-agent/JobAgentPage"));
+const JobHubPage = lazyWithRetry(() => import("./module/student/job-hub/JobHubPage"));
 
 // 404
 const NotFoundPage = lazyWithRetry(() => import("./module/NotFoundPage"));
@@ -438,6 +439,7 @@ function App() {
             <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
               <Route index element={<Navigate to="applications" replace />} />
               <Route path="jobs" element={<JobBrowsePage />} />
+              <Route path="job-hub" element={<JobHubPage />} />
               <Route path="internships" element={<GovInternshipsPage />} />
               <Route path="companies" element={<CompanyListPage />} />
               <Route path="companies/:slug" element={<CompanyDetailPage />} />
@@ -455,7 +457,7 @@ function App() {
               <Route path="mock-interview/expert" element={<ExpertSessionPage />} />
               <Route path="mock-interview/peer" element={<PeerMockInterviewPage />} />
               <Route path="companies/add" element={<AddCompanyPage />} />
-              <Route path="grants" element={<GrantsPage />} />
+              <Route path="grants" element={<Navigate to="/student/job-hub" replace />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
                 <Route index element={<OpenSourceDashboardPage />} />
                 <Route path="discover" element={<RepoDiscoveryPage />} />

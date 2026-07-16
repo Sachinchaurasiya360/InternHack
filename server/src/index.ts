@@ -43,6 +43,9 @@ import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { grantsRouter } from "./module/grants/grants.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
+import { applicationProfileRouter } from "./module/application-profile/application-profile.routes.js";
+import { applicationTrackerRouter } from "./module/application-tracker/application-tracker.routes.js";
+import { extensionRouter } from "./module/extension/extension.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { emailPrefsRouter } from "./module/email-prefs/email-prefs.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
@@ -256,6 +259,9 @@ app.use("/api/grants", grantsRouter);
 // ── InternHack AI Routes ──
 app.use("/api/job-feed", jobFeedRouter);
 app.use("/api/job-agent", jobAgentRouter);
+app.use("/api/application-profile", applicationProfileRouter);
+app.use("/api/application-tracker", applicationTrackerRouter);
+app.use("/api/extension", extensionRouter);
 
 // ── HR routes removed (recruiter/HR feature archived to /archived) ──
 app.use("/api/email-inbound", emailInboundRouter);

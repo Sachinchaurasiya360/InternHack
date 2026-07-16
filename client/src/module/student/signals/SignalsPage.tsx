@@ -178,7 +178,7 @@ export default function SignalsPage() {
             <option value="yc-launches">YC Launches</option>
             <option value="techcrunch">TechCrunch</option>
             <option value="hn-hiring">HN Hiring</option>
-            <option value="exa-funding">Exa Funding</option>
+            <option value="exa-funding">Funding News</option>
             <option value="manual">Manual</option>
           </select>
         </motion.div>

@@ -1621,53 +1621,57 @@ function formatAmountLabel(
   return null;
 }
 
+/**
+ * Build a ready-to-use image-generation prompt from a batch of new funding
+ * signals. The admin copies this straight into an image AI (ChatGPT, Gemini,
+ * Midjourney, etc.) to produce a social media graphic announcing the raises.
+ */
+export function newFundingSignalsImagePrompt(
+  signals: NewFundingSignalEmailItem[],
+): string {
+  const count = signals.length;
+
+  const companyLines = signals.map((s) => {
+    const amount = formatAmountLabel(s.fundingAmount, s.amountUsd);
+    const details = [s.fundingRound, amount].filter((v): v is string =>
+      Boolean(v),
+    );
+    const detailStr = details.length > 0 ? `: ${details.join(", ")}` : "";
+    const context = [s.industry, s.hqLocation].filter((v): v is string =>
+      Boolean(v),
+    );
+    const contextStr = context.length > 0 ? ` (${context.join(", ")})` : "";
+    return `- ${s.companyName}${detailStr}${contextStr}`;
+  });
+
+  return [
+    `Create a bold, modern social media graphic (1080x1080 square, works for LinkedIn and Instagram) announcing fresh startup funding rounds.`,
+    ``,
+    `Brand style: dark charcoal background (#0a0a0a) with a bright lime accent (#a3e635), crisp sans-serif typography, generous whitespace, subtle vertical grid lines, flat and premium editorial look. No photos of people, no real company logos, no trademarked marks. Use clean typographic placeholders only.`,
+    ``,
+    `Headline text: "Fresh Funding Signals".`,
+    `Subhead text: "${count} ${count === 1 ? "startup" : "startups"} just raised".`,
+    ``,
+    `Lay out these companies as clean cards, each showing the company name, funding round, and amount:`,
+    ...companyLines,
+    ``,
+    `Add a small "InternHack" wordmark in one corner. Keep it uncluttered and easy to read at a glance on a phone screen.`,
+  ].join("\n");
+}
+
 export function newFundingSignalsEmailHtml(
   signals: NewFundingSignalEmailItem[],
 ): string {
-  const rows = signals
-    .map((s) => {
-      const safeName = escapeHtml(s.companyName);
-      const amount = formatAmountLabel(s.fundingAmount, s.amountUsd);
-      const roundAmountParts = [s.fundingRound, amount]
-        .filter((v): v is string => Boolean(v))
-        .map(escapeHtml)
-        .join(" &middot; ");
-      const metaParts = [s.industry, s.hqLocation]
-        .filter((v): v is string => Boolean(v))
-        .map(escapeHtml)
-        .join(" &middot; ");
-      const investors = (s.investors ?? []).filter(Boolean);
-      const announced = s.announcedAt.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-      const safeUrl = escapeHtml(s.sourceUrl);
-
-      return `
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px;border:1px solid #e4e4e7;border-radius:8px;background-color:#ffffff;">
-          <tr>
-            <td style="padding:18px 18px 16px;">
-              <p style="margin:0 0 4px;font-size:17px;font-weight:700;color:#18181b;line-height:1.35;">${safeName}</p>
-              ${roundAmountParts ? `<p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#65a30d;">${roundAmountParts}</p>` : ""}
-              ${metaParts ? `<p style="margin:0 0 8px;font-size:13px;color:#71717a;">${metaParts}</p>` : ""}
-              ${investors.length > 0 ? `<p style="margin:0 0 10px;font-size:13px;color:#52525b;"><strong>Investors:</strong> ${escapeHtml(investors.join(", "))}</p>` : ""}
-              <p style="margin:0 0 12px;font-size:12px;color:#a1a1aa;">Announced ${announced} &middot; via ${escapeHtml(s.source)}</p>
-              <a href="${safeUrl}" target="_blank" style="display:inline-block;font-size:13px;font-weight:700;color:#18181b;text-decoration:underline;">View source &rarr;</a>
-            </td>
-          </tr>
-        </table>`;
-    })
-    .join("");
-
   const count = signals.length;
+  const prompt = newFundingSignalsImagePrompt(signals);
+  const safePrompt = escapeHtml(prompt);
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New funding signals</title>
+  <title>Social image prompt</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;">
@@ -1679,12 +1683,12 @@ export function newFundingSignalsEmailHtml(
     </tr>
     <tr>
       <td style="background-color:#ffffff;padding:30px 24px;">
-        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">${count} new funding signal${count === 1 ? "" : "s"} detected</h2>
-        <p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:#52525b;">
-          The signals cron just picked up ${count === 1 ? "this company" : "these companies"} raising money. Details below for your LinkedIn post.
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">${count} new funding signal${count === 1 ? "" : "s"}: image prompt ready</h2>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+          The signals cron just picked up ${count === 1 ? "this company" : "these companies"} raising money. Copy the prompt below and paste it into your image AI (ChatGPT, Gemini, Midjourney, etc.) to generate a social post graphic for these raises.
         </p>
-        ${rows}
-        <p style="margin:20px 0 0;font-size:12px;color:#a1a1aa;line-height:1.6;text-align:center;">
+        <pre style="margin:0 0 20px;padding:18px;background-color:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.6;color:#18181b;white-space:pre-wrap;word-break:break-word;">${safePrompt}</pre>
+        <p style="margin:0;font-size:12px;color:#a1a1aa;line-height:1.6;text-align:center;">
           Manage these in the <a href="https://internhack.xyz/admin/signals" style="color:#18181b;text-decoration:underline;">admin signals dashboard</a>.
         </p>
       </td>

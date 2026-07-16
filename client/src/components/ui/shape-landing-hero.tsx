@@ -2,9 +2,8 @@ import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion
 import { Link } from "react-router";
 import { useEffect, useCallback, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
-import { ArrowRight, Github, Play, Star } from "lucide-react";
+import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
-import { SOCIAL_LINKS } from "@/lib/social-links";
 
 const ROTATING_WORDS = ["offer.", "internship.", "interview.", "callback.", "dream job."];
 
@@ -78,19 +77,6 @@ function HeroGeometric() {
       />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-10 md:pt-40 md:pb-14 text-center">
-        <motion.a
-          href={SOCIAL_LINKS.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="no-underline inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-md border border-stone-300 dark:border-white/15 text-xs font-mono text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-lime-400 dark:hover:border-lime-400 transition-colors"
-        >
-          <Github className="w-3.5 h-3.5" />
-          Open source on GitHub
-          <ArrowRight className="w-3 h-3" />
-        </motion.a>
         <motion.h1
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}

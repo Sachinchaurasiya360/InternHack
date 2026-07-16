@@ -1,5 +1,4 @@
 import { formatDate } from "../../../lib/date-utils";
-import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { Link } from "react-router";
 import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
@@ -264,8 +263,6 @@ export default function MyApplicationsPage() {
 
       {/* Search */}
 
-
-      <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
         <input

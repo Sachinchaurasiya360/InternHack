@@ -164,6 +164,14 @@ export const queryKeys = {
   jobAgent: {
     conversation: () => ["job-agent", "conversation"] as const,
   },
+  applicationTracker: {
+    list: (params?: Record<string, string | number | boolean | undefined>) =>
+      ["application-tracker", "list", params] as const,
+    stats: () => ["application-tracker", "stats"] as const,
+  },
+  extension: {
+    session: () => ["extension", "session"] as const,
+  },
 
   // Interview Experiences
   interviews: {

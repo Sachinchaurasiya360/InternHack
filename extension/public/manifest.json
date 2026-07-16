@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "InternHack Autofill",
+  "description": "Autofill internship and job applications with your InternHack profile.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "InternHack Autofill",
+    "default_popup": "src/popup/index.html"
+  },
+  "background": {
+    "service_worker": "assets/background.js",
+    "type": "module"
+  },
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://www.internhack.xyz/*",
+    "https://*.linkedin.com/*",
+    "https://*.workdayjobs.com/*",
+    "https://*.greenhouse.io/*",
+    "https://jobs.lever.co/*",
+    "https://*.ashbyhq.com/*",
+    "https://*.indeed.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/*",
+        "https://*.workdayjobs.com/*",
+        "https://*.greenhouse.io/*",
+        "https://jobs.lever.co/*",
+        "https://*.ashbyhq.com/*",
+        "https://*.indeed.com/*"
+      ],
+      "js": ["assets/content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
+

@@ -3,7 +3,10 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import { sendEmail } from "../../utils/email.utils.js";
-import { newFundingSignalsEmailHtml } from "../../utils/email-templates.js";
+import {
+  newFundingSignalsEmailHtml,
+  newFundingSignalsImagePrompt,
+} from "../../utils/email-templates.js";
 import type { NewFundingSignalEmailItem } from "../../utils/email-templates.js";
 import { BaseSignalSource } from "./sources/base.source.js";
 import type { FundingSignalData } from "./sources/base.source.js";
@@ -218,8 +221,9 @@ export class SignalsService {
       try {
         await sendEmail({
           to: ADMIN_ALERT_EMAIL,
-          subject: `${allNewFundingSignals.length} new funding signal${allNewFundingSignals.length === 1 ? "" : "s"} found`,
+          subject: `Social image prompt: ${allNewFundingSignals.length} new funding signal${allNewFundingSignals.length === 1 ? "" : "s"}`,
           html: newFundingSignalsEmailHtml(allNewFundingSignals),
+          text: newFundingSignalsImagePrompt(allNewFundingSignals),
         });
       } catch (err) {
         console.error("[Signals] Failed to send new-funding-signals alert email:", err);

@@ -25,7 +25,7 @@ interface ExaResponse {
  */
 export class ExaFundingSource extends BaseSignalSource {
   readonly source = "exa-funding";
-  readonly displayName = "Exa Funding News";
+  readonly displayName = "Funding News";
 
   private readonly apiUrl = "https://api.exa.ai/search";
 
@@ -149,7 +149,7 @@ export class ExaFundingSource extends BaseSignalSource {
       fundingRound: parsed.round,
       fundingAmount: parsed.amountText,
       amountUsd: parsed.amountText ? this.parseAmountUsd(parsed.amountText) : undefined,
-      tags: ["funding", "venture", "exa"],
+      tags: ["funding", "venture"],
       hiringSignal: this.detectHiringIntent(`${item.title} ${highlightText}`),
       metadata: { rawTitle: item.title },
     };
