@@ -108,8 +108,12 @@ export class ApplicationTrackerService {
     const role = normalizeText(data.role);
     const existing = (applicationUrl && role)
       ? await prisma.trackedJobApplication.findFirst({
-          where: { userId, applicationUrl, role },
-        })
+        where: {
+          userId,
+          applicationUrl,
+          role
+        },
+      })
       : null;
 
     const payload = {
