@@ -13,9 +13,6 @@ export const studentRouter = Router();
 // All routes require authentication and STUDENT role
 studentRouter.use(authMiddleware, requireRole("STUDENT"));
 
-// Applications (external/admin-posted jobs only; internal recruiter jobs removed)
-studentRouter.get("/applications", (req, res) => studentController.getMyApplications(req, res));
-
 // External job applications
 studentRouter.post("/external-jobs/:adminJobId/apply", usageLimit("JOB_APPLICATION"), (req, res) => studentController.applyToExternalJob(req, res));
 studentRouter.get("/external-jobs/:adminJobId/status", (req, res) => studentController.getExternalApplicationStatus(req, res));

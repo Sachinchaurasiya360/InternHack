@@ -51,6 +51,68 @@ export interface ExternalApplication {
   };
 }
 
+export type TrackedApplicationStatus =
+  | "SAVED"
+  | "APPLIED"
+  | "OA"
+  | "PHONE_SCREEN"
+  | "INTERVIEW"
+  | "OFFER"
+  | "REJECTED"
+  | "WITHDRAWN"
+  | "GHOSTED";
+
+export type TrackedApplicationSource =
+  | "INTERNHACK_ADMIN"
+  | "SCRAPED"
+  | "JOB_INDEX"
+  | "EXTENSION"
+  | "MANUAL";
+
+// Unified application record returned by GET /application-tracker. Merges the
+// new trackedJobApplication table (recordType "TRACKED") with the legacy
+// externalJobApplication table (recordType "LEGACY_EXTERNAL"), so `id` is a
+// composite string ("tracked-1" / "legacy-1") and `numericId` is the row id.
+export interface TrackedApplication {
+  id: string;
+  numericId: number;
+  recordType: "TRACKED" | "LEGACY_EXTERNAL";
+  sourceType: TrackedApplicationSource;
+  sourceId: number | null;
+  adminJobId: number | null;
+  company: string;
+  role: string;
+  location: string | null;
+  jobUrl: string | null;
+  applicationUrl: string | null;
+  jobDescription: string | null;
+  status: TrackedApplicationStatus;
+  appliedAt: string | null;
+  deadline: string | null;
+  nextFollowUpAt: string | null;
+  resumeUrl: string | null;
+  coverLetterId: number | null;
+  notes: string;
+  contacts: unknown[];
+  events: unknown[];
+  extensionMetadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApplicationTrackerStats {
+  total: number;
+  saved: number;
+  applied: number;
+  interviews: number;
+  offers: number;
+  rejections: number;
+  ghosted: number;
+  applicationsThisWeek: number;
+  responseRate: number;
+  byStatus: Record<string, number>;
+}
+
 // Scraped Jobs
 export type ScrapedJobStatus = "ACTIVE" | "EXPIRED" | "REMOVED";
 

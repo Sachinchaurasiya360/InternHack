@@ -2,7 +2,6 @@ import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
 import {
   Briefcase,
-  ClipboardList,
   FileText,
   LogOut,
   ScanSearch,
@@ -41,7 +40,6 @@ const NAV_GROUPS: NavGroup[] = [
   label: "work",
   items: [
     { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
-    { to: "/student/job-hub", icon: ClipboardList, label: "Job Hub" },
     { to: "/student/signals", icon: Radar, label: "Funding Signals" },
     { to: "/student/applications", icon: FileText, label: "My Applications" },
     { to: "/student/companies", icon: Building2, label: "Explore Companies" },

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { ExternalApplication } from "../../../lib/types";
+import type { TrackedApplication } from "../../../lib/types";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import toast from "@/components/ui/toast";
@@ -11,17 +11,22 @@ import toast from "@/components/ui/toast";
 const NOTES_LIMIT = 4000;
 const NOTES_WARNING_AT = 3500;
 
-type ApplicationsCache = {
-  externalApplications: ExternalApplication[];
+type TrackerCache = {
+  applications: TrackedApplication[];
 };
 
 type ApplicationNotesProps = {
-  applicationId: number;
+  // Composite tracker id ("tracked-1" / "legacy-1"), used for cache targeting.
+  id: string;
+  recordType: TrackedApplication["recordType"];
+  numericId: number;
   notes: string | null;
 };
 
 export function ApplicationNotes({
-  applicationId,
+  id,
+  recordType,
+  numericId,
   notes,
 }: ApplicationNotesProps) {
   const queryClient = useQueryClient();
@@ -47,41 +52,50 @@ export function ApplicationNotes({
     };
   }, []);
 
+  const listKey = queryKeys.applicationTracker.list();
+
   const mutation = useMutation({
     mutationFn: async (variables: { notes: string; requestId: number }) => {
-      const res = await api.patch(`/student/external-applications/${applicationId}/notes`, {
+      if (recordType === "LEGACY_EXTERNAL") {
+        const res = await api.patch(
+          `/student/external-applications/${numericId}/notes`,
+          { notes: variables.notes },
+        );
+        return (res.data as { notes: string }).notes;
+      }
+      const res = await api.patch(`/application-tracker/${numericId}`, {
         notes: variables.notes,
       });
-      return res.data as { notes: string; updatedAt: string };
+      return (res.data as { application: TrackedApplication }).application.notes;
     },
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.applications.mine() });
+      await queryClient.cancelQueries({ queryKey: listKey });
 
-      const previousMine = queryClient.getQueryData<ApplicationsCache>(queryKeys.applications.mine());
+      const previous = queryClient.getQueryData<TrackerCache>(listKey);
 
-      queryClient.setQueryData<ApplicationsCache>(queryKeys.applications.mine(), (old) => {
+      queryClient.setQueryData<TrackerCache>(listKey, (old) => {
         if (!old) return old;
         return {
           ...old,
-          externalApplications: old.externalApplications.map((app) =>
-            app.id === applicationId ? { ...app, studentNotes: variables.notes } : app
+          applications: old.applications.map((app) =>
+            app.id === id ? { ...app, notes: variables.notes } : app,
           ),
         };
       });
 
-      return { previousMine };
+      return { previous };
     },
     onError: (_error, variables, context) => {
       if (variables.requestId !== saveSeqRef.current) return;
-      if (context?.previousMine) {
-        queryClient.setQueryData(queryKeys.applications.mine(), context.previousMine);
+      if (context?.previous) {
+        queryClient.setQueryData(listKey, context.previous);
       }
       setValue(lastSavedRef.current);
       toast.error("Failed to save notes");
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (savedNotes, variables) => {
       if (variables.requestId !== saveSeqRef.current) return;
-      lastSavedRef.current = data.notes;
+      lastSavedRef.current = savedNotes;
       setSavedVisible(true);
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       savedTimerRef.current = setTimeout(() => setSavedVisible(false), 1800);
