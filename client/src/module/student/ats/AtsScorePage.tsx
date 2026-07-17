@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
@@ -281,9 +281,18 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
   });
 
   const loading = analyzeMutation.isPending;
-  const previewUrl = useMemo(() => {
-    if (!file) return "";
-    return URL.createObjectURL(file);
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl("");
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
   }, [file]);
 
   const validateFile = (file: File): string | null => {
