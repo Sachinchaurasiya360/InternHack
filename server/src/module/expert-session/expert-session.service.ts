@@ -8,8 +8,8 @@ type DbClient = Prisma.TransactionClient | typeof prisma;
 
 const IST_OFFSET_MINUTES = 330; // UTC+5:30, fixed offset (India has no DST)
 const SLOT_DURATION_MINUTES = 30;
-const BUSINESS_START_HOUR = 10; // 10:00 IST
-const BUSINESS_END_HOUR = 18; // last slot starts 17:30, ends 18:00 IST
+const BUSINESS_START_HOUR = 0; // 00:00 IST (bookable the entire day)
+const BUSINESS_END_HOUR = 24; // last slot starts 23:30, ends 00:00 IST
 const LOOKAHEAD_DAYS = 14;
 const MIN_LEAD_HOURS = 12;
 // How long a PENDING_PAYMENT hold blocks a slot's availability before it's
@@ -64,7 +64,7 @@ function generateSlotCandidates(now: Date): Date[] {
   for (let dayOffset = 0; dayOffset < LOOKAHEAD_DAYS; dayOffset++) {
     const dayAnchor = istWallClockToUtc(nowIst.year, nowIst.month, nowIst.date + dayOffset, 12, 0);
     const dayIst = toIstParts(dayAnchor);
-    if (dayIst.day === 0 || dayIst.day === 6) continue; // skip weekends
+    // Every day is bookable, including Saturday and Sunday.
 
     for (let hour = BUSINESS_START_HOUR; hour < BUSINESS_END_HOUR; hour++) {
       for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
@@ -150,6 +150,7 @@ export class ExpertSessionService {
       experienceLevel?: string;
       focusAreas: string[];
       notes?: string;
+      recordingConsent?: boolean;
     },
     now: Date = new Date(),
   ) {
@@ -192,6 +193,7 @@ export class ExpertSessionService {
               experienceLevel: input.experienceLevel,
               focusAreas: input.focusAreas,
               notes: input.notes,
+              recordingConsent: input.recordingConsent ?? true,
               status: "PENDING_PAYMENT",
             },
           });
@@ -270,7 +272,8 @@ export class ExpertSessionService {
         <p><strong>Target role:</strong> ${updated.targetRole ?? "Not specified"}</p>
         <p><strong>Experience level:</strong> ${updated.experienceLevel ?? "Not specified"}</p>
         <p><strong>Focus areas:</strong> ${updated.focusAreas.join(", ") || "Not specified"}</p>
-        <p><strong>Notes:</strong> ${updated.notes ?? "None"}</p>`,
+        <p><strong>Notes:</strong> ${updated.notes ?? "None"}</p>
+        <p><strong>Recording consent:</strong> ${updated.recordingConsent ? "Yes — agreed to be recorded" : "No — declined recording"}</p>`,
     }).catch((err) => console.error("[ExpertSession] Failed to send admin alert email:", err));
 
     if (updated.user.email) {
@@ -279,7 +282,10 @@ export class ExpertSessionService {
         subject: "Your expert mock interview session is confirmed",
         html: `<h2>Session Confirmed</h2>
           <p>Your expert mock interview session is booked for <strong>${scheduledLabel} IST</strong>.</p>
-          <p>You'll receive the meeting link by email shortly before your session.</p>`,
+          <p>You'll receive the meeting link by email shortly before your session.</p>
+          <p>${updated.recordingConsent
+            ? "You agreed to have this interview recorded so others can watch and learn from it. You can change your mind at the start of the session."
+            : "You chose not to have this interview recorded."}</p>`,
       }).catch((err) => console.error("[ExpertSession] Failed to send student confirmation email:", err));
     }
 

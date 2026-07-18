@@ -1,8 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { runJobCleanup } from "./job-cleanup.cron.js";
-import { runDeadlineAlerts } from "./deadline-alerts.cron.js";
 import { runGrantDeadlineAlerts } from "./grant-deadline-alerts.cron.js";
-import { runOpensourceRepoStatsRefresh } from "./opensource-repo-stats.cron.js";
 import { runAiPipelineDaily } from "./internhack-ai.cron.js";
 import { sendWeeklyRoadmapDigests } from "./roadmap-weekly-digest.js";
 import { drainScheduledEmails } from "./scheduled-email-worker.js";
@@ -53,7 +51,6 @@ interface CronJob {
 const LIGHT_JOBS: CronJob[] = [
   { name: "subscription-expiry", lockKey: "subscription-expiry", run: runSubscriptionExpiry },
   { name: "job-cleanup", lockKey: "job-cleanup", run: runJobCleanup },
-  { name: "deadline-alerts", lockKey: "deadline-alerts", run: runDeadlineAlerts },
   { name: "grant-deadline-alerts", lockKey: "grant-deadline-alerts", run: runGrantDeadlineAlerts },
   { name: "peer-mock-interview-reminders", lockKey: "peer-mock-interview-reminders", run: runPeerMockInterviewReminders },
   { name: "follow-up-emails", lockKey: "scheduled-emails-followup", run: runFollowUpEmails },
@@ -67,7 +64,6 @@ const HEAVY_JOBS: CronJob[] = [
   { name: "scraper", lockKey: "external-job-scraper", run: () => scraperController.getService().runOnce() },
   { name: "signals", lockKey: "signals-ingestion", run: () => signalsController.getService().runOnce() },
   { name: "ai-pipeline", lockKey: "internhack-ai-daily", run: runAiPipelineDaily },
-  { name: "opensource-repo-stats", lockKey: "opensource-repo-stats-refresh", run: runOpensourceRepoStatsRefresh },
   // Weekly: roadmap progress digest ran Mondays.
   { name: "roadmap-weekly-digest", lockKey: "roadmap-weekly-digest", onlyOnUtcDay: 1, run: sendWeeklyRoadmapDigests },
 ];

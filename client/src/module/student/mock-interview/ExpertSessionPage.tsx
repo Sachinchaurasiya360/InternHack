@@ -28,9 +28,19 @@ const FOCUS_AREA_OPTIONS = [
   "System Design",
   "Frontend",
   "Backend",
+  "Full Stack",
+  "DevOps",
+  "Cloud",
+  "Mobile",
+  "Data Analytics",
+  "Data Science",
+  "Machine Learning",
   "Behavioral",
   "Resume Review",
 ];
+
+// Server caps focusAreas at 10 (expert-session.validation.ts).
+const MAX_FOCUS_AREAS = 10;
 
 const EXPERIENCE_LEVELS = [
   { value: "STUDENT", label: "Student, no experience" },
@@ -85,6 +95,7 @@ export default function ExpertSessionPage() {
   const [experienceLevel, setExperienceLevel] = useState<string>("");
   const [focusAreas, setFocusAreas] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+  const [recordingConsent, setRecordingConsent] = useState(true);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
@@ -190,6 +201,7 @@ export default function ExpertSessionPage() {
         experienceLevel: experienceLevel || undefined,
         focusAreas,
         notes: notes.trim() || undefined,
+        recordingConsent,
       });
       return res.data as { checkoutUrl: string; expertSessionId: number };
     },
@@ -208,7 +220,15 @@ export default function ExpertSessionPage() {
   const canProceedFromPrep = experienceLevel !== "" && focusAreas.length > 0;
 
   const toggleFocusArea = (area: string) => {
-    setFocusAreas((prev) => (prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]));
+    if (focusAreas.includes(area)) {
+      setFocusAreas((prev) => prev.filter((a) => a !== area));
+      return;
+    }
+    if (focusAreas.length >= MAX_FOCUS_AREAS) {
+      toast.error(`Pick up to ${MAX_FOCUS_AREAS} focus areas`);
+      return;
+    }
+    setFocusAreas((prev) => [...prev, area]);
   };
 
   const stepIndex = STEPS.findIndex((s) => s.id === step);
@@ -346,6 +366,18 @@ export default function ExpertSessionPage() {
                     className="bg-transparent border border-stone-200 dark:border-white/10 text-stone-900 dark:text-stone-50 text-sm"
                   />
                 </div>
+
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={recordingConsent}
+                    onChange={(e) => setRecordingConsent(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-lime-400 cursor-pointer"
+                  />
+                  <span className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
+                    I agree to record my interview so that others can watch and improve it.
+                  </span>
+                </label>
 
                 <div className="flex justify-end pt-2">
                   <Button

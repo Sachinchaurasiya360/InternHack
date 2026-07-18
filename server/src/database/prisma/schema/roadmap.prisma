@@ -335,6 +335,7 @@ model expertSession {
   experienceLevel String?
   focusAreas      String[]            @default([])
   notes           String?             @db.Text
+  recordingConsent Boolean            @default(true)
   meetingLink     String?             @db.Text
   dodoCheckoutUrl String?
   dodoPaymentId   String?             @unique

@@ -21,7 +21,7 @@ export class ExpertSessionController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const { scheduledAt, targetRole, experienceLevel, focusAreas, notes } = req.body;
+      const { scheduledAt, targetRole, experienceLevel, focusAreas, notes, recordingConsent } = req.body;
 
       const session = await service.bookSession(req.user.id, {
         scheduledAt: new Date(scheduledAt),
@@ -29,6 +29,7 @@ export class ExpertSessionController {
         experienceLevel,
         focusAreas,
         notes,
+        recordingConsent: recordingConsent !== false,
       });
 
       try {

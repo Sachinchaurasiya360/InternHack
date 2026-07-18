@@ -1,27 +1,43 @@
 import type { ExtensionProfile, JobContext } from "./types";
 
-const API_BASE = "http://localhost:3000/api";
 const TOKEN_KEY = "internhack_extension_token";
+const API_BASE_KEY = "internhack_api_base";
+// Fallback when the extension has not yet learned the API base from a handoff.
+const DEFAULT_API_BASE = "https://api.internhack.xyz/api";
 
 async function getToken(): Promise<string | null> {
   const result = await chrome.storage.local.get(TOKEN_KEY);
   return typeof result[TOKEN_KEY] === "string" ? result[TOKEN_KEY] : null;
 }
 
-export async function setToken(token: string) {
-  await chrome.storage.local.set({ [TOKEN_KEY]: token });
+async function getApiBase(): Promise<string> {
+  const result = await chrome.storage.local.get(API_BASE_KEY);
+  const value = result[API_BASE_KEY];
+  return typeof value === "string" && value ? value : DEFAULT_API_BASE;
 }
 
-export async function clearToken() {
-  await chrome.storage.local.remove(TOKEN_KEY);
+// The web app hands off a session token (and the API base it is talking to) via
+// the site bridge content script, so the extension authenticates automatically
+// while the user is signed in to InternHack. No manual token entry.
+export async function setSession(token: string, apiBase?: string) {
+  const data: Record<string, string> = { [TOKEN_KEY]: token };
+  if (apiBase) data[API_BASE_KEY] = apiBase;
+  await chrome.storage.local.set(data);
+}
+
+export async function clearSession() {
+  await chrome.storage.local.remove([TOKEN_KEY, API_BASE_KEY]);
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const token = await getToken();
+  const [token, apiBase] = await Promise.all([getToken(), getApiBase()]);
+  if (!token) {
+    throw new Error("Not connected. Open InternHack while signed in to connect.");
+  }
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json");
-  if (token) headers.set("Authorization", `Bearer ${token}`);
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+  headers.set("Authorization", `Bearer ${token}`);
+  const res = await fetch(`${apiBase}${path}`, { ...init, headers });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.message || body.error || `Request failed: ${res.status}`);

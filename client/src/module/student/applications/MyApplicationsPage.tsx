@@ -13,13 +13,13 @@ import {
   X,
   Trash2,
   PlugZap,
-  Copy,
   Download,
+  Loader2,
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
-import api from "../../../lib/axios";
+import api, { API_BASE } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type {
   ApplicationTrackerStats,
@@ -40,7 +40,7 @@ type TrackerCache = { applications: TrackedApplication[] };
 const STATUS_LABELS: Record<TrackedApplicationStatus, string> = {
   SAVED: "Saved",
   APPLIED: "Applied",
-  OA: "Online assessment",
+  OA: "Assessment",
   PHONE_SCREEN: "Phone screen",
   INTERVIEW: "Interview",
   OFFER: "Offer",
@@ -129,11 +129,8 @@ const ApplicationCard = React.memo(function ApplicationCard({
 }) {
   const appliedAt = app.appliedAt ?? app.createdAt;
   return (
-    <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
-      <div className="absolute top-4 right-4">
-        <StatusTag status={app.status} />
-      </div>
-      <div className="flex items-start gap-4 pr-28">
+    <div className="group relative flex flex-col h-full bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
+      <div className="flex items-start gap-3">
         <CompanyMark name={app.company || "?"} />
         <div className="flex-1 min-w-0">
           <RoleTitle app={app} />
@@ -149,6 +146,9 @@ const ApplicationCard = React.memo(function ApplicationCard({
               </span>
             )}
           </div>
+        </div>
+        <div className="shrink-0">
+          <StatusTag status={app.status} />
         </div>
       </div>
 
@@ -198,8 +198,11 @@ export default function MyApplicationsPage() {
   const [pendingDelete, setPendingDelete] = useState<TrackedApplication | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company">("newest");
   const [statusFilter, setStatusFilter] = useState<"ALL" | TrackedApplicationStatus>("ALL");
-  const [extensionToken, setExtensionToken] = useState<string | null>(null);
   const [showExtensionSetup, setShowExtensionSetup] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
+  const [extLive, setExtLive] = useState(false);
+  const [extConnected, setExtConnected] = useState(false);
 
   const clearFilters = useClearFilters([
     () => setSearch(""),
@@ -261,6 +264,7 @@ export default function MyApplicationsPage() {
 
   const totalAll = applications.length;
   const totalFiltered = filtered.length;
+  const extensionAvailable = extLive || extConnected || extensionDetected;
 
   const deleteMutation = useMutation({
     mutationFn: async (app: TrackedApplication) => {
@@ -286,22 +290,74 @@ export default function MyApplicationsPage() {
     },
   });
 
-  const extensionSession = useMutation({
-    mutationFn: async () => {
-      const res = await api.post("/extension/session");
-      return res.data as { token: string; expiresInSeconds: number };
-    },
-    onSuccess: (result) => {
-      setExtensionToken(result.token);
-      toast.success("Extension token created");
-    },
-    onError: () => toast.error("Failed to create extension token"),
-  });
+  // Extension handoff: if the site bridge (content script) is present, hand it a
+  // fresh session token so the extension authenticates automatically, no manual
+  // token or copy/paste. See extension/src/content/bridge.ts.
+  useEffect(() => {
+    const WEB_SOURCE = "internhack-web";
+    const EXT_SOURCE = "internhack-extension";
+    const origin = window.location.origin;
+    const post = (message: Record<string, unknown>) =>
+      window.postMessage({ source: WEB_SOURCE, ...message }, origin);
 
-  const copyToken = async () => {
-    if (!extensionToken) return;
-    await navigator.clipboard.writeText(extensionToken);
-    toast.success("Token copied");
+    let cancelled = false;
+    const handoff = async () => {
+      try {
+        const res = await api.post("/extension/session");
+        if (cancelled) return;
+        post({ type: "INTERNHACK_CONNECT", token: res.data.token, apiBase: API_BASE });
+      } catch {
+        /* not signed in / offline: nothing to hand off */
+      }
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.source !== window || event.origin !== origin) return;
+      const data = event.data as { source?: string; type?: string } | null;
+      if (!data || typeof data !== "object" || data.source !== EXT_SOURCE) return;
+      if (data.type === "READY") {
+        setExtLive(true);
+        void handoff();
+      } else if (data.type === "CONNECTED") {
+        setExtConnected(true);
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+    // Announce; the bridge (if installed) replies READY, which flips extLive.
+    // This also covers a bridge that injected before this listener attached.
+    post({ type: "WEB_READY" });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("message", onMessage);
+    };
+  }, []);
+
+  // Fetch the bundle as a blob so we can show a processing state and only
+  // reveal the install steps once the download has actually finished.
+  const handleDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const res = await fetch("/internhack-extension.zip");
+      if (!res.ok) throw new Error("download failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "internhack-extension.zip";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setDownloaded(true);
+      toast.success("Extension downloaded");
+    } catch {
+      toast.error("Failed to download extension");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleRemove = useCallback((app: TrackedApplication) => {
@@ -380,11 +436,11 @@ export default function MyApplicationsPage() {
           <StatItem label="Response" value={`${stats?.responseRate ?? 0}%`} />
         </div>
         <div className="shrink-0">
-          {extensionDetected ? (
+          {extensionAvailable ? (
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
                 <span className="h-1.5 w-1.5 bg-lime-400" />
-                Extension active
+                {extConnected ? "Extension connected" : "Extension active"}
               </span>
               {!showExtensionSetup && (
                 <Button
@@ -425,22 +481,20 @@ export default function MyApplicationsPage() {
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <Button asChild variant="outline" size="sm" className="gap-1.5">
-                <a href="/internhack-extension.zip" download>
-                  <Download className="w-3.5 h-3.5" />
-                  Download extension
-                </a>
-              </Button>
               <Button
                 type="button"
-                variant="mono"
+                variant="outline"
                 size="sm"
                 className="gap-1.5"
-                onClick={() => extensionSession.mutate()}
-                disabled={extensionSession.isPending}
+                onClick={handleDownload}
+                disabled={isDownloading}
               >
-                <PlugZap className="w-3.5 h-3.5" />
-                {extensionSession.isPending ? "Creating..." : "Connect"}
+                {isDownloading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
+                {isDownloading ? "Downloading..." : "Download extension"}
               </Button>
               <button
                 type="button"
@@ -453,34 +507,32 @@ export default function MyApplicationsPage() {
             </div>
           </div>
 
-          {extensionToken && (
+          {downloaded && (
             <div className="mt-4 border-t border-stone-200 dark:border-white/10 pt-4">
               <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                Set up locally
+                Install locally
               </p>
-              <ol className="mt-2 space-y-1 text-xs text-stone-500 leading-relaxed list-decimal pl-4">
-                <li>Unzip the downloaded file.</li>
+              <ol className="mt-2 space-y-1.5 text-xs text-stone-500 leading-relaxed list-decimal pl-4">
                 <li>
-                  Open{" "}
-                  <code className="text-stone-700 dark:text-stone-300">chrome://extensions</code>{" "}
-                  and turn on Developer mode.
+                  Unzip{" "}
+                  <code className="text-stone-700 dark:text-stone-300">internhack-extension.zip</code>.
                 </li>
                 <li>
-                  Click Load unpacked and select the{" "}
+                  Open{" "}
+                  <code className="text-stone-700 dark:text-stone-300">chrome://extensions/</code>{" "}
+                  in your browser.
+                </li>
+                <li>Turn on Developer mode (toggle, top-right).</li>
+                <li>
+                  Click Load unpacked and select the unzipped{" "}
                   <code className="text-stone-700 dark:text-stone-300">internhack-extension</code>{" "}
                   folder.
                 </li>
-                <li>Open the extension popup and paste the token below.</li>
+                <li>
+                  Open the InternHack Autofill extension. It signs in automatically from
+                  your InternHack session, no token needed.
+                </li>
               </ol>
-              <textarea
-                readOnly
-                value={extensionToken}
-                className="mt-3 w-full h-20 resize-none rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950 p-3 text-xs text-stone-700 dark:text-stone-300 focus:outline-none"
-              />
-              <Button type="button" variant="mono" size="sm" className="mt-3 gap-1.5" onClick={copyToken}>
-                <Copy className="w-3.5 h-3.5" />
-                Copy token
-              </Button>
             </div>
           )}
         </div>
@@ -591,10 +643,11 @@ export default function MyApplicationsPage() {
 
           return (
             <>
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 {pageItems.map((app, i) => (
                   <motion.div
                     key={app.id}
+                    className="h-full"
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03, duration: 0.25 }}

@@ -1,9 +1,9 @@
 import {
-  clearToken,
+  clearSession,
   detectPage,
   getProfile,
   logEvent,
-  setToken,
+  setSession,
   supportRequest,
   trackApplication,
 } from "./lib/api";
@@ -16,13 +16,16 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         sendResponse(await getProfile());
         return;
       }
-      if (message.type === "SET_TOKEN") {
-        await setToken(String(message.token || ""));
+      if (message.type === "SET_SESSION") {
+        await setSession(
+          String(message.token || ""),
+          typeof message.apiBase === "string" ? message.apiBase : undefined,
+        );
         sendResponse({ success: true });
         return;
       }
-      if (message.type === "CLEAR_TOKEN") {
-        await clearToken();
+      if (message.type === "CLEAR_SESSION") {
+        await clearSession();
         sendResponse({ success: true });
         return;
       }
