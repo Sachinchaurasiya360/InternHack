@@ -266,32 +266,6 @@ export class OpensourceService {
     return { owner: match[1], name: match[2].replace(".git", "") };
   }
 
-  async refreshStaleRepoStats(batchSize = 50) {
-    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-    const staleRepos = await prisma.opensourceRepo.findMany({
-      where: {
-        url: { contains: "github.com" },
-        OR: [
-          { githubStatsUpdatedAt: null },
-          { githubStatsUpdatedAt: { lt: sixHoursAgo } },
-        ],
-      },
-      take: batchSize,
-      select: { id: true, url: true, name: true },
-    });
-
-    let updated = 0;
-    for (const repo of staleRepos) {
-      try {
-        await this.updateGithubStats(repo.id, repo.url, repo.name);
-        updated++;
-      } catch (err) {
-        console.error(`[github] cron stats refresh failed for repo ${repo.id}:`, err);
-      }
-    }
-    return { scanned: staleRepos.length, updated };
-  }
-
   async getGsocOrgs(query: GsocOrgsQuery & { tech?: string }) {
     const { page, limit, search, category, tech, year } = query;
     const skip = (page - 1) * limit;

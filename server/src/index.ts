@@ -68,8 +68,6 @@ import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/sche
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
-import { startOpensourceRepoStatsCron, stopOpensourceRepoStatsCron } from "./cron/opensource-repo-stats.cron.js";
-import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { startGrantDeadlineAlertCron, stopGrantDeadlineAlertCron } from "./cron/grant-deadline-alerts.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
@@ -424,14 +422,6 @@ const server = app.listen(PORT, async () => {
     fn: () => stopJobCleanupCron(),
   });
 
-  // Start OSS deadline alert cron (daily at 9 AM)
-  startDeadlineAlertCron();
-  shutdownManager.register({
-    name: "Deadline Alert Cron",
-    priority: 10,
-    fn: () => stopDeadlineAlertCron(),
-  });
-
   // Start grant tracker deadline alert cron (daily at 9 AM)
   startGrantDeadlineAlertCron();
   shutdownManager.register({
@@ -455,23 +445,6 @@ const server = app.listen(PORT, async () => {
     });
   } else {
     logger.info("Peer mock interview reminders cron disabled on this process");
-  }
-
-  // Env var names kept as-is (RUN_GITHUB_CONTRIBUTIONS_CRON / GITHUB_CONTRIBUTIONS_CRON)
-  // for deploy compatibility with existing Vercel config, even though this cron
-  // no longer does any GitHub sync — it only refreshes opensource repo stats now.
-  const runOpensourceRepoStatsCron =
-    process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
-    (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
-  if (runOpensourceRepoStatsCron) {
-    startOpensourceRepoStatsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
-    shutdownManager.register({
-      name: "Opensource Repo Stats Cron",
-      priority: 10,
-      fn: () => stopOpensourceRepoStatsCron(),
-    });
-  } else {
-    logger.info("Opensource repo stats cron disabled on this process");
   }
 
   // Register Prisma disconnect
