@@ -81,6 +81,7 @@ peerMockInterviewRouter.post(
   "/pairings/:id/complete",
   authMiddleware,
   requireRole("STUDENT"),
+  validateBody(z.object({})),
   (req, res) => controller.markCompleted(req, res)
 );
 
