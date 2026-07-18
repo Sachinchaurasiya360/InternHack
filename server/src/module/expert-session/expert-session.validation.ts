@@ -6,6 +6,7 @@ export const bookExpertSessionSchema = z.object({
   experienceLevel: z.enum(["STUDENT", "FRESHER", "0_2_YEARS", "2_PLUS_YEARS"]).optional(),
   focusAreas: z.array(z.string().trim().max(60)).max(10).default([]),
   notes: z.string().trim().max(1000).optional(),
+  recordingConsent: z.boolean().default(true),
 });
 
 export const availabilityBlockSchema = z.object({

@@ -150,6 +150,7 @@ export class ExpertSessionService {
       experienceLevel?: string;
       focusAreas: string[];
       notes?: string;
+      recordingConsent?: boolean;
     },
     now: Date = new Date(),
   ) {
@@ -192,6 +193,7 @@ export class ExpertSessionService {
               experienceLevel: input.experienceLevel,
               focusAreas: input.focusAreas,
               notes: input.notes,
+              recordingConsent: input.recordingConsent ?? true,
               status: "PENDING_PAYMENT",
             },
           });
@@ -270,7 +272,8 @@ export class ExpertSessionService {
         <p><strong>Target role:</strong> ${updated.targetRole ?? "Not specified"}</p>
         <p><strong>Experience level:</strong> ${updated.experienceLevel ?? "Not specified"}</p>
         <p><strong>Focus areas:</strong> ${updated.focusAreas.join(", ") || "Not specified"}</p>
-        <p><strong>Notes:</strong> ${updated.notes ?? "None"}</p>`,
+        <p><strong>Notes:</strong> ${updated.notes ?? "None"}</p>
+        <p><strong>Recording consent:</strong> ${updated.recordingConsent ? "Yes — agreed to be recorded" : "No — declined recording"}</p>`,
     }).catch((err) => console.error("[ExpertSession] Failed to send admin alert email:", err));
 
     if (updated.user.email) {
@@ -279,7 +282,10 @@ export class ExpertSessionService {
         subject: "Your expert mock interview session is confirmed",
         html: `<h2>Session Confirmed</h2>
           <p>Your expert mock interview session is booked for <strong>${scheduledLabel} IST</strong>.</p>
-          <p>You'll receive the meeting link by email shortly before your session.</p>`,
+          <p>You'll receive the meeting link by email shortly before your session.</p>
+          <p>${updated.recordingConsent
+            ? "You agreed to have this interview recorded so others can watch and learn from it. You can change your mind at the start of the session."
+            : "You chose not to have this interview recorded."}</p>`,
       }).catch((err) => console.error("[ExpertSession] Failed to send student confirmation email:", err));
     }
 
