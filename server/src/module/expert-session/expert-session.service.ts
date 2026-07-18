@@ -8,8 +8,8 @@ type DbClient = Prisma.TransactionClient | typeof prisma;
 
 const IST_OFFSET_MINUTES = 330; // UTC+5:30, fixed offset (India has no DST)
 const SLOT_DURATION_MINUTES = 30;
-const BUSINESS_START_HOUR = 10; // 10:00 IST
-const BUSINESS_END_HOUR = 18; // last slot starts 17:30, ends 18:00 IST
+const BUSINESS_START_HOUR = 0; // 00:00 IST (bookable the entire day)
+const BUSINESS_END_HOUR = 24; // last slot starts 23:30, ends 00:00 IST
 const LOOKAHEAD_DAYS = 14;
 const MIN_LEAD_HOURS = 12;
 // How long a PENDING_PAYMENT hold blocks a slot's availability before it's
@@ -64,7 +64,7 @@ function generateSlotCandidates(now: Date): Date[] {
   for (let dayOffset = 0; dayOffset < LOOKAHEAD_DAYS; dayOffset++) {
     const dayAnchor = istWallClockToUtc(nowIst.year, nowIst.month, nowIst.date + dayOffset, 12, 0);
     const dayIst = toIstParts(dayAnchor);
-    if (dayIst.day === 0 || dayIst.day === 6) continue; // skip weekends
+    // Every day is bookable, including Saturday and Sunday.
 
     for (let hour = BUSINESS_START_HOUR; hour < BUSINESS_END_HOUR; hour++) {
       for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {

@@ -42,21 +42,24 @@ describe("ExpertSessionService.getAvailableSlots", () => {
     service = new ExpertSessionService();
   });
 
-  it("only generates slots on weekdays within business hours (10:00-18:00 IST, 30-min increments)", async () => {
+  it("generates all-day slots every day of the week (30-min increments)", async () => {
     const slots = await service.getAvailableSlots(REFERENCE_NOW);
     expect(slots.length).toBeGreaterThan(0);
 
+    const hours = new Set<number>();
+    const days = new Set<number>();
     for (const slot of slots) {
       const ist = new Date(slot.getTime() + 330 * 60_000);
-      const day = ist.getUTCDay();
-      const hour = ist.getUTCHours();
-      const minute = ist.getUTCMinutes();
-      expect(day).not.toBe(0); // not Sunday
-      expect(day).not.toBe(6); // not Saturday
-      expect(hour).toBeGreaterThanOrEqual(10);
-      expect(hour).toBeLessThan(18);
-      expect([0, 30]).toContain(minute);
+      expect([0, 30]).toContain(ist.getUTCMinutes());
+      hours.add(ist.getUTCHours());
+      days.add(ist.getUTCDay());
     }
+    // The entire day is bookable now, not just 10:00-18:00 IST.
+    expect([...hours].some((h) => h < 10)).toBe(true);
+    expect([...hours].some((h) => h >= 18)).toBe(true);
+    // Weekends are bookable: the 14-day window from a Monday spans both.
+    expect(days.has(0)).toBe(true); // Sunday
+    expect(days.has(6)).toBe(true); // Saturday
   });
 
   it("excludes slots less than 12 hours from now", async () => {
