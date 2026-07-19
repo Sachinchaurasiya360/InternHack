@@ -100,6 +100,7 @@ export default function ExpertSessionPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
   const [failedNotice, setFailedNotice] = useState(false);
+  const [confirmTimeout, setConfirmTimeout] = useState(false);
   const dodoInitialized = useRef(false);
   const bookingIdRef = useRef<number | null>(null);
 
@@ -156,7 +157,13 @@ export default function ExpertSessionPage() {
           // ignore transient polling errors
         }
       }
+      // Webhook confirmation didn't land within the poll window. The payment did
+      // go through (we only poll after checkout.status === "succeeded"), so surface
+      // a "finalizing" notice with a manual recheck instead of silently dropping
+      // the user back onto the pay screen as if nothing happened.
       setPaying(false);
+      setConfirmTimeout(true);
+      queryClient.invalidateQueries({ queryKey: queryKeys.expertSession.mySessions() });
     },
     [queryClient],
   );
@@ -173,8 +180,13 @@ export default function ExpertSessionPage() {
         if (event.event_type === "checkout.status") {
           const status = (event.data?.message as { status?: string })?.status;
           if (status === "succeeded" && bookingIdRef.current) {
+            // Dismiss the Dodo overlay ourselves — this flow confirms in-app by
+            // polling (no return_url redirect), so nothing else closes it. Without
+            // this, the "Session booked!" step renders behind a stuck overlay.
+            DodoPayments.Checkout.close();
             void pollStatus(bookingIdRef.current);
           } else if (status === "failed") {
+            DodoPayments.Checkout.close();
             setPaying(false);
             setFailedNotice(true);
           }
@@ -208,6 +220,7 @@ export default function ExpertSessionPage() {
     onSuccess: (data) => {
       bookingIdRef.current = data.expertSessionId;
       setFailedNotice(false);
+      setConfirmTimeout(false);
       setPaying(true);
       DodoPayments.Checkout.open({ checkoutUrl: data.checkoutUrl });
     },
@@ -516,9 +529,23 @@ export default function ExpertSessionPage() {
                     </p>
                   </div>
 
+                  {paying && (
+                    <div className="rounded-md border border-lime-200 bg-lime-50 px-4 py-3 text-xs text-lime-700 dark:border-lime-400/30 dark:bg-lime-400/10 dark:text-lime-300 flex items-center gap-2">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                      Confirming your payment. This only takes a few seconds.
+                    </div>
+                  )}
+
                   {failedNotice && (
                     <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-300">
                       Payment did not complete. You can try again below.
+                    </div>
+                  )}
+
+                  {confirmTimeout && (
+                    <div className="rounded-md border border-stone-200 bg-stone-50 px-4 py-3 text-xs text-stone-600 dark:border-white/10 dark:bg-white/5 dark:text-stone-300">
+                      Payment received. We're finalizing your booking, this can take a moment. It will
+                      appear under Your sessions shortly, so there's no need to pay again.
                     </div>
                   )}
 
@@ -542,11 +569,22 @@ export default function ExpertSessionPage() {
                     <Button
                       variant="primary"
                       disabled={paying || checkoutMutation.isPending}
-                      onClick={() => checkoutMutation.mutate()}
+                      onClick={
+                        confirmTimeout
+                          ? () => {
+                              if (!bookingIdRef.current) return;
+                              setConfirmTimeout(false);
+                              setPaying(true);
+                              void pollStatus(bookingIdRef.current);
+                            }
+                          : () => checkoutMutation.mutate()
+                      }
                       className="bg-lime-400 text-stone-950 hover:bg-lime-300 disabled:opacity-60"
                     >
                       {paying || checkoutMutation.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : confirmTimeout ? (
+                        "Check booking status"
                       ) : (
                         <>
                           <IndianRupee className="w-3.5 h-3.5" />

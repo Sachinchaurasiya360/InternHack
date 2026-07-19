@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { DodoPaymentsError } from "dodopayments";
 import { ExpertSessionService } from "./expert-session.service.js";
 import { PaymentService } from "../payment/payment.service.js";
 
@@ -49,6 +50,16 @@ export class ExpertSessionController {
         throw checkoutErr;
       }
     } catch (err: any) {
+      // A payment-provider failure (e.g. Dodo returning 401 for a bad/rotated API
+      // key) is a server-side misconfiguration, not a client auth problem. Never
+      // mirror the provider's status to the browser: the global axios interceptor
+      // logs the user out on any 401, so passing Dodo's 401 through would silently
+      // sign the student out mid-checkout. Surface it as 502 and log the real cause.
+      if (err instanceof DodoPaymentsError) {
+        console.error("[ExpertSession] Payment provider error during checkout:", err);
+        res.status(502).json({ message: "Payment is temporarily unavailable. Please try again shortly." });
+        return;
+      }
       res.status(err.status || 500).json({ message: err.message || "Failed to start checkout" });
     }
   }

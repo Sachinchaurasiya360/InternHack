@@ -186,10 +186,15 @@ export default function CheckoutPage() {
         if (event.event_type === "checkout.status") {
           const status = (event.data?.message as { status?: string })?.status;
           if (status === "succeeded") {
+            // Close the overlay immediately; confirmation happens in-app by polling.
+            // Otherwise it lingers over the page for the poll's duration (and stays
+            // stuck if the poll times out before we navigate away).
+            DodoPayments.Checkout.close();
             setPaymentStatus("success");
             setLoading(null);
             pollSubscription();
           } else if (status === "failed") {
+            DodoPayments.Checkout.close();
             setPaymentStatus("failed");
             setLoading(null);
           }
