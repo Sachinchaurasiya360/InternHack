@@ -14,6 +14,7 @@ vi.mock("../database/db.js", () => ({
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
       delete: vi.fn(),
       deleteMany: vi.fn(),
     },
@@ -163,8 +164,9 @@ describe("ExpertSessionService booking lifecycle", () => {
 
   it("confirmBooking marks the session SCHEDULED and sends admin + student emails", async () => {
     const emailUtils = await import("../utils/email.utils.js");
-    vi.mocked(prisma.expertSession.findUnique).mockResolvedValue({ id: 5 } as any);
-    vi.mocked(prisma.expertSession.update).mockResolvedValue({
+    // The atomic transition succeeds (one row flipped PENDING_PAYMENT -> SCHEDULED).
+    vi.mocked(prisma.expertSession.updateMany).mockResolvedValue({ count: 1 } as any);
+    vi.mocked(prisma.expertSession.findUnique).mockResolvedValue({
       id: 5,
       scheduledAt: new Date("2026-08-05T04:30:00.000Z"),
       targetRole: "SDE",
@@ -176,21 +178,31 @@ describe("ExpertSessionService booking lifecycle", () => {
 
     await service.confirmBooking("dodo_session_123");
 
-    expect(prisma.expertSession.update).toHaveBeenCalledWith({
-      where: { id: 5 },
+    expect(prisma.expertSession.updateMany).toHaveBeenCalledWith({
+      where: { dodoPaymentId: "dodo_session_123", status: "PENDING_PAYMENT" },
       data: { status: "SCHEDULED" },
-      include: { user: { select: { name: true, email: true } } },
     });
     expect(emailUtils.sendEmail).toHaveBeenCalledTimes(2);
   });
 
   it("confirmBooking is a no-op when no session matches the payment id", async () => {
     const emailUtils = await import("../utils/email.utils.js");
-    vi.mocked(prisma.expertSession.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.expertSession.updateMany).mockResolvedValue({ count: 0 } as any);
 
     await service.confirmBooking("unknown_session");
 
-    expect(prisma.expertSession.update).not.toHaveBeenCalled();
+    expect(prisma.expertSession.findUnique).not.toHaveBeenCalled();
+    expect(emailUtils.sendEmail).not.toHaveBeenCalled();
+  });
+
+  it("confirmBooking is idempotent: a redelivered webhook sends no duplicate emails", async () => {
+    const emailUtils = await import("../utils/email.utils.js");
+    // Row is already SCHEDULED, so the conditional transition matches nothing.
+    vi.mocked(prisma.expertSession.updateMany).mockResolvedValue({ count: 0 } as any);
+
+    await service.confirmBooking("dodo_session_123");
+
+    expect(prisma.expertSession.findUnique).not.toHaveBeenCalled();
     expect(emailUtils.sendEmail).not.toHaveBeenCalled();
   });
 

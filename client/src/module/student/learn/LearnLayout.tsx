@@ -20,6 +20,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   sql: "SQL",
   dsa: "DSA",
   "dsa-foundations": "DSA Foundations",
+  "computer-networks": "Computer Networks",
   "level-0": "Level 0",
   "level-1": "Level 1",
   "level-2": "Level 2",

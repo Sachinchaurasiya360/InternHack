@@ -248,14 +248,22 @@ export class ExpertSessionService {
 
   /** Called from the payment webhook once the ₹49 checkout succeeds. */
   async confirmBooking(dodoPaymentId: string) {
-    const session = await prisma.expertSession.findUnique({ where: { dodoPaymentId } });
-    if (!session) return;
-
-    const updated = await prisma.expertSession.update({
-      where: { id: session.id },
+    // Atomically flip PENDING_PAYMENT -> SCHEDULED. Dodo delivers webhooks at
+    // least once (and we return 5xx on transient errors, which triggers a retry),
+    // so this guard is what stops a redelivery, or a concurrent delivery, from
+    // re-sending both confirmation emails and rewriting the row. Only the call
+    // that actually performs the transition (count === 1) goes on to notify.
+    const { count } = await prisma.expertSession.updateMany({
+      where: { dodoPaymentId, status: "PENDING_PAYMENT" },
       data: { status: "SCHEDULED" },
+    });
+    if (count === 0) return;
+
+    const updated = await prisma.expertSession.findUnique({
+      where: { dodoPaymentId },
       include: { user: { select: { name: true, email: true } } },
     });
+    if (!updated) return;
 
     const scheduledLabel = updated.scheduledAt.toLocaleString("en-US", {
       timeZone: "Asia/Kolkata",

@@ -57,6 +57,8 @@ const PlacementPrepPlansPage = lazyWithRetry(() => import("./module/student/lear
 const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignHubPage"));
 const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
 const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
+const ComputerNetworksHubPage = lazyWithRetry(() => import("./module/student/learn/computer-networks/ComputerNetworksHubPage"));
+const ComputerNetworksModulePage = lazyWithRetry(() => import("./module/student/learn/computer-networks/ComputerNetworksModulePage"));
 const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/YCCompanyDetailPage"));
 const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
@@ -371,6 +373,8 @@ function App() {
               <Route path="system-design" element={<SystemDesignHubPage />} />
               <Route path="system-design/:levelId" element={<SystemDesignLevelPage />} />
               <Route path="system-design/:levelId/:lessonSlug" element={<SystemDesignLessonPage />} />
+              <Route path="computer-networks" element={<ComputerNetworksHubPage />} />
+              <Route path="computer-networks/:moduleId" element={<ComputerNetworksModulePage />} />
               <Route path="aptitude" element={<AptitudeCategoriesPage />} />
               <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
               <Route path="aptitude/verbal-ability" element={<VerbalAbilityPage />} />
