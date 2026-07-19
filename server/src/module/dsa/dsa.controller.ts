@@ -373,6 +373,24 @@ export class DsaController {
     }
   }
 
+  async getTestCasesForRun(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) {
+        res.status(400).json({ message: "Invalid problem ID" });
+        return;
+      }
+      const testCases = await this.dsaService.getTestCasesForRun(problemId);
+      res.json({ testCases });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async executeCode(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
@@ -390,14 +408,15 @@ export class DsaController {
         return res
           .status(400)
           .json({ message: "Validation failed", errors: body.error.flatten() });
-      const { language, code } = body.data;
-      const result = await this.dsaService.executeCodeAgainstTestCases(
+      const { language, code, results } = body.data;
+      const result = await this.dsaService.submitExecutionResults(
         userId,
         problemId,
         language,
         code,
+        results,
       );
-      res.json(result);
+      res.json({ ...result, usage: (req as any).usageInfo });
     } catch (err) {
       next(err);
     }

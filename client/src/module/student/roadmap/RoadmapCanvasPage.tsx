@@ -1,20 +1,5 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import ReactFlow, {
-  Background,
-  BackgroundVariant,
-  Controls,
-  MiniMap,
-  type Node,
-  type Edge,
-  Position,
-  Handle,
-  type NodeProps,
-  ReactFlowProvider,
-  useNodesState,
-  useEdgesState,
-} from "reactflow";
-import "reactflow/dist/style.css";
 import { motion, AnimatePresence } from "framer-motion";
 import NumberFlow from "@number-flow/react";
 import {
@@ -32,13 +17,11 @@ import {
   ChevronRight,
   BookOpen,
   Pencil,
-  LayoutTemplate,
-  GitCommit,
-  Network,
   ChevronDown,
   ChevronUp,
   RefreshCw,
-  Sparkles,
+  Wand2,
+  Link2,
   TrendingUp,
   AlertTriangle,
   Users,
@@ -74,49 +57,50 @@ interface AnalyticsResponse {
   analytics: RoadmapEnrollmentAnalytics;
 }
 
-interface TopicNodeData {
-  topic: RoadmapTopic;
-  status: RoadmapTopicStatus;
-  bookmarked: boolean;
-  isNext: boolean;
-  isWeak: boolean;
-  index: number;
-  onClick: () => void;
-}
-
-interface SectionLabelData {
+interface SectionHeaderProps {
   title: string;
   index: number;
   total: number;
   completed: number;
-  isCollapsed?: boolean;
-  onToggle?: () => void;
+  isCollapsed: boolean;
+  onToggle: () => void;
   /** Present only on AI-generated roadmaps owned by the current user */
   onRegenerate?: () => void;
   isRegenerating?: boolean;
   aiRegeneratedAt?: string | null;
 }
 
-// ─── Custom node: section banner (decorative, no handles) ─────────────────
-function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
-  const pct =
-    data.total === 0 ? 0 : Math.round((data.completed / data.total) * 100);
-  const sectionDone = data.completed === data.total && data.total > 0;
-  const baseDelay = Math.min(data.index * 0.08, 0.4);
+// ─── Section banner: header for a group of topics ─────────────────────────
+function SectionHeader({
+  title,
+  index,
+  total,
+  completed,
+  isCollapsed,
+  onToggle,
+  onRegenerate,
+  isRegenerating,
+  aiRegeneratedAt,
+}: SectionHeaderProps) {
+  const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+  const sectionDone = completed === total && total > 0;
+  const baseDelay = Math.min(index * 0.06, 0.3);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: baseDelay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="select-none w-120"
+      className="select-none"
     >
       {/* Decorative spine break */}
-      <div className="flex items-center gap-2 mb-5 px-2">
-        <span className="h-1 w-1 rounded-full bg-stone-400 dark:bg-stone-600" />
-        <div className="h-px flex-1 border-t border-dashed border-stone-300 dark:border-stone-700" />
-        <span className="h-1 w-1 rounded-full bg-stone-400 dark:bg-stone-600" />
-      </div>
+      {index > 0 && (
+        <div className="flex items-center gap-2 mb-5 px-2">
+          <span className="h-1 w-1 rounded-full bg-stone-400 dark:bg-stone-600" />
+          <div className="h-px flex-1 border-t border-dashed border-stone-300 dark:border-stone-700" />
+          <span className="h-1 w-1 rounded-full bg-stone-400 dark:bg-stone-600" />
+        </div>
+      )}
 
       <div className="flex items-center gap-4 px-2">
         {/* Number/check token with ping ring on completion */}
@@ -138,7 +122,7 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             <Check className="w-5 h-5" strokeWidth={3} />
           ) : (
             <span className="text-sm font-mono font-bold tabular-nums">
-              {String(data.index + 1).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")}
             </span>
           )}
           {sectionDone && (
@@ -153,41 +137,39 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
 
         <div className="flex-1 min-w-0">
           <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-stone-400 mb-0.5">
-            section {String(data.index + 1).padStart(2, "0")}
+            section {String(index + 1).padStart(2, "0")}
           </p>
           <p className="text-lg font-bold text-stone-950 dark:text-stone-50 leading-tight truncate">
-            {data.title}
+            {title}
           </p>
         </div>
 
-        {data.onToggle && (
-          <button
-            type="button"
-            onClick={data.onToggle}
-            title={data.isCollapsed ? "Expand section" : "Collapse section"}
-            className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-1 cursor-pointer"
-          >
-            {data.isCollapsed ? (
-              <ChevronDown className="w-5 h-5" />
-            ) : (
-              <ChevronUp className="w-5 h-5" />
-            )}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onToggle}
+          title={isCollapsed ? "Expand section" : "Collapse section"}
+          className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors mr-1 cursor-pointer"
+        >
+          {isCollapsed ? (
+            <ChevronDown className="w-5 h-5" />
+          ) : (
+            <ChevronUp className="w-5 h-5" />
+          )}
+        </button>
 
-        {data.onRegenerate && (
+        {onRegenerate && (
           <button
             type="button"
-            onClick={data.onRegenerate}
-            disabled={data.isRegenerating}
+            onClick={onRegenerate}
+            disabled={isRegenerating}
             title={
-              data.isRegenerating
+              isRegenerating
                 ? "Regenerating section…"
                 : "Regenerate this section with AI"
             }
-            className="p-1 rounded hover:bg-lime-100 dark:hover:bg-lime-950/40 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors pointer-events-auto mr-2 cursor-pointer"
+            className="p-1 rounded hover:bg-lime-100 dark:hover:bg-lime-950/40 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mr-2 cursor-pointer"
           >
-            {data.isRegenerating ? (
+            {isRegenerating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <RefreshCw className="w-4 h-4" />
@@ -223,14 +205,14 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
       {/* Topic count + status */}
       <div className="mt-2 mx-2 flex items-center justify-between text-[10px] font-mono text-stone-400">
         <span className="tabular-nums">
-          {data.completed}/{data.total} topics
+          {completed}/{total} topics
         </span>
         {sectionDone ? (
           <span className="inline-flex items-center gap-1 text-lime-600 dark:text-lime-500 font-bold uppercase tracking-wider">
             <Check className="w-2.5 h-2.5" strokeWidth={3} />
             section complete
           </span>
-        ) : data.completed > 0 ? (
+        ) : completed > 0 ? (
           <span className="text-stone-500 dark:text-stone-400 uppercase tracking-wider">
             in progress
           </span>
@@ -242,9 +224,9 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
       </div>
 
       {/* AI-regenerated badge */}
-      {data.aiRegeneratedAt && (
+      {aiRegeneratedAt && (
         <div className="mt-1.5 mx-2 flex items-center gap-1 text-[9px] font-mono text-lime-600 dark:text-lime-500 uppercase tracking-wider">
-          <Sparkles className="w-2.5 h-2.5" />
+          <Wand2 className="w-2.5 h-2.5" />
           ai-rewritten
         </div>
       )}
@@ -252,20 +234,31 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
   );
 }
 
-// ─── Custom node: topic card ────────────────────────────────────────────────
-function TopicNode({ data }: NodeProps<TopicNodeData>) {
-  const { status, topic, isNext, bookmarked, index, isWeak } = data;
+interface TopicTimelineCardProps {
+  topic: RoadmapTopic;
+  status: RoadmapTopicStatus;
+  bookmarked: boolean;
+  isNext: boolean;
+  isWeak: boolean;
+  index: number;
+  prerequisiteTitles: string[];
+  onClick: () => void;
+}
+
+// ─── Topic card: one row in the timeline ───────────────────────────────────
+function TopicTimelineCard({
+  topic,
+  status,
+  isNext,
+  bookmarked,
+  index,
+  isWeak,
+  prerequisiteTitles,
+  onClick,
+}: TopicTimelineCardProps) {
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
   const isSkipped = status === "SKIPPED";
-
-  const railColor = isCompleted
-    ? "bg-lime-500"
-    : isInProgress
-      ? "bg-amber-400"
-      : isSkipped
-        ? "bg-stone-400 dark:bg-stone-600"
-        : "bg-stone-200 dark:bg-stone-800";
 
   const weakRing =
     isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
@@ -276,38 +269,17 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
-        delay: Math.min(index * 0.022, 0.6),
-        duration: 0.4,
+        delay: Math.min(index * 0.02, 0.5),
+        duration: 0.35,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
-      whileTap={{ scale: 0.98 }}
-      onClick={data.onClick}
-      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-pointer active:cursor-grabbing w-72 min-h-16 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
+      whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
+      onClick={onClick}
+      className={`group relative bg-white dark:bg-stone-900 border ${cardBorder} rounded-lg cursor-pointer min-h-16 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="bg-stone-300! dark:bg-stone-700! w-2! h-2! border-0! top-0!"
-      />
-
-      {/* Left status rail */}
-      <div
-        className={`absolute left-0 top-0 bottom-0 w-1.5 ${railColor} transition-colors`}
-      >
-        {isNext && (
-          <motion.div
-            initial={{ y: "-100%" }}
-            animate={{ y: "200%" }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-x-0 h-1/2 bg-linear-to-b from-transparent via-lime-300 to-transparent"
-          />
-        )}
-      </div>
-
       {/* Bookmark corner ribbon */}
       {bookmarked && (
         <div className="pointer-events-none absolute top-0 right-0">
@@ -319,7 +291,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       )}
 
       {/* Card body */}
-      <div className="pl-5 pr-3.5 py-3">
+      <div className="pl-4 pr-3.5 py-3">
         {/* Top row: step + status */}
         <div className="flex items-center justify-between mb-1.5 min-h-3.5">
           <div className="inline-flex items-center gap-1.5 text-[9.5px] font-mono uppercase tracking-[0.18em] text-stone-400">
@@ -374,7 +346,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
 
         {/* Title */}
         <p
-          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${isCompleted || isSkipped
+          className={`text-sm font-bold leading-snug transition-colors ${isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
             }`}
@@ -408,18 +380,34 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
             <ChevronRight className="w-3 h-3" />
           </span>
         </div>
-      </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="bg-stone-300! dark:bg-stone-700! w-2! h-2! border-0! bottom-0!"
-      />
+        {/* Prerequisite badges */}
+        {prerequisiteTitles.length > 0 && (
+          <div className="mt-2 pt-2 border-t border-dashed border-stone-200 dark:border-stone-800 flex items-start gap-1.5 text-[10px] font-mono text-stone-400">
+            <Link2 className="w-2.5 h-2.5 mt-0.5 shrink-0" />
+            <span className="leading-relaxed">
+              requires{" "}
+              <span className="text-stone-600 dark:text-stone-300 font-semibold">
+                {prerequisiteTitles.join(", ")}
+              </span>
+            </span>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }
 
-const nodeTypes = { topic: TopicNode, sectionLabel: SectionLabelNode };
+function topicDotClass(
+  status: RoadmapTopicStatus,
+  isNext: boolean,
+): string {
+  if (status === "COMPLETED") return "bg-lime-500";
+  if (status === "IN_PROGRESS") return "bg-amber-400";
+  if (status === "SKIPPED") return "bg-stone-400 dark:bg-stone-600";
+  if (isNext) return "bg-lime-400";
+  return "bg-stone-300 dark:bg-stone-700";
+}
 
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function RoadmapCanvasPage() {
@@ -427,11 +415,6 @@ export default function RoadmapCanvasPage() {
 
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
-  );
-  const [isTouchDevice] = useState(() =>
-    typeof window !== "undefined"
-      ? "ontouchstart" in window || navigator.maxTouchPoints > 0
-      : false,
   );
 
   useEffect(() => {
@@ -442,18 +425,8 @@ export default function RoadmapCanvasPage() {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
-  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
-    "LINEAR",
-  );
-
-  // On small screens (< 768px), default to a linear list view.
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (isMobile && viewMode !== "LINEAR") setViewMode("LINEAR");
-  }, [isMobile, viewMode]);
   // Track which sectionId is currently being regenerated
   const [regeneratingSectionId, setRegeneratingSectionId] = useState<
     number | null
@@ -727,12 +700,6 @@ export default function RoadmapCanvasPage() {
     return { totalAffected: completed + inProgress, completed, inProgress };
   }, [regenModal, data, progressByTopicId]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<
-    TopicNodeData | SectionLabelData
-  >([]);
-
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-
   const isAiOwned = !!(
     data?.enrollment.roadmap.isAiGenerated &&
     data?.enrollment.roadmap.ownerUserId
@@ -746,191 +713,17 @@ export default function RoadmapCanvasPage() {
     [],
   );
 
-  const getGraphOffset = useCallback((topicId: number) => {
-    const existing = graphOffsetsRef.current.get(topicId);
-    if (existing) return existing;
+  const topicsBySlug = useMemo(() => {
+    const map = new Map<string, RoadmapTopic>();
+    for (const t of allTopics) map.set(t.slug, t);
+    return map;
+  }, [allTopics]);
 
-    const xSeed = (topicId * 37) % 100;
-    const ySeed = (topicId * 53) % 50;
-    const offset = {
-      x: xSeed - 50,
-      y: ySeed - 25,
-    };
-
-    graphOffsetsRef.current.set(topicId, offset);
-    return offset;
-  }, []);
-
-  useEffect(() => {
-    if (!data) return;
-
-    const slugToTopicId = new Map<string, number>();
-    for (const t of allTopics) slugToTopicId.set(t.slug, t.id);
-
-    const TOPIC_NODE_WIDTH = 288;
-    const TOPIC_X = -TOPIC_NODE_WIDTH / 2;
-    const SECTION_BANNER_X = -240;
-    const SECTION_HEADER_HEIGHT = 150;
-    const ROW_HEIGHT = 110;
-    const SECTION_GAP = 70;
-
-    const newNodes: Node<TopicNodeData | SectionLabelData>[] = [];
-    const newEdges: Edge[] = [];
-    const sections = data.enrollment.roadmap.sections;
-
-    let cursorY = 0;
-    let globalIdx = 0;
-    let prevSectionLastTopicId: number | null = null;
-
-    sections.forEach((section, sIdx) => {
-      const isCollapsed = collapsedSections.has(section.id);
-      const completedInSection = section.topics.filter(
-        (t) => progressByTopicId.get(t.id)?.status === "COMPLETED",
-      ).length;
-
-      newNodes.push({
-        id: `section-${section.id}`,
-        type: "sectionLabel",
-        position: { x: SECTION_BANNER_X, y: cursorY },
-        data: {
-          title: section.title,
-          index: sIdx,
-          total: section.topics.length,
-          completed: completedInSection,
-          isCollapsed,
-          onToggle: () => toggleSection(section.id),
-          ...(isAiOwned && {
-            onRegenerate: () => openRegenModal(section.id, section.title),
-            isRegenerating: regeneratingSectionId === section.id,
-            aiRegeneratedAt: section.aiRegeneratedAt ?? null,
-          }),
-        },
-        draggable: viewMode === "GRAPH",
-        selectable: viewMode === "GRAPH",
-      });
-      cursorY += SECTION_HEADER_HEIGHT;
-
-      const firstTopicInSection = section.topics[0];
-
-      if (prevSectionLastTopicId && firstTopicInSection && !isCollapsed) {
-        newEdges.push({
-          id: `bridge-${prevSectionLastTopicId}-${firstTopicInSection.id}`,
-          source: String(prevSectionLastTopicId),
-          target: String(firstTopicInSection.id),
-          type: "smoothstep",
-          style: {
-            stroke: "#a8a29e",
-            strokeWidth: 1.25,
-            strokeDasharray: "3 5",
-            opacity: 0.5,
-          },
-        });
-      }
-
-      if (!isCollapsed) {
-        section.topics.forEach((topic, tIdx) => {
-          const p = progressByTopicId.get(topic.id);
-          newNodes.push({
-            id: String(topic.id),
-            type: "topic",
-            position:
-              viewMode === "GRAPH"
-                ? {
-                  x: TOPIC_X + getGraphOffset(topic.id).x,
-                  y: cursorY + getGraphOffset(topic.id).y,
-                }
-                : { x: TOPIC_X, y: cursorY },
-            data: {
-              topic,
-              status: p?.status ?? "NOT_STARTED",
-              bookmarked: p?.bookmarked ?? false,
-              isNext: topic.id === nextTopicId,
-              isWeak: weakTopicTitles.has(topic.slug),
-              index: globalIdx,
-              onClick: () => handleNodeClick(topic.id),
-            },
-            draggable: viewMode === "GRAPH",
-          });
-          globalIdx += 1;
-          cursorY += ROW_HEIGHT;
-
-          if (tIdx > 0) {
-            const prev = section.topics[tIdx - 1];
-            const prevDone =
-              progressByTopicId.get(prev.id)?.status === "COMPLETED";
-            const isFrontier = prevDone && topic.id === nextTopicId;
-            newEdges.push({
-              id: `e${prev.id}-${topic.id}`,
-              source: String(prev.id),
-              target: String(topic.id),
-              type: "smoothstep",
-              animated: isFrontier,
-              style: {
-                stroke: prevDone ? "#84cc16" : "#d6d3d1",
-                strokeWidth: prevDone ? 2 : 1.5,
-              },
-            });
-          }
-
-          for (const preSlug of topic.prerequisiteSlugs ?? []) {
-            const preId = slugToTopicId.get(preSlug);
-            if (preId && preId !== topic.id) {
-              newEdges.push({
-                id: `p${preId}-${topic.id}`,
-                source: String(preId),
-                target: String(topic.id),
-                type: "smoothstep",
-                animated: false,
-                style: {
-                  stroke: "#a8a29e",
-                  strokeWidth: 1.25,
-                  strokeDasharray: "4 4",
-                  opacity: 0.45,
-                },
-              });
-            }
-          }
-        });
-      }
-
-      prevSectionLastTopicId = !isCollapsed
-        ? (section.topics[section.topics.length - 1]?.id ??
-          prevSectionLastTopicId)
-        : prevSectionLastTopicId;
-      cursorY += SECTION_GAP;
-    });
-
-    setNodes(newNodes);
-    setEdges(newEdges);
-  }, [
-    data,
-
-    allTopics,
-
-    progressByTopicId,
-
-    nextTopicId,
-
-    handleNodeClick,
-
-    viewMode,
-
-    collapsedSections,
-    toggleSection,
-
-    isAiOwned,
-
-    openRegenModal,
-
-    regeneratingSectionId,
-
-    getGraphOffset,
-
-    setNodes,
-
-    setEdges,
-    weakTopicTitles,
-  ]);
+  const globalIndexByTopicId = useMemo(() => {
+    const map = new Map<number, number>();
+    allTopics.forEach((t, i) => map.set(t.id, i));
+    return map;
+  }, [allTopics]);
 
   const drawerTopic = useMemo(() => {
     if (!drawerTopicId || !data) return null;
@@ -1150,53 +943,6 @@ export default function RoadmapCanvasPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-5 shrink-0">
-              <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
-                <Button
-                  variant="ghost"
-                  mode="icon"
-                  aria-label="Linear View"
-                  size="sm"
-                  onClick={() => setViewMode("LINEAR")}
-                  title="Linear View"
-                  className={
-                    viewMode === "LINEAR"
-                      ? "bg-stone-800 text-stone-50"
-                      : "text-stone-400 hover:text-stone-200"
-                  }
-                >
-                  <GitCommit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  mode="icon"
-                  aria-label="Grid View"
-                  size="sm"
-                  onClick={() => setViewMode("GRID")}
-                  title="Grid View"
-                  className={
-                    viewMode === "GRID"
-                      ? "bg-stone-800 text-stone-50"
-                      : "text-stone-400 hover:text-stone-200"
-                  }
-                >
-                  <LayoutTemplate className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  mode="icon"
-                  aria-label="Graph View"
-                  size="sm"
-                  onClick={() => setViewMode("GRAPH")}
-                  title="Graph View"
-                  className={
-                    viewMode === "GRAPH"
-                      ? "bg-stone-800 text-stone-50"
-                      : "text-stone-400 hover:text-stone-200"
-                  }
-                >
-                  <Network className="w-4 h-4" />
-                </Button>
-              </div>
               <Stat
                 icon={Target}
                 label="progress"
@@ -1296,74 +1042,108 @@ export default function RoadmapCanvasPage() {
           </div>
         </motion.header>
 
-        {/* ─── Canvas ──────────────────────────────────────────────────────── */}
-        <div className="flex-1 relative">
-          <ReactFlowProvider>
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              panOnScroll={false}
-              zoomOnScroll={!isTouchDevice}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              nodeTypes={nodeTypes}
-              fitView={false}
-              defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-              onInit={(instance) => {
-                const w = window.innerWidth;
-                // Center the spine (flow x = 0) on screen, pin to top of content
-                instance.setViewport({ x: w / 2, y: 30, zoom: 1 });
-              }}
-              proOptions={{ hideAttribution: true }}
-              nodesDraggable={true}
-              nodesConnectable={false}
-              elementsSelectable={true}
-              panOnDrag={true}
-              minZoom={0.4}
-              maxZoom={1.5}
-              className="bg-stone-50 dark:bg-stone-950"
-            >
-              <Background
-                variant={BackgroundVariant.Dots}
-                gap={28}
-                size={1}
-                color="#d6d3d1"
-                className="dark:opacity-20"
+        {/* ─── Timeline ────────────────────────────────────────────────────── */}
+        <div className="flex-1 bg-stone-50 dark:bg-stone-950">
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 py-8">
+            {/* Legend */}
+            <div className="mb-6 flex items-center gap-4">
+              <LegendDot color="bg-lime-500" label="done" />
+              <LegendDot color="bg-amber-400" label="active" />
+              <LegendDot
+                color="border-2 border-stone-300 dark:border-stone-700"
+                label="todo"
               />
-              <Controls
-                showInteractive={false}
-                className="bg-white! dark:bg-stone-900! border! border-stone-200! dark:border-stone-800! rounded-md! shadow-sm! [&_button]:border-stone-200! dark:[&_button]:border-stone-800! [&_button:hover]:bg-lime-50! dark:[&_button:hover]:bg-lime-950/30!"
-              />
-              <MiniMap
-                pannable
-                zoomable
-                maskColor="rgba(245, 245, 244, 0.6)"
-                className="bg-white! dark:bg-stone-900! border! border-stone-200! dark:border-stone-800! rounded-md!"
-                nodeColor={(n) => {
-                  if (n.type === "sectionLabel") return "transparent";
-                  const d = n.data as TopicNodeData;
-                  if (d?.status === "COMPLETED") return "#84cc16";
-                  if (d?.status === "IN_PROGRESS") return "#fbbf24";
-                  return "#d6d3d1";
-                }}
-              />
-            </ReactFlow>
-          </ReactFlowProvider>
+            </div>
 
-          {/* Floating legend */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="absolute bottom-5 left-5 hidden sm:flex items-center gap-3 px-3 py-2 bg-white/90 dark:bg-stone-900/90 backdrop-blur border border-stone-200 dark:border-stone-800 rounded-md shadow-sm"
-          >
-            <LegendDot color="bg-lime-500" label="done" />
-            <LegendDot color="bg-amber-400" label="active" />
-            <LegendDot
-              color="border-2 border-stone-300 dark:border-stone-700"
-              label="todo"
-            />
-          </motion.div>
+            {data.enrollment.roadmap.sections.map((section, sIdx) => {
+              const isCollapsed = collapsedSections.has(section.id);
+              const completedInSection = section.topics.filter(
+                (t) => progressByTopicId.get(t.id)?.status === "COMPLETED",
+              ).length;
+
+              return (
+                <div key={section.id} className={sIdx > 0 ? "mt-10" : ""}>
+                  <SectionHeader
+                    title={section.title}
+                    index={sIdx}
+                    total={section.topics.length}
+                    completed={completedInSection}
+                    isCollapsed={isCollapsed}
+                    onToggle={() => toggleSection(section.id)}
+                    {...(isAiOwned
+                      ? {
+                        onRegenerate: () =>
+                          openRegenModal(section.id, section.title),
+                        isRegenerating:
+                          regeneratingSectionId === section.id,
+                        aiRegeneratedAt: section.aiRegeneratedAt ?? null,
+                      }
+                      : {})}
+                  />
+
+                  {!isCollapsed && (
+                    <div className="mt-5 space-y-2">
+                      {section.topics.map((topic, tIdx) => {
+                        const p = progressByTopicId.get(topic.id);
+                        const status = p?.status ?? "NOT_STARTED";
+                        const isNext = topic.id === nextTopicId;
+                        const isFirst = tIdx === 0;
+                        const isLast = tIdx === section.topics.length - 1;
+                        const prevTopic =
+                          tIdx > 0 ? section.topics[tIdx - 1] : null;
+                        const prevDone = prevTopic
+                          ? progressByTopicId.get(prevTopic.id)?.status ===
+                          "COMPLETED"
+                          : false;
+                        const prerequisiteTitles = (
+                          topic.prerequisiteSlugs ?? []
+                        )
+                          .map((s) => topicsBySlug.get(s)?.title)
+                          .filter((t): t is string => Boolean(t));
+
+                        return (
+                          <div key={topic.id} className="relative flex gap-3">
+                            {/* Gutter: connecting line + status dot */}
+                            <div className="relative flex w-6 shrink-0 justify-center">
+                              {!isFirst && (
+                                <span
+                                  className={`absolute top-0 h-5 w-px ${prevDone
+                                      ? "bg-lime-400"
+                                      : "bg-stone-200 dark:bg-stone-800"
+                                    }`}
+                                />
+                              )}
+                              {!isLast && (
+                                <span className="absolute top-5 bottom-0 w-px bg-stone-200 dark:bg-stone-800" />
+                              )}
+                              <span
+                                className={`relative z-10 mt-4 h-2.5 w-2.5 rounded-full ${topicDotClass(status, isNext)}`}
+                              />
+                            </div>
+
+                            <div className="flex-1 min-w-0 pb-1">
+                              <TopicTimelineCard
+                                topic={topic}
+                                status={status}
+                                bookmarked={p?.bookmarked ?? false}
+                                isNext={isNext}
+                                isWeak={weakTopicTitles.has(topic.slug)}
+                                index={
+                                  globalIndexByTopicId.get(topic.id) ?? 0
+                                }
+                                prerequisiteTitles={prerequisiteTitles}
+                                onClick={() => handleNodeClick(topic.id)}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* ─── Drawer ──────────────────────────────────────────────────────── */}
@@ -2155,7 +1935,7 @@ export default function RoadmapCanvasPage() {
                       {regenerateMutation.isPending ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Wand2 className="w-3.5 h-3.5" />
                       )}
                     </Button>
                   </div>

@@ -115,6 +115,3 @@ adminRouter.post("/broadcast-email", (req, res) => adminController.sendBroadcast
 adminRouter.get("/ai/config", (req, res, next) => adminController.getAIServiceConfigs(req, res, next));
 adminRouter.put("/ai/switch", (req, res, next) => adminController.switchAIProvider(req, res, next));
 adminRouter.get("/ai/stats", (req, res, next) => adminController.getAIRequestStats(req, res, next));
-
-// Guide Feedback Analytics
-adminRouter.get("/guide-feedback", (req, res) => adminController.getGuideFeedbackAnalytics(req, res));

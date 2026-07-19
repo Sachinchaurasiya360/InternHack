@@ -25,6 +25,7 @@ export const NotesPanel = React.memo(function NotesPanel({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const noteRef = useRef(note);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const lastSavedRef = useRef("");
 
   useEffect(() => {
     noteRef.current = note;
@@ -38,7 +39,9 @@ export const NotesPanel = React.memo(function NotesPanel({
       try {
         const { data } = await api.get(`/notes/${contentType}/${contentId}`);
         if (active) {
-          setNote(data.note?.note ?? "");
+          const loaded = data.note?.note ?? "";
+          setNote(loaded);
+          lastSavedRef.current = loaded;
           setSaveStatus("idle");
           initialLoadRef.current = false;
         }
@@ -54,6 +57,7 @@ export const NotesPanel = React.memo(function NotesPanel({
               : undefined;
           if (status === 404) {
             setNote("");
+            lastSavedRef.current = "";
             initialLoadRef.current = false;
           } else {
             setError("Failed to load notes.");
@@ -76,6 +80,11 @@ export const NotesPanel = React.memo(function NotesPanel({
   }, [contentType, contentId]);
 
   const handleSave = useCallback(async (valueToSave: string) => {
+    if (valueToSave === lastSavedRef.current) {
+      setSaveStatus("idle");
+      return;
+    }
+
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -93,6 +102,7 @@ export const NotesPanel = React.memo(function NotesPanel({
         { signal: controller.signal }
       );
       if (abortControllerRef.current === controller) {
+        lastSavedRef.current = valueToSave;
         setSaveStatus("saved");
       }
     } catch (err: unknown) {

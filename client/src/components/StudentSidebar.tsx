@@ -9,7 +9,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   UserCircle,
-  Award,
   Globe,
   Crown,
   ShieldCheck,
@@ -59,7 +58,6 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "discover",
     items: [
-      { to: "/student/grants", icon: Award, label: "Grants" },
       { to: "/student/opensource", icon: Globe, label: "Open Source" },
     ],
   },
@@ -187,14 +185,17 @@ export function useStudentSidebar() {
           >
             {avatar("md")}
             {!collapsed && (
-              <>
-                <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight flex-1">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight">
                   {user?.name}
                 </h2>
                 {isPremium && (
-                  <span className="shrink-0 h-1.5 w-1.5 bg-lime-400" title="Premium" />
+                  <span className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-amber-500 dark:text-amber-400">
+                    <Crown className="w-2.5 h-2.5 shrink-0" fill="currentColor" />
+                    Premium
+                  </span>
                 )}
-              </>
+              </div>
             )}
           </Link>
           {!collapsed && (

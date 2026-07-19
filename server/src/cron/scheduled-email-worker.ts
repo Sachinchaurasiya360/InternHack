@@ -136,8 +136,8 @@ async function sendDay10(
   });
 }
 
-/** Start the scheduled-email worker. Default cadence: every 5 minutes. */
-export function startScheduledEmailWorker(schedule = "*/5 * * * *"): void {
+/** Start the scheduled-email worker. Default cadence: every 30 minutes. */
+export function startScheduledEmailWorker(schedule = "*/30 * * * *"): void {
   if (cronJob) return;
   cronJob = cron.schedule(schedule, () => {
     void withAdvisoryLock("scheduled-email-worker", async () => {

@@ -90,7 +90,7 @@ jobs:
               },
               {
                 label: 'type:devops',
-                keywords: ['ci', 'cd', 'pipeline', 'workflow', 'action', 'deploy', 'docker', 'infra', 'helm', 'config', 'env', 'build', 'release', 'devops', 'github-actions']
+                keywords: ['ci', 'cd', 'pipeline', 'workflow', 'action', 'deploy', 'infra', 'helm', 'config', 'env', 'build', 'release', 'devops', 'github-actions']
               },
               {
                 label: 'type:accessibility',
@@ -110,7 +110,7 @@ jobs:
               },
               {
                 label: 'type:devops',
-                patterns: [/^\.github\/workflows\//i, /^\.github\/actions\//i, /dockerfile/i, /docker-compose/i, /\.yaml$/i, /\.yml$/i, /^infra\//i, /^helm\//i]
+                patterns: [/^\.github\/workflows\//i, /^\.github\/actions\//i, /\.yaml$/i, /\.yml$/i, /^infra\//i, /^helm\//i]
               },
               {
                 label: 'type:design',

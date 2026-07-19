@@ -7,7 +7,9 @@ import { initServiceProviders } from "../src/lib/ai-provider-registry.js";
 // the module async, which breaks Vercel's default-export detection ("the default
 // export must be a function or server"). Failures are swallowed so a cold start
 // still serves.
-void initServiceProviders().catch(() => {});
+void initServiceProviders().catch((err) => {
+  console.error("[api] Failed to initialize service providers:", err);
+});
 
 // Vercel serves the configured Express app directly.
 export default app;

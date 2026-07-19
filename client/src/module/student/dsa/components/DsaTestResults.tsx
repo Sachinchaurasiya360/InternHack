@@ -5,7 +5,6 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
-  HardDrive,
   AlertTriangle,
 } from "lucide-react";
 import type { DsaExecutionResult } from "../../../../lib/types";
@@ -46,14 +45,6 @@ export function DsaTestResults({ result, isRunning }: Props) {
     );
   }
 
-  // Check for compile error
-  const firstResult = result.results[0];
-  const hasCompileError =
-    firstResult &&
-    firstResult.compileOutput &&
-    firstResult.statusId !== 3 &&
-    firstResult.statusId !== 4;
-
   return (
     <div className="p-3 space-y-3">
       {/* Summary bar */}
@@ -76,21 +67,6 @@ export function DsaTestResults({ result, isRunning }: Props) {
         </div>
       </div>
 
-      {/* Compile error */}
-      {hasCompileError && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 text-red-500" />
-            <span className="text-sm font-semibold text-red-700 dark:text-red-300">
-              Compilation Error
-            </span>
-          </div>
-          <pre className="text-xs text-red-600 dark:text-red-400 font-mono whitespace-pre-wrap overflow-x-auto">
-            {firstResult.compileOutput}
-          </pre>
-        </div>
-      )}
-
       {/* Test case list */}
       <div className="space-y-1.5">
         {result.results.map((tc, idx) => {
@@ -107,7 +83,7 @@ export function DsaTestResults({ result, isRunning }: Props) {
               >
                 {tc.passed ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                ) : tc.statusId === -1 ? (
+                ) : tc.error === "Not executed" ? (
                   <div className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0" />
                 ) : (
                   <XCircle className="w-4 h-4 text-red-500 shrink-0" />
@@ -115,21 +91,11 @@ export function DsaTestResults({ result, isRunning }: Props) {
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex-1">
                   {tc.label || `Test case ${idx + 1}`}
                 </span>
-                {tc.statusId !== -1 && (
-                  <div className="flex items-center gap-3 text-xs text-gray-400">
-                    {tc.timeMs > 0 && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {tc.timeMs}ms
-                      </span>
-                    )}
-                    {tc.memoryKb > 0 && (
-                      <span className="flex items-center gap-1">
-                        <HardDrive className="w-3 h-3" />
-                        {(tc.memoryKb / 1024).toFixed(1)}MB
-                      </span>
-                    )}
-                  </div>
+                {tc.error !== "Not executed" && tc.timeMs > 0 && (
+                  <span className="flex items-center gap-1 text-xs text-gray-400">
+                    <Clock className="w-3 h-3" />
+                    {tc.timeMs}ms
+                  </span>
                 )}
                 {isExpanded ? (
                   <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -140,20 +106,14 @@ export function DsaTestResults({ result, isRunning }: Props) {
 
               {isExpanded && (
                 <div className="px-3 pb-3 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-2">
-                  {tc.statusDescription !== "Not executed" &&
-                    tc.statusDescription !== "Accepted" &&
-                    tc.statusDescription !== "Wrong Answer" && (
-                      <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                        {tc.statusDescription}
-                      </div>
-                    )}
-                  {tc.stderr && (
+                  {tc.error && tc.error !== "Not executed" && (
                     <div>
-                      <p className="text-xs font-medium text-red-500 mb-1">
-                        Runtime Error
+                      <p className="text-xs font-medium text-red-500 mb-1 flex items-center gap-1">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        {tc.error === "Time Limit Exceeded" ? "Time Limit Exceeded" : "Runtime Error"}
                       </p>
                       <pre className="text-xs font-mono bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-2 rounded-lg whitespace-pre-wrap">
-                        {tc.stderr}
+                        {tc.error}
                       </pre>
                     </div>
                   )}
@@ -174,7 +134,7 @@ export function DsaTestResults({ result, isRunning }: Props) {
                         {tc.expected || "(empty)"}
                       </pre>
                     </div>
-                    {tc.statusId !== -1 && (
+                    {tc.error !== "Not executed" && (
                       <div>
                         <p className="text-xs font-medium text-gray-500 mb-1">
                           Your Output

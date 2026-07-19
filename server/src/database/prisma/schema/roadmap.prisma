@@ -236,6 +236,11 @@ enum MockInterviewTopic {
   DSA
   SYSTEM_DESIGN
   FRONTEND
+  BACKEND
+  BEHAVIORAL
+  DEVOPS
+  DATA_SCIENCE
+  OTHER
 }
 
 enum MockInterviewStatus {
@@ -251,6 +256,8 @@ model peerMockInterviewPreference {
   user            user               @relation("UserMockInterviewPreference", fields: [userId], references: [id], onDelete: Cascade)
   enabled         Boolean            @default(true)
   topic           MockInterviewTopic
+  // Free-text topic when topic = OTHER (e.g. "Android", "Blockchain")
+  customTopic     String?
   availability    String[]           @default([])
   targetRole      String?
   experienceLevel String?
@@ -264,6 +271,8 @@ model peerMockInterviewPreference {
 model peerMockInterview {
   id                Int                 @id @default(autoincrement())
   topic             MockInterviewTopic
+  // Free-text topic when topic = OTHER, carried over from the students' preferences
+  customTopic       String?
   studentAId        Int?
   studentA          user?               @relation("StudentAMockInterviews", fields: [studentAId], references: [id], onDelete: SetNull)
   studentBId        Int?
@@ -310,6 +319,12 @@ model expertAvailabilityBlock {
   @@index([date])
 }
 
+// NOTE: a partial unique index on (scheduledAt) WHERE status IN
+// ('PENDING_PAYMENT', 'SCHEDULED') is added via migration
+// 20260712000000_add_expert_session_slot_unique_index. Prisma's schema DSL
+// can't express a filtered unique constraint, so it isn't declared with
+// @@unique here — see expert-session.service.ts#bookSession for the
+// Serializable-transaction check that backs it up.
 model expertSession {
   id              Int                 @id @default(autoincrement())
   userId          Int
@@ -320,6 +335,7 @@ model expertSession {
   experienceLevel String?
   focusAreas      String[]            @default([])
   notes           String?             @db.Text
+  recordingConsent Boolean            @default(true)
   meetingLink     String?             @db.Text
   dodoCheckoutUrl String?
   dodoPaymentId   String?             @unique

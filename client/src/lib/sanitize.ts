@@ -18,13 +18,14 @@ export function sanitizeHtml(html: string): string {
     allowedTags: [
       "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "p", "a", "ul", "ol",
       "li", "b", "i", "strong", "em", "strike", "code", "hr", "br", "div", "span",
-      "pre", "table", "thead", "tbody", "tr", "th", "td"
+      "pre", "table", "thead", "tbody", "tr", "th", "td", "img"
     ],
     allowedAttributes: {
       a: ["href", "name", "target"],
       code: ["class"],
       span: ["class"],
       div: ["class"],
+      img: ["src", "alt", "class", "loading"],
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],
   });

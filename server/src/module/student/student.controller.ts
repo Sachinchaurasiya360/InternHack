@@ -8,18 +8,6 @@ const logger = createLogger("StudentController");
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
-  async getMyApplications(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const externalApplications = await this.studentService.getMyExternalApplications(req.user.id);
-      return res.status(200).json({ applications: [], externalApplications });
-    } catch (error) {
-      logger.error("Failed to get applications", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
   async applyToExternalJob(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });

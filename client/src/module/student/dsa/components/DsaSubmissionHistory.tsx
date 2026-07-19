@@ -9,8 +9,10 @@ import {
 import type { DsaSubmissionSummary, DsaLanguage } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
 
-const LANG_LABELS: Record<DsaLanguage, string> = {
+// Keyed loosely: old submissions may carry retired languages (cpp/java)
+const LANG_LABELS: Record<string, string> = {
   python: "Python",
+  javascript: "JavaScript",
   cpp: "C++",
   java: "Java",
 };

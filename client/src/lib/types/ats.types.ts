@@ -30,7 +30,7 @@ export interface AtsScore {
 
 // Usage tracking
 export interface UsageItem {
-  action: "ATS_SCORE" | "COVER_LETTER" | "GENERATE_RESUME";
+  action: "ATS_SCORE" | "COVER_LETTER" | "GENERATE_RESUME" | "DSA_EXECUTE";
   used: number;
   limit: number;
 }

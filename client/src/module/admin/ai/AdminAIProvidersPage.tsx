@@ -14,13 +14,19 @@ const SERVICE_LABELS: Record<AIServiceType, string> = {
   LATEX_CHAT: "LaTeX Chat Assistant",
   EMAIL_CHAT: "Email Chat Assistant",
   AI_ROADMAP_GENERATION: "AI Roadmap Generation",
+  DSA_CODE_REVIEW: "DSA Code Review",
+  DSA_TESTCASE_GEN: "DSA Test Case Generation",
+  BEHAVIORAL_EVALUATION: "Behavioral STAR Evaluation",
+  GSOC_REVIEW: "GSoC Proposal Review",
+  JOB_ENRICHMENT: "Job Data Enrichment",
+  LEARN_READINESS: "Interview Readiness Report",
 };
 
 const PROVIDER_INFO: Record<AIProviderType, { label: string; color: string; models: string[] }> = {
   GEMINI: {
     label: "Google Gemini",
     color: "text-blue-400",
-    models: ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-pro"],
+    models: ["gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-2.5-flash"],
   },
   GROQ: {
     label: "Groq",

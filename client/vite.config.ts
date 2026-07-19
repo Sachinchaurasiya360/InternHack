@@ -29,7 +29,6 @@ const PRERENDER_ROUTES = [
   '/learn/data-analytics',
   '/learn/interview',
   '/learn/dsa',
-  '/learn/dsa/patterns',
   '/learn/dsa/companies',
   '/learn/aptitude',
   '/learn/aptitude/companies',

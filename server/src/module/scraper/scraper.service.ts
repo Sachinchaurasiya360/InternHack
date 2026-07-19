@@ -259,20 +259,32 @@ export class ScraperService {
     // so users only see tech roles even before the 48h expiry sweep clears
     // them. Other sources (linkedin, arbeitnow) are tech-focused already.  
   const conditions: Prisma.scrapedJobWhereInput[] = [
-  {
-    OR: [
-      { title: { contains: "developer", mode: "insensitive" } },
-      { title: { contains: "engineer", mode: "insensitive" } },
-      { title: { contains: "software", mode: "insensitive" } },
-      { title: { contains: "frontend", mode: "insensitive" } },
-      { title: { contains: "backend", mode: "insensitive" } },
-      { title: { contains: "full stack", mode: "insensitive" } },
-      { title: { contains: "python", mode: "insensitive" } },
-      { title: { contains: "java", mode: "insensitive" } },
-      { title: { contains: "react", mode: "insensitive" } }, 
-    ],
-  },
-];
+    {
+      OR: [
+        // Non-adzuna sources (linkedin, arbeitnow) are already tech-focused.
+        { source: { not: "adzuna" } },
+        // Legacy adzuna rows may contain non-tech categories — filter to IT.
+        {
+          AND: [
+            { source: "adzuna" },
+            {
+              OR: [
+                { title: { contains: "developer", mode: "insensitive" } },
+                { title: { contains: "engineer", mode: "insensitive" } },
+                { title: { contains: "software", mode: "insensitive" } },
+                { title: { contains: "frontend", mode: "insensitive" } },
+                { title: { contains: "backend", mode: "insensitive" } },
+                { title: { contains: "full stack", mode: "insensitive" } },
+                { title: { contains: "python", mode: "insensitive" } },
+                { title: { contains: "java", mode: "insensitive" } },
+                { title: { contains: "react", mode: "insensitive" } },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ];
    
 
     if (query.search) {

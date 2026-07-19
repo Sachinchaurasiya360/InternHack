@@ -1,4 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, memo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -11,9 +13,13 @@ import {
   SlidersHorizontal,
   CalendarDays,
   StickyNote,
+  Crown,
 } from "lucide-react";
+import { Link } from "react-router";
 import { grants } from "./grantsData";
 import { Button } from "../../../components/ui/button";
+import api from "../../../lib/axios";
+import { useAuthStore } from "../../../lib/auth.store";
 
 // ---- Types ----------------------------------------------------------------
 
@@ -32,6 +38,49 @@ interface TrackedGrant {
   notes: string;
   deadline: string;
   dateAdded: string;
+}
+
+// Server-synced tracker (premium plan) — grants aren't stored in the DB, so the
+// server keys rows on (grantName, organization) rather than a numeric grant id.
+type ServerStatus = "INTERESTED" | "PREPARING" | "APPLIED" | "ACCEPTED" | "REJECTED";
+
+interface ServerTrackedGrant {
+  id: number;
+  grantName: string;
+  organization: string;
+  status: ServerStatus;
+  notes: string;
+  deadline: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const STATUS_TO_SERVER: Record<ApplicationStatus, ServerStatus> = {
+  Interested: "INTERESTED",
+  Preparing: "PREPARING",
+  Applied: "APPLIED",
+  Accepted: "ACCEPTED",
+  Rejected: "REJECTED",
+};
+
+const STATUS_FROM_SERVER: Record<ServerStatus, ApplicationStatus> = {
+  INTERESTED: "Interested",
+  PREPARING: "Preparing",
+  APPLIED: "Applied",
+  ACCEPTED: "Accepted",
+  REJECTED: "Rejected",
+};
+
+function toClientGrant(row: ServerTrackedGrant): TrackedGrant {
+  return {
+    id: String(row.id),
+    grantName: row.grantName,
+    organization: row.organization,
+    status: STATUS_FROM_SERVER[row.status],
+    notes: row.notes,
+    deadline: row.deadline ? row.deadline.slice(0, 10) : "",
+    dateAdded: row.createdAt,
+  };
 }
 
 // ---- Constants -------------------------------------------------------------
@@ -57,8 +106,8 @@ const STATUS_COLORS: Record<ApplicationStatus, { color: string; bg: string }> =
       bg: "bg-amber-50 dark:bg-amber-900/30",
     },
     Applied: {
-      color: "text-violet-600 dark:text-violet-400",
-      bg: "bg-violet-50 dark:bg-violet-900/30",
+      color: "text-stone-600 dark:text-stone-300",
+      bg: "bg-stone-100 dark:bg-stone-800",
     },
     Accepted: {
       color: "text-emerald-600 dark:text-emerald-400",
@@ -355,7 +404,30 @@ export default function GrantTrackerDialog({
 }: {
   onClose: () => void;
 }) {
-  const [trackedGrants, setTrackedGrants] = useState<TrackedGrant[]>(loadGrants);
+  const { user } = useAuthStore();
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    !!user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
+
+  const queryClient = useQueryClient();
+  const [addError, setAddError] = useState<string | null>(null);
+
+  const { data: serverGrants } = useQuery({
+    queryKey: ["grants", "tracked"],
+    queryFn: () => api.get("/grants/tracked").then((r) => r.data.tracked as ServerTrackedGrant[]),
+    enabled: isPremium,
+    staleTime: 60 * 1000,
+  });
+
+  const [localGrants, setLocalGrants] = useState<TrackedGrant[]>(loadGrants);
+
+  const trackedGrants = useMemo(
+    () => (isPremium ? (serverGrants ?? []).map(toClientGrant) : localGrants),
+    [isPremium, serverGrants, localGrants]
+  );
+
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "ALL">(
     "ALL"
   );
@@ -371,15 +443,58 @@ export default function GrantTrackerDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, showAddModal]);
 
-  // ---- Persistence helpers ------------------------------------------------
+  // ---- Server mutations (premium) ------------------------------------------
+
+  const invalidateTracked = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ["grants", "tracked"] }),
+    [queryClient]
+  );
+
+  const addMutation = useMutation({
+    mutationFn: (data: { grantName: string; organization: string }) =>
+      api.post("/grants/tracked", data),
+    onSuccess: () => {
+      setAddError(null);
+      invalidateTracked();
+    },
+    onError: (err) => {
+      setAddError(
+        err instanceof AxiosError && err.response?.status === 409
+          ? "You are already tracking this grant"
+          : "Failed to add grant, please try again"
+      );
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<TrackedGrant> }) => {
+      const body: Record<string, unknown> = {};
+      if (updates.status !== undefined) body["status"] = STATUS_TO_SERVER[updates.status];
+      if (updates.notes !== undefined) body["notes"] = updates.notes;
+      if (updates.deadline !== undefined) body["deadline"] = updates.deadline || null;
+      return api.patch(`/grants/tracked/${id}`, body);
+    },
+    onSuccess: invalidateTracked,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/grants/tracked/${id}`),
+    onSuccess: invalidateTracked,
+  });
+
+  // ---- Persistence helpers (free plan, localStorage-only) ------------------
 
   const saveGrants = useCallback((next: TrackedGrant[]) => {
-    setTrackedGrants(next);
+    setLocalGrants(next);
     persistGrants(next);
   }, []);
 
   const addGrant = useCallback(
     (grantName: string, organization: string) => {
+      if (isPremium) {
+        addMutation.mutate({ grantName, organization });
+        return;
+      }
       const entry: TrackedGrant = {
         id: crypto.randomUUID(),
         grantName,
@@ -389,26 +504,34 @@ export default function GrantTrackerDialog({
         deadline: "",
         dateAdded: new Date().toISOString(),
       };
-      saveGrants([entry, ...trackedGrants]);
+      saveGrants([entry, ...localGrants]);
     },
-    [trackedGrants, saveGrants]
+    [isPremium, addMutation, localGrants, saveGrants]
   );
 
   const updateGrant = useCallback(
     (id: string, updates: Partial<TrackedGrant>) => {
-      const next = trackedGrants.map((g) =>
+      if (isPremium) {
+        updateMutation.mutate({ id, updates });
+        return;
+      }
+      const next = localGrants.map((g) =>
         g.id === id ? { ...g, ...updates } : g
       );
       saveGrants(next);
     },
-    [trackedGrants, saveGrants]
+    [isPremium, updateMutation, localGrants, saveGrants]
   );
 
   const deleteGrant = useCallback(
     (id: string) => {
-      saveGrants(trackedGrants.filter((g) => g.id !== id));
+      if (isPremium) {
+        deleteMutation.mutate(id);
+        return;
+      }
+      saveGrants(localGrants.filter((g) => g.id !== id));
     },
-    [trackedGrants, saveGrants]
+    [isPremium, deleteMutation, localGrants, saveGrants]
   );
 
   // ---- Derived data -------------------------------------------------------
@@ -472,8 +595,9 @@ export default function GrantTrackerDialog({
                 Application Tracker
               </h2>
               <p className="text-sm text-stone-500 mt-0.5">
-                Track grant applications from interest to acceptance, stored
-                locally on your device.
+                {isPremium
+                  ? "Track grant applications from interest to acceptance, synced across your devices."
+                  : "Track grant applications from interest to acceptance, stored locally on your device."}
               </p>
             </div>
             <Button
@@ -490,6 +614,23 @@ export default function GrantTrackerDialog({
 
           {/* Scrollable body */}
           <div className="flex-1 overflow-y-auto px-5 py-5">
+            {!isPremium && (
+              <Link
+                to="/student/checkout"
+                className="flex items-center gap-3 px-4 py-3 mb-5 rounded-md border border-lime-300 dark:border-lime-800 bg-lime-50 dark:bg-lime-900/20 no-underline hover:border-lime-400 dark:hover:border-lime-700 transition-colors"
+              >
+                <Crown className="w-4 h-4 text-lime-700 dark:text-lime-400 shrink-0" />
+                <p className="text-sm text-stone-700 dark:text-stone-300">
+                  <span className="font-semibold text-stone-900 dark:text-stone-50">Upgrade to Premium</span>
+                  {" "}to sync this tracker across devices and get deadline reminder emails.
+                </p>
+              </Link>
+            )}
+
+            {addError && (
+              <p className="text-sm text-red-500 mb-4">{addError}</p>
+            )}
+
             {/* Summary stats */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               {[
@@ -503,7 +644,7 @@ export default function GrantTrackerDialog({
                   icon: Send,
                   value: totalApplied,
                   label: "Applied",
-                  iconColor: "text-violet-500",
+                  iconColor: "text-stone-500",
                 },
                 {
                   icon: CheckCircle2,

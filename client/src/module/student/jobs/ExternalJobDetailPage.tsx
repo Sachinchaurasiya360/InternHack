@@ -87,6 +87,8 @@ export default function ExternalJobDetailPage() {
     onSuccess: () => {
       setApplied(true);
       queryClient.invalidateQueries({ queryKey: queryKeys.applications.mine() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.applicationTracker.list() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.applicationTracker.stats() });
     },
   });
 

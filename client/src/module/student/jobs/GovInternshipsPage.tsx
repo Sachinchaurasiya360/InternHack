@@ -160,11 +160,11 @@ export default function GovInternshipsPage() {
       <div className={`max-w-6xl mx-auto px-6 pb-16 ${isInsideLayout ? "" : "pt-24"}`}>
         {/* Back link */}
         <Link
-          to={isInsideLayout ? "/student/jobs" : "/jobs"}
+          to={isInsideLayout ? "/student/applications" : "/external-jobs"}
           className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors mb-8 no-underline"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back to jobs
+          Back
         </Link>
 
         {/* Header */}

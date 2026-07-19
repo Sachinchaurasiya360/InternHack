@@ -1,21 +1,19 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useParams, Link, Navigate } from "react-router";
+import { useParams, Link, Navigate, useNavigate } from "react-router";
 import {
   useQuery,
   useMutation,
   useQueryClient,
   keepPreviousData,
 } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   CheckCircle2,
   Circle,
   ExternalLink,
   Bookmark,
   BookmarkCheck,
-  ChevronDown,
-  Lightbulb,
   BookOpen,
   TrendingUp,
   Search,
@@ -31,13 +29,9 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
-import { cleanHint } from "../../../lib/sanitize";
 import { DIFF_COLOR } from "../../../lib/difficulty-styles";
-import { SafeHtml } from "../../../components/common/SafeHtml";
 import { useDsaLabels } from "./components/useDsaLabels";
-import { DsaLabelManager } from "./components/DsaLabelManager";
 import { DsaLabelFilter } from "./components/DsaLabelFilter";
-import { NotesPanel } from "../../../components/learning/NotesPanel";
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
@@ -48,10 +42,9 @@ export default function DsaTopicDetailPage() {
   const [filter, setFilter] = useState<DiffFilter>("All");
   const [search, setSearch] = useState("");
   const page = 1; // virtual scroll replaces server-side pagination
-  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
-  const { allLabels, getLabels, addLabel, removeLabel } = useDsaLabels(!!user);
+  const { allLabels, getLabels } = useDsaLabels(!!user);
   const toggleLabelFilter = (label: string) =>
     setSelectedLabels((prev) =>
       prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
@@ -434,17 +427,8 @@ export default function DsaTopicDetailPage() {
                         problem={problem}
                         pIdx={virtualItem.index}
                         user={user}
-                        isExpanded={expandedId === problem.id}
                         toggleMutation={toggleMutation}
                         bookmarkMutation={bookmarkMutation}
-                        setExpandedId={setExpandedId}
-                        labels={
-                          getLabels(problem.id).length
-                            ? getLabels(problem.id)
-                            : (problem.labels ?? [])
-                        }
-                        onAddLabel={addLabel}
-                        onRemoveLabel={removeLabel}
                       />
                     </div>
                   </div>
@@ -462,36 +446,16 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   problem,
   pIdx,
   user,
-  isExpanded,
   toggleMutation,
   bookmarkMutation,
-  setExpandedId,
-  labels,
-  onAddLabel,
-  onRemoveLabel,
 }: {
   problem: DsaProblem;
   pIdx: number;
   user: User | null;
-  isExpanded: boolean;
   toggleMutation: UseMutationResult<unknown, Error, number>;
   bookmarkMutation: UseMutationResult<unknown, Error, number>;
-  setExpandedId: (val: number | null) => void;
-  labels: string[];
-  onAddLabel: (problemId: number, label: string) => void;
-  onRemoveLabel: (problemId: number, label: string) => void;
 }) {
-  const links: { href: string; label: string }[] = [];
-  if (problem.leetcodeUrl)
-    links.push({ href: problem.leetcodeUrl, label: "LeetCode" });
-  if (problem.gfgUrl) links.push({ href: problem.gfgUrl, label: "GFG" });
-  if (problem.hackerrankUrl)
-    links.push({ href: problem.hackerrankUrl, label: "HackerRank" });
-  if (problem.codechefUrl)
-    links.push({ href: problem.codechefUrl, label: "CodeChef" });
-  if (problem.articleUrl)
-    links.push({ href: problem.articleUrl, label: "Article" });
-  if (problem.videoUrl) links.push({ href: problem.videoUrl, label: "Video" });
+  const navigate = useNavigate();
 
   return (
     <motion.div
@@ -502,7 +466,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
     >
       <div
         className="flex items-center gap-2 sm:gap-3 px-3 py-3 sm:px-5 sm:py-4 cursor-pointer"
-        onClick={() => setExpandedId(isExpanded ? null : problem.id)}
+        onClick={() => navigate(`/learn/dsa/problem/${problem.slug}`)}
       >
         {user && (
           <Button
@@ -592,98 +556,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
             )}
           </Button>
         )}
-
-        <ChevronDown
-          className={`w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 transition-transform duration-200 ${
-            isExpanded ? "rotate-180" : ""
-          }`}
-        />
       </div>
-
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="px-3 sm:px-5 pb-4 space-y-3 border-t border-stone-200 dark:border-white/10 pt-4">
-              {problem.hints.length > 0 && (
-                <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Lightbulb className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                      /{" "}
-                      {problem.hints.length === 1
-                        ? "hint"
-                        : `hints (${problem.hints.length})`}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {problem.hints.map((hint, i) => (
-                      <div
-                        key={i}
-                        className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex gap-1"
-                      >
-                        {problem.hints.length > 1 && (
-                          <span className="font-mono font-medium text-stone-500 dark:text-stone-400 shrink-0">
-                            {i + 1}.
-                          </span>
-                        )}
-                        <SafeHtml className="flex-1 min-w-0" html={cleanHint(hint)} method="sanitize-html" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {links.length > 0 && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  {links.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      {link.label}
-                    </a>
-                  ))}
-                  <Link
-                    to={`/learn/dsa/problem/${problem.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 dark:bg-stone-50 text-lime-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:opacity-90 transition-opacity no-underline"
-                  >
-                    view details
-                  </Link>
-                </div>
-              )}
-
-              {user && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                    / labels
-                  </span>
-                  <DsaLabelManager
-                    problemId={problem.id}
-                    labels={labels}
-                    onAdd={onAddLabel}
-                    onRemove={onRemoveLabel}
-                  />
-                </div>
-              )}
-              {user && (
-                <div className="mt-2 border-t border-stone-200 dark:border-white/10 pt-3">
-                  <NotesPanel contentType="DSA_PROBLEM" contentId={problem.id} />
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 });

@@ -27,11 +27,9 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "Jobs", href: "/jobs" },
+  { label: "Jobs", href: "/external-jobs" },
   { label: "Learn", href: "/learn" },
   { label: "Companies", href: "/companies" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
 ];
 
 export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
@@ -92,7 +90,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 if (item.href === "/") {
                   return location.pathname === "/";
                 }
-                if (item.href === "/jobs") {
+                if (item.href === "/external-jobs") {
                   return (
                     location.pathname === "/jobs" ||
                     location.pathname.startsWith("/jobs/") ||
@@ -123,10 +121,17 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                   location.pathname.startsWith(item.href + "/")
                 );
               })();
+              const targetHref = (() => {
+                if (isAuthenticated && user?.role === "STUDENT") {
+                  if (item.href === "/external-jobs") return "/student/jobs";
+                  if (item.href === "/companies") return "/student/companies";
+                }
+                return item.href;
+              })();
               return (
                 <Link
                   key={item.href}
-                  to={item.href}
+                  to={targetHref}
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "no-underline group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300",
@@ -342,15 +347,24 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               className="overflow-hidden lg:hidden"
             >
                 <div role="menu" aria-label="Mobile navigation" className="pt-2 pb-4 space-y-1 border-t border-stone-200 dark:border-white/10">
-                {NAV_ITEMS.map((item) => (
-                  <MobileNavLink
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.label}
-                  </MobileNavLink>
-                ))}
+                {NAV_ITEMS.map((item) => {
+                  const targetHref = (() => {
+                    if (isAuthenticated && user?.role === "STUDENT") {
+                      if (item.href === "/external-jobs") return "/student/jobs";
+                      if (item.href === "/companies") return "/student/companies";
+                    }
+                    return item.href;
+                  })();
+                  return (
+                    <MobileNavLink
+                      key={item.href}
+                      href={targetHref}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.label}
+                    </MobileNavLink>
+                  );
+                })}
                 <div className="pt-3 space-y-2">
                   {isAuthenticated ? (
                     <>

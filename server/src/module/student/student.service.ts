@@ -5,21 +5,6 @@ import { buildUnsubscribeUrl } from "../../utils/unsubscribe.utils.js";
 import { milestoneEmailHtml } from "../../utils/email-templates.js";
 
 export class StudentService {
-  async getMyExternalApplications(studentId: number) {
-    return prisma.externalJobApplication.findMany({
-      where: { studentId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        adminJob: {
-          select: {
-            id: true, slug: true, company: true, role: true,
-            location: true, salary: true, tags: true, applyLink: true,
-          },
-        },
-      },
-    });
-  }
-
   async applyToExternalJob(studentId: number, adminJobId: number) {
     const job = await prisma.adminJob.findUnique({ where: { id: adminJobId } });
     if (!job) throw new Error("External job not found");

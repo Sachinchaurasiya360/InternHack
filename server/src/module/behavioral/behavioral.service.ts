@@ -1,4 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
 import type { EvaluateStarInput, StarEvaluationResult, SectionEvaluation } from "./behavioral.validation.js";
 
 function buildPrompt(input: EvaluateStarInput): string {
@@ -126,23 +127,19 @@ function buildFallback(input: EvaluateStarInput): StarEvaluationResult {
 
 export class BehavioralService {
   async evaluate(input: EvaluateStarInput): Promise<StarEvaluationResult> {
-    const apiKey = process.env["GEMINI_API_KEY"];
-    if (!apiKey) {
-      return buildFallback(input);
-    }
-
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const provider = getProviderForService("BEHAVIORAL_EVALUATION");
       const prompt = buildPrompt(input);
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().trim();
+      const response = await provider.generateText(prompt);
+      const text = response.text.trim();
       const parsed = parseEvaluationResponse(text);
 
       if (!parsed) {
+        logAIRequest("BEHAVIORAL_EVALUATION", response, false, "Failed to parse evaluation response");
         return buildFallback(input);
       }
 
+      logAIRequest("BEHAVIORAL_EVALUATION", response, true);
       return parsed;
     } catch {
       return buildFallback(input);

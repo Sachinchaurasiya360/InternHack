@@ -92,15 +92,13 @@ function sendVerificationEmail(to: string, name: string, otp: string) {
   }).catch((err) => console.error("Failed to send OTP email:", err));
 }
 
-/** Rotate tokenVersion (single-device enforcement), bust the version cache, return a fresh JWT. */
-async function rotateSession(user: { id: number; email: string; role: User["role"] }) {
-  const { tokenVersion } = await prisma.user.update({
-    where: { id: user.id },
-    data: { tokenVersion: { increment: 1 } },
-    select: { tokenVersion: true },
-  });
-  invalidateVersionCache(user.id);
-  return generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion });
+/**
+ * Sign a session JWT for the user's current tokenVersion. Login no longer rotates
+ * the version, so multiple devices can stay signed in at once; tokenVersion is only
+ * bumped by explicit revocation (password reset, account delete, admin ban/delete).
+ */
+function issueToken(user: { id: number; email: string; role: User["role"]; tokenVersion: number }): string {
+  return generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion });
 }
 
 /** Replace stored S3 keys with presigned URLs, in place. */
@@ -263,8 +261,7 @@ export class AuthService {
       }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
-    // Rotate session to invalidate all previous sessions (single-device enforcement)
-    const token = await rotateSession(user);
+    const token = issueToken(user);
 
     return {
       user: buildAuthUser(user),
@@ -301,8 +298,7 @@ export class AuthService {
       throw new Error("EMAIL_NOT_VERIFIED");
     }
 
-    // Rotate session to invalidate all previous sessions (single-device enforcement)
-    const token = await rotateSession(user);
+    const token = issueToken(user);
 
     return {
       user: buildAuthUser(user),
@@ -492,10 +488,6 @@ export class AuthService {
     const fullResult = {
       ...rest,
     };
-    // Guest-safe view: strip PII regardless of who triggered the request.
-    const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
-    const guestResult = guestRest;
-
     // Authorized tier (admin): cache and return the full view under
     // the ":auth" key, which is only ever served back to authorized viewers.
     if (isVisitorAuthorized) {
@@ -506,7 +498,7 @@ export class AuthService {
     // Only the owner reaches this point (non-owner, non-authorized visitors are
     // rejected above). Return the owner's full view; never cache under the
     // shared key so it can't be served to another visitor.
-    return { profile: isOwner ? fullResult : guestResult, cacheHit: false };
+    return { profile: fullResult, cacheHit: false };
   }
 
   async verifyEmail(email: string, otp: string) {
@@ -574,8 +566,7 @@ export class AuthService {
       html: welcomeEmailHtml(user.name),
     }).catch((err) => console.error("Failed to send welcome email:", err));
 
-    // Rotate session, first real login after email verification
-    const token = await rotateSession(updated);
+    const token = issueToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: user.tokenVersion });
 
     return { user: buildAuthUser(updated), token };
   }

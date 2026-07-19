@@ -3,16 +3,10 @@ import { Link } from "react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import api from "../lib/axios";
+import { SOCIAL_LINKS } from "../lib/social-links";
 
 const linkClass =
   "text-sm text-stone-400 hover:text-stone-50 transition-all duration-300 no-underline hover:-translate-y-0.5 hover:shadow-md hover:shadow-lime-400/20";
-
-const SOCIAL_LINKS = {
-  email: "mailto:mrsachinchaurasiya@gmail.com",
-  twitter: "https://x.com/sachindev69",
-  linkedin: "https://www.linkedin.com/company/internhack",
-  github: "https://github.com/Sachinchaurasiya360/InternHack",
-};
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -131,7 +125,6 @@ export function Footer() {
               <ul className="space-y-3">
                 <li><Link to="/register" className={linkClass} onClick={handleNavigation}>Start free</Link></li>
                 <li><Link to="/login" className={linkClass} onClick={handleNavigation}>Sign in</Link></li>
-                <li><Link to="/blog" className={linkClass} onClick={handleNavigation}>Blog</Link></li>
                 <li><Link to="/contact" className={linkClass} onClick={handleNavigation}> Contact </Link></li>
                 <li> <Link to="/contributors" className={linkClass} onClick={handleNavigation}> Contributors </Link></li>
               </ul>

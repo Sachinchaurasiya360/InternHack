@@ -5,16 +5,12 @@ import type {
   FundingSignalSource,
 } from "../../../lib/types";
 
-export type SignalKind = "funding" | "hiring" | "product_launch" | "all";
-
 export interface SignalsQuery {
   page: number;
   limit: number;
   sort?: "recent" | "amount";
   search?: string;
   source?: string;
-  kind?: SignalKind;
-  hiringOnly?: boolean;
   status?: "ACTIVE" | "STALE" | "ARCHIVED" | "ALL";
 }
 
@@ -26,8 +22,6 @@ export async function querySignals(q: SignalsQuery): Promise<FundingSignalListRe
   };
   if (q.search) params["search"] = q.search;
   if (q.source) params["source"] = q.source;
-  if (q.kind && q.kind !== "all") params["kind"] = q.kind;
-  if (q.hiringOnly) params["hiringOnly"] = true;
   if (q.status) params["status"] = q.status;
 
   const { data } = await api.get<FundingSignalListResponse>("/signals", { params });

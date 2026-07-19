@@ -1,6 +1,7 @@
 import { prisma } from "../../database/db.js";
 import type { InterviewProgressAction, BulkInterviewProgressInput } from "./learn.validation.js";
-import { GeminiProvider } from "../../lib/providers/gemini.provider.js";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
 
 export interface InterviewProgressDto {
   completedIds: string[];
@@ -76,7 +77,7 @@ export class LearnService {
       totalAptitudeSolved = aptitudeSolved;
     }
 
-    const provider = new GeminiProvider("gemini-2.5-flash-lite");
+    const provider = getProviderForService("LEARN_READINESS");
 
     const systemPrompt = `
       You are an expert tech recruiter and coding coach assessing student readiness indicators.
@@ -122,18 +123,25 @@ export class LearnService {
     try {
       const response = await provider.generateText(systemPrompt);
       const text = response.text;
-      
+
       // Clean and parse the JSON response
       let cleanJson = text.trim();
       cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
       cleanJson = cleanJson.replace(/,\s*([\]}])/g, "$1");
 
       try {
-        return JSON.parse(cleanJson);
+        const parsed = JSON.parse(cleanJson);
+        logAIRequest("LEARN_READINESS", response, true, undefined, typeof userIdNum === "number" && !isNaN(userIdNum) ? userIdNum : undefined);
+        return parsed;
       } catch {
         const match = cleanJson.match(/\{[\s\S]*\}/);
-        if (!match) throw new Error("No JSON object found in AI response");
-        return JSON.parse(match[0].replace(/,\s*([\]}])/g, "$1"));
+        if (!match) {
+          logAIRequest("LEARN_READINESS", response, false, "No JSON object found in AI response");
+          throw new Error("No JSON object found in AI response");
+        }
+        const parsed = JSON.parse(match[0].replace(/,\s*([\]}])/g, "$1"));
+        logAIRequest("LEARN_READINESS", response, true, undefined, typeof userIdNum === "number" && !isNaN(userIdNum) ? userIdNum : undefined);
+        return parsed;
       }
     } catch (error) {
       console.error("Gemini exception in readiness report, using fallback:", error);

@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation } from "react-router";
 import {
   Search,
   ExternalLink,
@@ -20,6 +21,7 @@ import {
   ClipboardList,
   Clock,
   Activity,
+  Crown,
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
@@ -28,6 +30,8 @@ import { GridBackground } from "../../../components/ui/GridBackground";
 import GrantTrackerDialog from "./GrantTrackerDialog";
 import { FilterChip } from "../../../components/ui/FilterChip";
 import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
+import { Navbar } from "../../../components/Navbar";
+import { useAuthStore } from "../../../lib/auth.store";
 
 
 function resolveGrantLogo(logo: string, website: string): string {
@@ -43,7 +47,7 @@ function resolveGrantLogo(logo: string, website: string): string {
 const STATUS_CONFIG = {
   Active:        { icon: CheckCircle2, color: "text-lime-600 dark:text-lime-400",     border: "border-lime-300 dark:border-lime-900/60" },
   Paused:        { icon: AlertCircle,  color: "text-amber-600 dark:text-amber-400",   border: "border-amber-300 dark:border-amber-900/60" },
-  "Invite Only": { icon: Lock,         color: "text-violet-600 dark:text-violet-400", border: "border-violet-300 dark:border-violet-900/60" },
+  "Invite Only": { icon: Lock,         color: "text-stone-600 dark:text-stone-300", border: "border-stone-300 dark:border-stone-700" },
 };
 
 const ECOSYSTEMS = Array.from(new Set(grants.map((g) => g.ecosystem))).sort();
@@ -91,7 +95,7 @@ function getDeadlineBadge(deadline: string) {
     return {
       text: "Closed",
       className:
-        "bg-gray-200 text-gray-600 dark:bg-stone-800 dark:text-stone-400",
+        "bg-stone-200 text-stone-600 dark:bg-stone-800 dark:text-stone-400",
       isClosed: true,
     };
   }
@@ -131,7 +135,22 @@ function MetaChip({ icon, children, className = "" }: { icon?: React.ReactNode; 
   );
 }
 
+const FREE_GRANT_LIMIT = 50;
+const TEASER_PREVIEW_COUNT = 6;
+
 export default function GrantsPage() {
+  const location = useLocation();
+  // /grants is public (no layout chrome); /student/grants is nested inside
+  // StudentLayout, which already renders the sidebar nav.
+  const isPublicRoute = location.pathname === "/grants";
+
+  const { user } = useAuthStore();
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    !!user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<GrantCategory | "ALL">("ALL");
   const [selectedEcosystem, setSelectedEcosystem] = useState<string>("ALL");
@@ -189,6 +208,10 @@ export default function GrantsPage() {
     return result;
   }, [search, selectedCategory, selectedEcosystem, selectedStatus, showSavedOnly, savedGrants]);
 
+  const visibleGrants = isPremium ? filtered : filtered.slice(0, FREE_GRANT_LIMIT);
+  const lockedGrants = isPremium ? [] : filtered.slice(FREE_GRANT_LIMIT);
+  const noop = useCallback(() => {}, []);
+
   const activeFilters =
     (selectedEcosystem !== "ALL" ? 1 : 0) +
     (selectedStatus !== "ALL" ? 1 : 0);
@@ -203,15 +226,17 @@ export default function GrantsPage() {
   return (
     <div className="relative text-stone-900 dark:text-stone-50 pb-12">
       <SEO
-        title="Grants & Funding for Students"
-        description="Discover grants, scholarships, and funding opportunities for students. Browse tech grants, research funding, and startup grants."
-        keywords="student grants, tech scholarships, research funding, startup grants, student funding"
+        title="Startup Grants & Non-Dilutive Funding"
+        description="Find non-dilutive grants, government schemes, and accelerator programs for startups. Browse seed funding, deep-tech grants, and founder programs worldwide."
+        keywords="startup grants, non-dilutive funding, government startup schemes, accelerator programs, seed funding, founder grants"
         canonicalUrl={canonicalUrl("/grants")}
       />
 
+      {isPublicRoute && <Navbar />}
+
       <GridBackground />
 
-      <div className="relative max-w-6xl mx-auto">
+      <div className={`relative max-w-6xl mx-auto ${isPublicRoute ? "pt-24" : ""}`}>
         {/* Editorial header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -222,12 +247,12 @@ export default function GrantsPage() {
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
               <span className="h-1.5 w-1.5 bg-lime-400" />
-              student / grants
+              startup / grants
             </div>
             <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Fund your{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">work.</span>
+                <span className="relative z-10">startup.</span>
                 <motion.span
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
@@ -238,7 +263,7 @@ export default function GrantsPage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Grants, scholarships, and funding across Web3, government, research, climate, and AI, curated for student builders.
+              Non-dilutive grants, government schemes, and accelerator programs for founders, across deep tech, climate, Web3, and more.
             </p>
           </div>
           <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -452,18 +477,53 @@ export default function GrantsPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filtered.map((grant, i) => (
-              <GrantCard
-                key={grant.id}
-                grant={grant}
-                index={i}
-                onSelect={handleCardSelect}
-                saved={savedGrants.has(grant.id)}
-                onToggleSave={toggleSave}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {visibleGrants.map((grant, i) => (
+                <GrantCard
+                  key={grant.id}
+                  grant={grant}
+                  index={i}
+                  onSelect={handleCardSelect}
+                  saved={savedGrants.has(grant.id)}
+                  onToggleSave={toggleSave}
+                />
+              ))}
+            </div>
+
+            {lockedGrants.length > 0 && (
+              <div className="relative mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 blur-sm opacity-60 select-none pointer-events-none">
+                  {lockedGrants.slice(0, TEASER_PREVIEW_COUNT).map((grant, i) => (
+                    <GrantCard
+                      key={grant.id}
+                      grant={grant}
+                      index={i}
+                      onSelect={noop}
+                      saved={false}
+                      onToggleSave={noop}
+                    />
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-transparent via-stone-50/80 to-stone-50 dark:via-stone-950/80 dark:to-stone-950">
+                  <Link
+                    to="/student/checkout"
+                    className="flex items-center gap-3 px-6 py-4 rounded-md border border-lime-300 dark:border-lime-800 bg-white dark:bg-stone-900 shadow-lg no-underline hover:border-lime-400 dark:hover:border-lime-700 transition-colors"
+                  >
+                    <Crown className="w-5 h-5 text-lime-600 dark:text-lime-400 shrink-0" />
+                    <div>
+                      <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                        Unlock {lockedGrants.length} more grant{lockedGrants.length === 1 ? "" : "s"}
+                      </p>
+                      <p className="text-xs text-stone-500">
+                        Upgrade to Premium to see the full catalog
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -568,7 +628,7 @@ const GrantCard = memo(function GrantCard({
           {countdown && (
             <MetaChip
               icon={<Clock className="w-3 h-3" />}
-              className="text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-stone-800"
+              className="text-stone-700 dark:text-stone-200 border-stone-200 dark:border-white/10 bg-stone-100 dark:bg-stone-800"
             >
               {countdown}
             </MetaChip>

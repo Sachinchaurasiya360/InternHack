@@ -7,13 +7,7 @@ export const signalsListSchema = z.object({
   source: z.string().trim().min(1).max(60).optional(),
   round: z.string().trim().min(1).max(60).optional(),
   industry: z.string().trim().min(1).max(60).optional(),
-  kind: z.enum(["funding", "hiring", "product_launch", "all"]).default("all"),
-  hiringOnly: z
-    .union([z.literal("true"), z.literal("false"), z.boolean()])
-    .optional()
-    .transform((v) => (v === true || v === "true" ? true : undefined)),
   status: z.enum(["ACTIVE", "STALE", "ARCHIVED", "ALL"]).default("ACTIVE"),
-  minAmountUsd: z.coerce.bigint().nonnegative().optional(),
   sort: z.enum(["recent", "amount"]).default("recent"),
 });
 
