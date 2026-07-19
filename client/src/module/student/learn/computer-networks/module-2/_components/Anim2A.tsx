@@ -33,7 +33,7 @@ const STEPS: {
   title: string
   desc: string
 }[] = [
-  { side:"S", layer:7, pdu:"Message",  hdrs:["data"],                    title:"Application Layer (Sender)",  desc:"Browser creates the HTTP request: GET /api/modules HTTP/1.1 Host: pandalearn.in" },
+  { side:"S", layer:7, pdu:"Message",  hdrs:["data"],                    title:"Application Layer (Sender)",  desc:"Browser creates the HTTP request: GET /api/modules HTTP/1.1 Host: internhack.xyz" },
   { side:"S", layer:6, pdu:"Data",     hdrs:["data"],                    title:"Presentation Layer (Sender)", desc:"TLS encrypts the payload. Text encoding (UTF-8) and compression applied." },
   { side:"S", layer:5, pdu:"Data",     hdrs:["data"],                    title:"Session Layer (Sender)",      desc:"A session is established and tracked. Session IDs allow resuming connections." },
   { side:"S", layer:4, pdu:"Segment",  hdrs:["tcp","data"],              title:"Transport Layer (Sender)",    desc:"TCP prepends its header  source port 50234, destination port 443, sequence number, window size." },

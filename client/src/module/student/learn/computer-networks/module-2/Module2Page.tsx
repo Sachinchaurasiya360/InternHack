@@ -1,38 +1,35 @@
-﻿import { Layers, Network, Shield, Server, Globe, Cpu } from "lucide-react"
+import { Layers, Network, Shield } from "lucide-react"
+import EngineeringLessonShell, { type EngTabDef, type EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell"
 import AnimFrame from "@/components/learn/AnimFrame"
 import ConceptCard from "@/components/learn/ConceptCard"
 import MicroCheck from "@/components/learn/MicroCheck"
-import ExitQuiz, { type QuizQuestion } from "@/components/learn/ExitQuiz"
-import ObjectivesCard from "@/components/learn/ObjectivesCard"
 import Anim2A from "./_components/Anim2A"
 import Anim2B from "./_components/Anim2B"
 import Anim2C from "./_components/Anim2C"
 
-// ── Exit Quiz ─────────────────────────────────────────────────────────────────
-
-const QUIZ: QuizQuestion[] = [
+const QUIZ: EngQuizQuestion[] = [
   {
     question: "Which OSI layer is responsible for logical (IP) addressing and routing between networks?",
     options: ["Data Link (L2)", "Transport (L4)", "Network (L3)", "Session (L5)"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "The Network layer (L3) handles logical IP addressing and makes routing decisions. The Data Link layer uses MAC addresses within a single network segment.",
   },
   {
     question: "What is the correct PDU name for data at the Transport layer when using TCP?",
     options: ["Bit", "Frame", "Segment", "Packet"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "TCP produces Segments at Layer 4. A Frame is the Data Link PDU, a Packet is the Network PDU, and Bits are the Physical PDU.",
   },
   {
     question: "Which OSI layer converts data into bits for physical transmission?",
     options: ["Data Link", "Session", "Presentation", "Physical"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "The Physical layer (L1) converts frames into electrical, optical, or radio signals  the actual bits on the wire. Data Link creates the frame, but Physical transmits it.",
   },
   {
     question: "Which OSI layer handles encryption, decryption, and data format conversion?",
     options: ["Application", "Transport", "Presentation", "Session"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "The Presentation layer (L6) is responsible for TLS/SSL encryption, data compression, and translating formats (e.g. JPEG, ASCII). It presents data in a usable format to the Application layer.",
   },
   {
@@ -43,25 +40,25 @@ const QUIZ: QuizQuestion[] = [
       "Adding headers as data travels down the stack",
       "Splitting data into equal-sized packets",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "Encapsulation means each layer wraps the data with its own header (and sometimes trailer) as it travels down the sender's stack. The reverse  stripping headers going up  is called decapsulation.",
   },
   {
     question: "The 'Internet' layer in the TCP/IP model is equivalent to which OSI layer?",
     options: ["Transport (L4)", "Data Link (L2)", "Network (L3)", "Physical (L1)"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "TCP/IP's Internet layer handles IP addressing and routing  exactly what OSI's Network layer (L3) does. The TCP/IP model was designed around real protocols, so it maps directly to L3.",
   },
   {
     question: "Which device operates at OSI Layer 3 and makes forwarding decisions based on IP addresses?",
     options: ["Hub", "Switch", "Repeater", "Router"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "A router operates at Layer 3 and uses IP routing tables to forward packets between networks. A switch operates at Layer 2 using MAC addresses; a hub is Layer 1.",
   },
   {
     question: "HTTP operates at which OSI layer?",
     options: ["Layer 4 (Transport)", "Layer 5 (Session)", "Layer 6 (Presentation)", "Layer 7 (Application)"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "HTTP is an Application layer (L7) protocol. It defines how web clients and servers exchange resources. Transport (TCP) and Network (IP) are lower layers that carry the HTTP data.",
   },
   {
@@ -72,48 +69,46 @@ const QUIZ: QuizQuestion[] = [
       "TCP Hdr → IP Hdr → App Data → Eth Hdr",
       "IP Hdr → Eth Hdr → TCP Hdr → App Data",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Ethernet is the outermost wrapper (Data Link). Inside is the IP header (Network), then TCP header (Transport), then the Application data. This reflects the encapsulation order: each lower layer wraps the layer above.",
   },
   {
     question: "The TCP/IP Application layer combines which OSI layers?",
     options: ["Layers 1 and 2", "Layers 3 and 4", "Layers 4 and 5", "Layers 5, 6, and 7"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "TCP/IP's Application layer is a consolidation of OSI's Session (L5), Presentation (L6), and Application (L7) layers. TCP/IP is a practical 4-layer model designed for real-world implementation.",
   },
   {
     question: "A switch makes forwarding decisions based on:",
     options: ["IP addresses (L3)", "Port numbers (L4)", "MAC addresses (L2)", "Domain names (L7)"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "A switch is a Layer 2 device. It learns which MAC address is reachable via which port (MAC address table) and forwards frames only to the correct port  avoiding the flooding a hub would do.",
   },
   {
     question: "When data travels up the receiver's OSI stack, each layer removes its header. This process is called:",
     options: ["Encapsulation", "Multiplexing", "Decapsulation", "Fragmentation"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "Decapsulation is the reverse of encapsulation. As data travels up the receiver's stack, each layer peels off and processes its own header before passing the payload to the layer above.",
   },
   {
     question: "The TCP/IP 'Network Access' layer covers which OSI layers?",
     options: ["Layers 1 and 2", "Layers 2 and 3", "Layers 1, 2, and 3", "Layers 3 and 4"],
-    correct: 0,
+    correctIndex: 0,
     explanation: "TCP/IP's Network Access layer combines OSI's Physical (L1) and Data Link (L2) layers. It deals with physical transmission and local network framing (e.g. Ethernet), which the TCP/IP model treats as a single concern.",
   },
   {
     question: "Which PDU is produced at the Data Link layer?",
     options: ["Segment", "Bit", "Packet", "Frame"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "The Data Link layer (L2) produces Frames  the PDU that includes MAC addresses and an FCS checksum for error detection. Packets are Network (L3) PDUs, Segments are Transport (L4), and Bits are Physical (L1).",
   },
   {
     question: "After a Network layer router processes a TCP segment and adds an IP header, the resulting PDU is called a:",
     options: ["Frame", "Segment", "Packet", "Datagram"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "When the Network layer (L3) adds an IP header to a TCP Segment, the result is a Packet. 'Datagram' typically refers to UDP's Transport-layer PDU. Packets are then handed to Data Link as Frames.",
   },
 ]
-
-// ── Section heading ───────────────────────────────────────────────────────────
 
 function SectionHeading({ n, title }: { n: string; title: string }) {
   return (
@@ -127,63 +122,14 @@ function SectionHeading({ n, title }: { n: string; title: string }) {
   )
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
-
 export default function Module2Page() {
-  return (
-    <div className="px-6 lg:px-10">
-
-      {/* ── Module hero ── */}
-      <div className="pt-8 pb-2">
-        <div className="relative overflow-hidden rounded-2xl bg-stone-900 px-8 py-10 text-white">
-          <Layers  size={180} className="pointer-events-none absolute -right-8 -top-6 text-white opacity-[0.04]" aria-hidden="true" />
-          <Shield  size={80}  className="pointer-events-none absolute right-40 top-4 text-white opacity-[0.05] rotate-12" aria-hidden="true" />
-          <Server  size={64}  className="pointer-events-none absolute right-24 bottom-3 text-white opacity-[0.05] -rotate-6" aria-hidden="true" />
-          <Globe   size={72}  className="pointer-events-none absolute right-6 bottom-4 text-white opacity-[0.04]" aria-hidden="true" />
-          <Network size={52}  className="pointer-events-none absolute right-64 top-6 text-white opacity-[0.05] rotate-3" aria-hidden="true" />
-          <Cpu     size={44}  className="pointer-events-none absolute right-52 bottom-5 text-white opacity-[0.04] -rotate-12" aria-hidden="true" />
-
-          <div className="relative flex items-start gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center font-display font-extrabold text-3xl shrink-0">
-              2
-            </div>
-            <div>
-              <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest mb-2">
-                Computer Networks · Module 2 of 8
-              </p>
-              <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
-                OSI &amp; TCP/IP Models
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3">
-                <span className="bg-blue-500/30 text-blue-300 border border-blue-500/30 px-2.5 py-0.5 rounded-md text-xs font-semibold">
-                  Beginner → Intermediate
-                </span>
-                <span className="text-white/50 text-xs">15 quiz questions</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="relative text-white/60 text-sm leading-relaxed mt-6 max-w-2xl">
-            Understand how the OSI and TCP/IP models structure network communication.
-            Trace a real HTTP request through every layer  from browser to server and back.
-          </p>
-        </div>
-      </div>
-
-      {/* ── Body ── */}
-      <div className="py-10 space-y-14">
-
-        {/* Learning objectives */}
-        <ObjectivesCard objectives={[
-          "Name and describe all 7 OSI layers and their responsibilities.",
-          "Map the 4 TCP/IP layers to their OSI equivalents.",
-          "Explain encapsulation and decapsulation with the correct PDU names.",
-          "Trace an HTTP request from browser to server through every layer.",
-          "Identify which OSI layer a given protocol or device belongs to.",
-        ]} />
-
-        {/* ───────────────────────────────────────── Section 01 */}
-        <section className="space-y-6">
+  const tabs: EngTabDef[] = [
+    {
+      id: "s1",
+      label: "The OSI Model",
+      icon: <Layers className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="01" title="The OSI Model" />
 
           <ConceptCard number="2.1" title="Seven Layers, One Framework" tag="Key Concept">
@@ -250,9 +196,14 @@ export default function Module2Page() {
             explanation="IP addresses are a Layer 3 (Network) concept. They provide logical addressing to route packets across multiple networks. MAC addresses are Layer 2 and only work within a single local network segment."
           />
         </section>
-
-        {/* ───────────────────────────────────────── Section 02 */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s2",
+      label: "Encapsulation & PDU Names",
+      icon: <Network className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="02" title="Encapsulation &amp; PDU Names" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -315,9 +266,14 @@ export default function Module2Page() {
             explanation="The Data Link layer produces Frames  they contain the source and destination MAC addresses, the payload, and an FCS (Frame Check Sequence) for error detection. Packets are Network layer PDUs, Segments are Transport, and Bits are Physical."
           />
         </section>
-
-        {/* ───────────────────────────────────────── Section 03 */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s3",
+      label: "The TCP/IP Model",
+      icon: <Shield className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="03" title="The TCP/IP Model" />
 
           <ConceptCard number="2.3" title="OSI vs TCP/IP  The Practical Model" tag="Key Concept">
@@ -374,31 +330,19 @@ export default function Module2Page() {
             explanation="The TCP/IP model has 4 layers: Application (covers OSI L5–L7), Transport (L4), Internet (L3), and Network Access (L1–L2). The OSI model has 7 layers. TCP/IP was designed around real internet protocols, so it's leaner."
           />
         </section>
+      ),
+    },
+  ]
 
-        {/* ───────────────────────────────────────── Exit Quiz */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-stone-200" />
-            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-stone-900 text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-              <span className="text-xs font-bold uppercase tracking-widest">Module Exit Quiz</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-            </div>
-            <div className="flex-1 h-px bg-stone-200" />
-          </div>
-
-          <p className="text-sm text-stone-500 text-center mb-8">
-            Score <strong className="text-stone-700 dark:text-stone-300">11 / 15</strong> or higher to unlock Module 3.
-          </p>
-
-          <ExitQuiz
-            moduleName="Module 2  OSI &amp; TCP/IP Models"
-            questions={QUIZ}
-            passThreshold={11}
-          />
-        </section>
-
-      </div>
-    </div>
+  return (
+    <EngineeringLessonShell
+      title="OSI & TCP/IP Models"
+      level={2}
+      lessonNumber={2}
+      crumbLabel="computer networks"
+      crumbTail="module 02"
+      tabs={tabs}
+      quiz={QUIZ}
+    />
   )
 }

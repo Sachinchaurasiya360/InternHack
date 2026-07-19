@@ -1,16 +1,13 @@
-﻿import { Network, Cpu, Shield, Server, Globe, Layers } from "lucide-react"
+import { Network, Cpu, Shield, Server } from "lucide-react"
+import EngineeringLessonShell, { type EngTabDef, type EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell"
 import AnimFrame from "@/components/learn/AnimFrame"
 import ConceptCard from "@/components/learn/ConceptCard"
 import MicroCheck from "@/components/learn/MicroCheck"
-import ExitQuiz, { type QuizQuestion } from "@/components/learn/ExitQuiz"
-import ObjectivesCard from "@/components/learn/ObjectivesCard"
 import Anim3A from "./_components/Anim3A"
 import Anim3B from "./_components/Anim3B"
 import Anim3C from "./_components/Anim3C"
 
-// ── Exit Quiz ─────────────────────────────────────────────────────────────────
-
-const QUIZ: QuizQuestion[] = [
+const QUIZ: EngQuizQuestion[] = [
   {
     question: "What does ARP stand for and what problem does it solve?",
     options: [
@@ -19,7 +16,7 @@ const QUIZ: QuizQuestion[] = [
       "Address Resolution Protocol  maps MAC addresses to IP addresses",
       "Automatic Routing Protocol  assigns IP addresses dynamically",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "ARP (Address Resolution Protocol) resolves a known IP address to its corresponding MAC address. You need the MAC address to actually send a frame on a local Ethernet network.",
   },
   {
@@ -30,7 +27,7 @@ const QUIZ: QuizQuestion[] = [
       "Broadcast … Unicast",
       "Broadcast … Broadcast",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "ARP requests are broadcast (FF:FF:FF:FF:FF:FF) because the sender doesn't yet know the destination MAC. The reply is unicast  the target now knows who asked and replies directly.",
   },
   {
@@ -41,19 +38,19 @@ const QUIZ: QuizQuestion[] = [
       "Floods the frame to all ports except the source port",
       "Forwards it to the default gateway",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "When a switch encounters an unknown destination MAC, it floods the frame to every port except the one it arrived on. This is called 'unknown unicast flooding'. The switch learns the destination MAC when that device replies.",
   },
   {
     question: "What is the maximum payload size (MTU) of a standard Ethernet frame?",
     options: ["512 bytes", "1500 bytes", "9000 bytes", "65535 bytes"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "The standard Ethernet MTU is 1500 bytes. Frames larger than this must be fragmented at the IP layer before transmission. Jumbo frames (up to 9000 bytes) require explicit switch/NIC support.",
   },
   {
     question: "Which field in an Ethernet frame identifies what Layer 3 protocol is inside the payload?",
     options: ["FCS", "Preamble", "EtherType", "SFD"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "The EtherType field (2 bytes) identifies the encapsulated protocol: 0x0800 = IPv4, 0x86DD = IPv6, 0x0806 = ARP. The receiver uses this to know which upper-layer handler to pass the payload to.",
   },
   {
@@ -64,7 +61,7 @@ const QUIZ: QuizQuestion[] = [
       "Detect bit errors introduced during transmission",
       "Identify the source port on the switch",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "The Frame Check Sequence (FCS) is a 32-bit CRC computed over the frame contents. If a receiver's computed CRC doesn't match the FCS, the frame is silently dropped  Ethernet does not request retransmission (that's TCP's job).",
   },
   {
@@ -75,7 +72,7 @@ const QUIZ: QuizQuestion[] = [
       "MAC addresses are hardware identifiers used within a LAN; IP addresses are logical and route across networks",
       "MAC addresses change every session; IP addresses are permanent",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "A MAC address is burned into the NIC hardware and used only for communication within a single network segment (Layer 2). An IP address is a logical address assigned by software and used to route packets across multiple networks (Layer 3).",
   },
   {
@@ -86,13 +83,13 @@ const QUIZ: QuizQuestion[] = [
       "To track how many times a port has been used",
       "To prioritise certain MAC addresses",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Entries in a switch's MAC table expire (typically after ~300 s) to handle devices that have disconnected, moved to a different port, or changed MAC addresses. Without aging, the table would fill with stale entries and the switch could no longer forward accurately.",
   },
   {
     question: "Which device operates at OSI Layer 2 and creates a separate collision domain per port?",
     options: ["Hub", "Bridge", "Switch", "Router"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "A switch creates a separate collision domain for each port  only the two devices on that segment compete for the medium. A hub (Layer 1) has one shared collision domain for all ports. A bridge creates per-segment collision domains but typically has fewer ports.",
   },
   {
@@ -103,7 +100,7 @@ const QUIZ: QuizQuestion[] = [
       "VLAN tag  identifies the virtual LAN",
       "EtherType  identifies the Layer 3 protocol",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "The first 24 bits (3 bytes) of a MAC address form the OUI (Organisationally Unique Identifier), assigned by IEEE to each NIC manufacturer. The remaining 24 bits are assigned by the manufacturer to uniquely identify each device.",
   },
   {
@@ -114,7 +111,7 @@ const QUIZ: QuizQuestion[] = [
       "Sends the frame to the default gateway",
       "Drops the frame until the destination is known",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Source learning  when a frame arrives, the switch records the source MAC address and the port it came in on. This way, the switch knows where to send future frames destined for that MAC without flooding.",
   },
   {
@@ -125,12 +122,10 @@ const QUIZ: QuizQuestion[] = [
       "A router (or Layer 3 switch) to route between them",
       "An additional FCS check",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "VLANs are Layer 2 constructs  traffic within a VLAN stays within it. To route between VLANs you need a Layer 3 device (router or Layer 3 switch) to move packets between the logical networks, just like routing between physical networks.",
   },
 ]
-
-// ── Section heading ───────────────────────────────────────────────────────────
 
 function SectionHeading({ n, title }: { n: string; title: string }) {
   return (
@@ -144,63 +139,14 @@ function SectionHeading({ n, title }: { n: string; title: string }) {
   )
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
-
 export default function Module3Page() {
-  return (
-    <div className="px-6 lg:px-10">
-
-      {/* ── Module hero ── */}
-      <div className="pt-8 pb-2">
-        <div className="relative overflow-hidden rounded-2xl bg-stone-900 px-8 py-10 text-white">
-          <Network size={180} className="pointer-events-none absolute -right-8 -top-6 text-white opacity-[0.04]" aria-hidden="true" />
-          <Cpu     size={80}  className="pointer-events-none absolute right-40 top-4 text-white opacity-[0.05] rotate-12" aria-hidden="true" />
-          <Shield  size={64}  className="pointer-events-none absolute right-24 bottom-3 text-white opacity-[0.05] -rotate-6" aria-hidden="true" />
-          <Globe   size={72}  className="pointer-events-none absolute right-6 bottom-4 text-white opacity-[0.04]" aria-hidden="true" />
-          <Server  size={52}  className="pointer-events-none absolute right-64 top-6 text-white opacity-[0.05] rotate-3" aria-hidden="true" />
-          <Layers  size={44}  className="pointer-events-none absolute right-52 bottom-5 text-white opacity-[0.04] -rotate-12" aria-hidden="true" />
-
-          <div className="relative flex items-start gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center font-display font-extrabold text-3xl shrink-0">
-              3
-            </div>
-            <div>
-              <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest mb-2">
-                Computer Networks · Module 3 of 8
-              </p>
-              <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
-                Data Link Layer
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3">
-                <span className="bg-amber-500/30 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded-md text-xs font-semibold">
-                  Intermediate
-                </span>
-                <span className="text-white/50 text-xs">12 quiz questions</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="relative text-white/60 text-sm leading-relaxed mt-6 max-w-2xl">
-            Understand how data moves between adjacent devices on a network  MAC addressing,
-            Ethernet framing, ARP, and how switches learn to forward frames intelligently.
-          </p>
-        </div>
-      </div>
-
-      {/* ── Body ── */}
-      <div className="py-10 space-y-14">
-
-        {/* Learning objectives */}
-        <ObjectivesCard objectives={[
-          "Explain what a MAC address is and how it differs from an IP address.",
-          "Describe the structure of an Ethernet frame field by field.",
-          "Trace an ARP request and response, including ARP caching.",
-          "Contrast hubs, bridges, and switches by layer and collision domain.",
-          "Explain how a switch builds and ages its MAC address table.",
-        ]} />
-
-        {/* ──────────────────────────────── Section 01 */}
-        <section className="space-y-6">
+  const tabs: EngTabDef[] = [
+    {
+      id: "s1",
+      label: "MAC Addresses",
+      icon: <Network className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="01" title="MAC Addresses" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -268,9 +214,14 @@ export default function Module3Page() {
             explanation="The first 24 bits of a MAC address are the OUI (Organisationally Unique Identifier), assigned by IEEE to each NIC manufacturer. Apple, Intel, and Cisco each have their own OUI prefix. The remaining 24 bits uniquely identify the specific device."
           />
         </section>
-
-        {/* ──────────────────────────────── Section 02 */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s2",
+      label: "Ethernet Frame Structure",
+      icon: <Cpu className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="02" title="Ethernet Frame Structure" />
 
           <ConceptCard number="3.2" title="Anatomy of an Ethernet Frame" tag="Key Concept">
@@ -336,9 +287,14 @@ export default function Module3Page() {
             explanation="Ethernet's FCS detects errors but does not correct them  the frame is simply dropped. Error recovery (retransmission) is handled by higher layers, specifically TCP at Layer 4. This keeps Layer 2 fast and simple."
           />
         </section>
-
-        {/* ──────────────────────────────── Section 03 */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s3",
+      label: "ARP  Address Resolution Protocol",
+      icon: <Shield className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="03" title="ARP  Address Resolution Protocol" />
 
           <ConceptCard number="3.3" title="The ARP Problem" tag="Key Concept">
@@ -389,9 +345,14 @@ export default function Module3Page() {
             explanation="The whole point of ARP is to discover an unknown MAC address. Since the sender doesn't know the MAC, it can't send a unicast (which requires the MAC). A broadcast (FF:FF:FF:FF:FF:FF) reaches every device on the segment  the correct one will reply."
           />
         </section>
-
-        {/* ──────────────────────────────── Section 04 */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s4",
+      label: "Hubs, Bridges & Switches",
+      icon: <Server className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="04" title="Hubs, Bridges &amp; Switches" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -471,31 +432,19 @@ export default function Module3Page() {
             explanation="Since the switch already knows D is on Port 4 (source learning), it forwards the frame only to Port 4. This is the key advantage of a switch over a hub  no unnecessary flooding when the destination is known."
           />
         </section>
+      ),
+    },
+  ]
 
-        {/* ──────────────────────────────── Exit Quiz */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-stone-200" />
-            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-stone-900 text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-              <span className="text-xs font-bold uppercase tracking-widest">Module Exit Quiz</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-            </div>
-            <div className="flex-1 h-px bg-stone-200" />
-          </div>
-
-          <p className="text-sm text-stone-500 text-center mb-8">
-            Score <strong className="text-stone-700 dark:text-stone-300">9 / 12</strong> or higher to unlock Module 4.
-          </p>
-
-          <ExitQuiz
-            moduleName="Module 3  Data Link Layer"
-            questions={QUIZ}
-            passThreshold={9}
-          />
-        </section>
-
-      </div>
-    </div>
+  return (
+    <EngineeringLessonShell
+      title="Data Link Layer"
+      level={3}
+      lessonNumber={3}
+      crumbLabel="computer networks"
+      crumbTail="module 03"
+      tabs={tabs}
+      quiz={QUIZ}
+    />
   )
 }

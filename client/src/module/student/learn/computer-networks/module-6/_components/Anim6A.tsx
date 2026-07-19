@@ -13,10 +13,10 @@ interface Phase {
 }
 
 const PHASES: Phase[] = [
-  { id: "dns",  label: "DNS Lookup",        detail: "Browser queries DNS resolver → root → TLD → authoritative. Returns 203.0.113.42 for pandalearn.in. Cached for next 300 s (TTL).", color: "#F59E0B", duration: 42,  icon: <Globe size={10} /> },
+  { id: "dns",  label: "DNS Lookup",        detail: "Browser queries DNS resolver → root → TLD → authoritative. Returns 203.0.113.42 for internhack.xyz. Cached for next 300 s (TTL).", color: "#F59E0B", duration: 42,  icon: <Globe size={10} /> },
   { id: "tcp",  label: "TCP Handshake",     detail: "SYN → SYN-ACK → ACK. Three packets establish the reliable channel before any data moves. Adds one RTT of latency.", color: "#7C3AED", duration: 28,  icon: <Wifi size={10} /> },
   { id: "tls",  label: "TLS 1.3 Handshake",detail: "ClientHello → ServerHello + Certificate → Key exchange. Both sides derive session keys. Only 1 RTT in TLS 1.3 (vs 2 RTT in 1.2). Padlock locked.", color: "#10B981", duration: 35,  icon: <Lock size={10} /> },
-  { id: "req",  label: "HTTP GET Request",  detail: "GET /api/modules HTTP/1.1  |  Host: pandalearn.in  |  Accept: application/json  |  Authorization: Bearer …  Encrypted in TLS record.", color: "#2563EB", duration: 8,   icon: <Server size={10} /> },
+  { id: "req",  label: "HTTP GET Request",  detail: "GET /api/modules HTTP/1.1  |  Host: internhack.xyz  |  Accept: application/json  |  Authorization: Bearer …  Encrypted in TLS record.", color: "#2563EB", duration: 8,   icon: <Server size={10} /> },
   { id: "proc", label: "Server Processing", detail: "Server reads DB, builds JSON response. Network I/O + compute. Typical: 5–50 ms for a cached API response.", color: "#8B5CF6", duration: 18,  icon: <Server size={10} /> },
   { id: "res",  label: "HTTP 200 Response", detail: "HTTP/1.1 200 OK  |  Content-Type: application/json  |  Content-Length: 348  |  Body: {\"modules\":[…]}  Decrypted by TLS layer.", color: "#10B981", duration: 12,  icon: <Server size={10} /> },
   { id: "keep", label: "Keep-Alive / Close",detail: "Connection: keep-alive header lets the TCP connection persist for the next request. Avoids paying TCP + TLS handshake cost again (~105 ms saved).", color: "#64748B", duration: 4,   icon: <Wifi size={10} /> },
@@ -94,7 +94,7 @@ export default function Anim6A() {
             <Globe size={16} className="text-blue-400" />
           </div>
           <span className="text-[9px] text-stone-500 font-bold uppercase tracking-wide">Browser</span>
-          <span className="text-[8px] text-stone-600 font-mono">pandalearn.in</span>
+          <span className="text-[8px] text-stone-600 font-mono">internhack.xyz</span>
         </div>
 
         {/* packet travel lane */}

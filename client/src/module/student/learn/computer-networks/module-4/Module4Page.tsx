@@ -1,33 +1,30 @@
-﻿import { Globe, Network, Server, Shield, Layers, Cpu } from "lucide-react"
+import { Globe, Network, Server, Shield, Layers } from "lucide-react"
+import EngineeringLessonShell, { type EngTabDef, type EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell"
 import AnimFrame from "@/components/learn/AnimFrame"
 import ConceptCard from "@/components/learn/ConceptCard"
 import MicroCheck from "@/components/learn/MicroCheck"
-import ExitQuiz, { type QuizQuestion } from "@/components/learn/ExitQuiz"
-import ObjectivesCard from "@/components/learn/ObjectivesCard"
 import Anim4A from "./_components/Anim4A"
 import Anim4B from "./_components/Anim4B"
 import Anim4C from "./_components/Anim4C"
 import Anim4D from "./_components/Anim4D"
 
-// ── Exit Quiz ─────────────────────────────────────────────────────────────────
-
-const QUIZ: QuizQuestion[] = [
+const QUIZ: EngQuizQuestion[] = [
   {
     question: "How many usable host addresses does a /26 subnet provide?",
     options: ["30", "62", "64", "126"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "A /26 subnet has 32 - 26 = 6 host bits. 2⁶ = 64 total addresses minus 2 (network + broadcast) = 62 usable hosts. This is a common calculation for small office subnets.",
   },
   {
     question: "What is the network address of 192.168.5.130/25?",
     options: ["192.168.5.0", "192.168.5.128", "192.168.5.130", "192.168.5.255"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "/25 means the subnet mask is 255.255.255.128. The network boundary for the second half is 192.168.5.128. ANDing 130 with 128 gives 128. So the network address is 192.168.5.128.",
   },
   {
     question: "Which IP address range belongs to the private (RFC 1918) space?",
     options: ["203.0.113.0/24", "172.16.0.0/12", "100.64.0.0/10", "8.8.8.0/24"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "RFC 1918 defines three private ranges: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. 203.0.113.0/24 is a documentation prefix; 100.64.0.0/10 is carrier-grade NAT (RFC 6598); 8.8.8.0/24 is Google's public DNS.",
   },
   {
@@ -38,7 +35,7 @@ const QUIZ: QuizQuestion[] = [
       "Both are used equally (load-balanced)",
       "The router drops the packet due to ambiguity",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Routers use longest prefix match: the most specific route (highest prefix length) that matches the destination wins. /24 is more specific than /16 for 10.10.5.100, so 10.10.5.0/24 is chosen.",
   },
   {
@@ -49,7 +46,7 @@ const QUIZ: QuizQuestion[] = [
       "It is used only for multicast traffic",
       "It blocks all traffic from reaching the router",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "The default route (0.0.0.0/0) matches any destination address. It has the shortest possible prefix (/0), so it only wins when no more specific route matches. It is the 'gateway of last resort'  typically pointing to the internet upstream.",
   },
   {
@@ -60,7 +57,7 @@ const QUIZ: QuizQuestion[] = [
       "The loopback address  traffic stays within the same host",
       "An APIPA address assigned when DHCP fails",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "127.0.0.1 (loopback / localhost) sends packets back to the same machine without hitting the network. The entire 127.0.0.0/8 block is reserved for loopback. APIPA addresses are in the 169.254.0.0/16 range.",
   },
   {
@@ -71,19 +68,19 @@ const QUIZ: QuizQuestion[] = [
       "Different VLAN tags",
       "Different TTL values",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "PAT (also called NAT Overload) maps each private IP:port combination to the same public IP with a unique source port. The NAT device maintains a table so return traffic can be forwarded to the correct private host. This is why a home router can serve dozens of devices with one public IP.",
   },
   {
     question: "Which routing protocol uses the Dijkstra shortest-path algorithm and is classified as link-state?",
     options: ["RIP", "BGP", "OSPF", "EIGRP"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "OSPF (Open Shortest Path First) is a link-state protocol  every router floods its links across the domain and each router independently runs Dijkstra to build a complete topology map. RIP is distance-vector (Bellman-Ford); BGP is path-vector used between autonomous systems.",
   },
   {
     question: "How many bits are in an IPv6 address?",
     options: ["32", "64", "96", "128"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "IPv6 addresses are 128 bits long, written as 8 groups of 4 hex digits. This gives ~340 undecillion unique addresses, solving IPv4 exhaustion. IPv4 uses only 32 bits (~4.3 billion addresses).",
   },
   {
@@ -94,25 +91,25 @@ const QUIZ: QuizQuestion[] = [
       "The link-local prefix (FE80::)",
       "A wildcard matching any address",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "In IPv6, :: compresses one contiguous run of consecutive all-zero groups. For example, 2001:0db8:0000:0000:0000:0000:0000:0001 becomes 2001:db8::1. It can only appear once in an address to avoid ambiguity.",
   },
   {
     question: "You need to split 10.0.0.0/24 into exactly 8 equal subnets. What will the new prefix length be?",
     options: ["/25", "/26", "/27", "/28"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "8 subnets = 2³, so you borrow 3 bits from the host portion. 24 + 3 = /27. Each /27 subnet has 2⁵ - 2 = 30 usable hosts.",
   },
   {
     question: "Which address is the broadcast address for the subnet 192.168.10.0/28?",
     options: ["192.168.10.14", "192.168.10.15", "192.168.10.16", "192.168.10.31"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "/28 has 4 host bits. Block size = 2⁴ = 16. Starting at .0, the broadcast is .0 + 16 - 1 = .15. The next subnet starts at .16. Usable hosts are .1 through .14 (14 hosts).",
   },
   {
     question: "BGP is the routing protocol of the internet. What type is it?",
     options: ["Link-state", "Distance-vector", "Path-vector", "Spanning-tree"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "BGP (Border Gateway Protocol) is a path-vector protocol. Each route advertisement carries the full AS path, not just a metric. Routers use path attributes (AS_PATH, LOCAL_PREF, MED) to select the best path. BGP connects Autonomous Systems (ASes) across the internet.",
   },
   {
@@ -123,7 +120,7 @@ const QUIZ: QuizQuestion[] = [
       "192.168.0.0/16  when static IP is not configured",
       "127.0.0.0/8  when no network interface is present",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "APIPA (Automatic Private IP Addressing) assigns a 169.254.x.x address when a host fails to reach a DHCP server. The address is link-local  usable only within the local segment. It allows local communication but not internet access.",
   },
   {
@@ -134,7 +131,7 @@ const QUIZ: QuizQuestion[] = [
       "PAT (NAT Overload)  many privates to one public using port numbers",
       "Twice NAT  source and destination both translated",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "Home routers use PAT (Port Address Translation / NAT Overload)  every device on your LAN shares a single public IP. The router maps each connection to a unique source port, so it can route return packets back to the correct private device.",
   },
   {
@@ -145,25 +142,25 @@ const QUIZ: QuizQuestion[] = [
       "DHCPv6  it assigns MACs as well as IPs",
       "RARP (Reverse ARP)",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "IPv6 replaces ARP with NDP (Neighbor Discovery Protocol), which uses ICMPv6 messages and multicast (not broadcast). The equivalent of ARP request/reply are 'Neighbor Solicitation' and 'Neighbor Advertisement' messages sent to multicast groups.",
   },
   {
     question: "How many usable hosts are in a /30 subnet?",
     options: ["0", "2", "4", "6"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "/30 has 2 host bits. 2² = 4 total addresses. Subtract network + broadcast = 2 usable hosts. /30 is commonly used for point-to-point router links where only two addresses are needed.",
   },
   {
     question: "Which special address does a host use when it doesn't know its own IP (e.g., during DHCP discovery)?",
     options: ["127.0.0.1", "255.255.255.255", "0.0.0.0", "169.254.0.1"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "A host uses 0.0.0.0 as its source address before it has been assigned an IP (e.g., in a DHCP Discover message). It also appears in routing tables as the default route destination (0.0.0.0/0).",
   },
   {
     question: "Subnetting 172.16.0.0/16 with a /20 prefix gives how many subnets?",
     options: ["4", "8", "16", "32"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "Borrowing 20 - 16 = 4 bits. 2⁴ = 16 subnets. Each /20 has 2¹² - 2 = 4094 usable hosts. Example subnets: 172.16.0.0/20, 172.16.16.0/20, 172.16.32.0/20, …",
   },
   {
@@ -174,12 +171,10 @@ const QUIZ: QuizQuestion[] = [
       "Static Link Address Allocation  used by IPv4 for manual configuration",
       "Subnet Layer Aggregation and Compression  used in BGP route summarization",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "SLAAC (Stateless Address Autoconfiguration) lets IPv6 hosts generate their own addresses using the network prefix advertised by the router (via ICMPv6 Router Advertisement) combined with their interface identifier (often derived from the MAC). No DHCP server required.",
   },
 ]
-
-// ── helpers ───────────────────────────────────────────────────────────────────
 
 function SectionHeading({ n, title }: { n: string; title: string }) {
   return (
@@ -193,63 +188,14 @@ function SectionHeading({ n, title }: { n: string; title: string }) {
   )
 }
 
-// ── page ─────────────────────────────────────────────────────────────────────
-
 export default function Module4Page() {
-  return (
-    <div className="px-6 lg:px-10">
-
-      {/* hero */}
-      <div className="pt-8 pb-2">
-        <div className="relative overflow-hidden rounded-2xl bg-stone-900 px-8 py-10 text-white">
-          <Globe   size={180} className="pointer-events-none absolute -right-8 -top-6 text-white opacity-[0.04]" aria-hidden />
-          <Network size={80}  className="pointer-events-none absolute right-40 top-4 text-white opacity-[0.05] rotate-12" aria-hidden />
-          <Server  size={64}  className="pointer-events-none absolute right-24 bottom-3 text-white opacity-[0.05] -rotate-6" aria-hidden />
-          <Shield  size={72}  className="pointer-events-none absolute right-6 bottom-4 text-white opacity-[0.04]" aria-hidden />
-          <Layers  size={52}  className="pointer-events-none absolute right-64 top-6 text-white opacity-[0.05] rotate-3" aria-hidden />
-          <Cpu     size={44}  className="pointer-events-none absolute right-52 bottom-5 text-white opacity-[0.04] -rotate-12" aria-hidden />
-
-          <div className="relative flex items-start gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center font-display font-extrabold text-3xl shrink-0">
-              4
-            </div>
-            <div>
-              <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest mb-2">
-                Computer Networks · Module 4 of 8
-              </p>
-              <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
-                Network Layer &amp; IP Addressing
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3">
-                <span className="bg-blue-500/30 text-blue-300 border border-blue-500/30 px-2.5 py-0.5 rounded-md text-xs font-semibold">
-                  Intermediate
-                </span>
-                <span className="text-white/50 text-xs">20 quiz questions</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="relative text-white/60 text-sm leading-relaxed mt-6 max-w-2xl">
-            Master IP addressing, subnetting, CIDR, routing tables, NAT, and IPv6.
-            Learn how routers make forwarding decisions and how the internet extends beyond 4 billion addresses.
-          </p>
-        </div>
-      </div>
-
-      {/* body */}
-      <div className="py-10 space-y-14">
-
-        <ObjectivesCard objectives={[
-          "Convert between binary and dotted-decimal IP addresses.",
-          "Apply CIDR notation to calculate network/host ranges and subnet counts.",
-          "Subnet a given address block and identify network, broadcast, and host ranges.",
-          "Explain how a routing table uses longest prefix match to forward packets.",
-          "Describe NAT (PAT) and how it extends IPv4 address space.",
-          "Understand IPv6 addressing and key differences from IPv4.",
-        ]} />
-
-        {/* ────────────── Section 01: IPv4 */}
-        <section className="space-y-6">
+  const tabs: EngTabDef[] = [
+    {
+      id: "s1",
+      label: "IPv4 Addressing",
+      icon: <Globe className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="01" title="IPv4 Addressing" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -317,9 +263,14 @@ export default function Module4Page() {
             explanation="192.168.0.0/16 is one of three RFC 1918 private ranges. The others are 10.0.0.0/8 and 172.16.0.0/12. These addresses are blocked by internet routers and used only within private networks."
           />
         </section>
-
-        {/* ────────────── Section 02: Subnetting */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s2",
+      label: "Subnet Masks & CIDR",
+      icon: <Network className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="02" title="Subnet Masks &amp; CIDR" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -392,9 +343,14 @@ export default function Module4Page() {
             explanation="A /27 subnet has 32 - 27 = 5 host bits. 2⁵ = 32 total addresses. Subtract 2 (network + broadcast) = 30 usable hosts. /27 is common for small branch office LANs."
           />
         </section>
-
-        {/* ────────────── Section 03: Routing */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s3",
+      label: "Routing & Routing Tables",
+      icon: <Server className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="03" title="Routing &amp; Routing Tables" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -465,9 +421,14 @@ export default function Module4Page() {
             explanation="Longest prefix match means the most specific (highest prefix) route wins. 10.10.0.0/16 matches 10.10.5.99 with a 16-bit prefix, which is more specific than 10.0.0.0/8 (8-bit) or 0.0.0.0/0 (0-bit default). So /16 is chosen."
           />
         </section>
-
-        {/* ────────────── Section 04: NAT */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s4",
+      label: "NAT  Network Address Translation",
+      icon: <Shield className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="04" title="NAT  Network Address Translation" />
 
           <ConceptCard number="4.6" title="How NAT Extends IPv4" tag="Key Concept">
@@ -522,9 +483,14 @@ export default function Module4Page() {
             explanation="PAT maps each private IP:port combination to the same public IP with a unique source port. When a response arrives, the router looks up the destination port in its NAT table to find the original private host and rewrites the destination IP:port accordingly."
           />
         </section>
-
-        {/* ────────────── Section 05: IPv6 */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s5",
+      label: "IPv6",
+      icon: <Layers className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="05" title="IPv6" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -577,31 +543,19 @@ export default function Module4Page() {
             explanation="The :: compresses all the zero groups between db8 and the trailing 1. Expanding it: 2001:0db8 + six all-zero groups (0000:0000:0000:0000:0000:0000) + 0001. Full form: 2001:0db8:0000:0000:0000:0000:0000:0001."
           />
         </section>
+      ),
+    },
+  ]
 
-        {/* ──────────────── Exit Quiz */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-stone-200" />
-            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-stone-900 text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-              <span className="text-xs font-bold uppercase tracking-widest">Module Exit Quiz</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-            </div>
-            <div className="flex-1 h-px bg-stone-200" />
-          </div>
-
-          <p className="text-sm text-stone-500 text-center mb-8">
-            Score <strong className="text-stone-700 dark:text-stone-300">14 / 20</strong> or higher to unlock Module 5.
-          </p>
-
-          <ExitQuiz
-            moduleName="Module 4  Network Layer &amp; IP Addressing"
-            questions={QUIZ}
-            passThreshold={14}
-          />
-        </section>
-
-      </div>
-    </div>
+  return (
+    <EngineeringLessonShell
+      title="Network Layer & IP Addressing"
+      level={4}
+      lessonNumber={4}
+      crumbLabel="computer networks"
+      crumbTail="module 04"
+      tabs={tabs}
+      quiz={QUIZ}
+    />
   )
 }

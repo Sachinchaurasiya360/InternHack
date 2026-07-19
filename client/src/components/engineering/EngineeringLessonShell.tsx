@@ -26,6 +26,8 @@ interface EngineeringLessonShellProps {
   nextLessonHint?: string;
   /** Crumb path label, e.g. "system design" or "engineering". Defaults to "system design". */
   crumbLabel?: string;
+  /** Overrides the "level X / lesson Y" crumb tail, e.g. "module 01". */
+  crumbTail?: string;
   /** Called when the quiz is fully answered. Pass score 0-100. */
   onQuizComplete?: (scorePercent: number) => void;
 }
@@ -39,6 +41,7 @@ export function EngineeringLessonShell({
   placementRelevance,
   nextLessonHint,
   crumbLabel = "system design",
+  crumbTail,
   onQuizComplete,
 }: EngineeringLessonShellProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
@@ -65,7 +68,7 @@ export function EngineeringLessonShell({
             transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.2 }}
             className="h-1 w-1 bg-lime-500"
           />
-          learn / {crumbLabel} / level {String(level).padStart(2, "0")} / lesson {String(lessonNumber).padStart(2, "0")}
+          learn / {crumbLabel} / {crumbTail ?? `level ${String(level).padStart(2, "0")} / lesson ${String(lessonNumber).padStart(2, "0")}`}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 12 }}

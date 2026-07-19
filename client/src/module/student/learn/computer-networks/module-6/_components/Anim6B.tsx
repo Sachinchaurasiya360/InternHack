@@ -17,24 +17,24 @@ const NODES: Node[] = [
   { id: "resolver", label: "Recursive Resolver",  sublabel: "8.8.8.8",          x: 0.32,  y: 0.50, color: "#7C3AED" },
   { id: "root",     label: "Root Nameserver",     sublabel: ". (dot)",          x: 0.56,  y: 0.15, color: "#F59E0B" },
   { id: "tld",      label: "TLD Nameserver",      sublabel: ".in",              x: 0.76,  y: 0.45, color: "#F97316" },
-  { id: "auth",     label: "Authoritative NS",    sublabel: "pandalearn.in",    x: 0.56,  y: 0.80, color: "#10B981" },
+  { id: "auth",     label: "Authoritative NS",    sublabel: "internhack.xyz",    x: 0.56,  y: 0.80, color: "#10B981" },
 ]
 
 interface Arrow { from: string; to: string; label: string; color: string; dir: "fwd" | "back" }
 
 const STEPS_FIRST: Arrow[] = [
-  { from: "browser",  to: "resolver", label: "pandalearn.in?",     color: "#2563EB", dir: "fwd" },
-  { from: "resolver", to: "root",     label: "pandalearn.in?",     color: "#7C3AED", dir: "fwd" },
+  { from: "browser",  to: "resolver", label: "internhack.xyz?",     color: "#2563EB", dir: "fwd" },
+  { from: "resolver", to: "root",     label: "internhack.xyz?",     color: "#7C3AED", dir: "fwd" },
   { from: "root",     to: "resolver", label: "ask .in NS",         color: "#F59E0B", dir: "back" },
-  { from: "resolver", to: "tld",      label: "pandalearn.in?",     color: "#7C3AED", dir: "fwd" },
+  { from: "resolver", to: "tld",      label: "internhack.xyz?",     color: "#7C3AED", dir: "fwd" },
   { from: "tld",      to: "resolver", label: "ask auth NS",        color: "#F97316", dir: "back" },
-  { from: "resolver", to: "auth",     label: "pandalearn.in?",     color: "#7C3AED", dir: "fwd" },
+  { from: "resolver", to: "auth",     label: "internhack.xyz?",     color: "#7C3AED", dir: "fwd" },
   { from: "auth",     to: "resolver", label: "A=203.0.113.42",     color: "#10B981", dir: "back" },
   { from: "resolver", to: "browser",  label: "203.0.113.42 (TTL=300s)", color: "#10B981", dir: "back" },
 ]
 
 const STEPS_CACHED: Arrow[] = [
-  { from: "browser",  to: "resolver", label: "pandalearn.in?",     color: "#2563EB", dir: "fwd" },
+  { from: "browser",  to: "resolver", label: "internhack.xyz?",     color: "#2563EB", dir: "fwd" },
   { from: "resolver", to: "browser",  label: "203.0.113.42 (cached!)", color: "#10B981", dir: "back" },
 ]
 

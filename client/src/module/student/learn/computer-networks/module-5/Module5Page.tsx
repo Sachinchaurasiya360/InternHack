@@ -1,17 +1,14 @@
-﻿import { Layers, Network, Shield, Server, Globe, Cpu } from "lucide-react"
+import { Layers, Network, Shield, Server, Globe, Cpu } from "lucide-react"
+import EngineeringLessonShell, { type EngTabDef, type EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell"
 import AnimFrame from "@/components/learn/AnimFrame"
 import ConceptCard from "@/components/learn/ConceptCard"
 import MicroCheck from "@/components/learn/MicroCheck"
-import ExitQuiz, { type QuizQuestion } from "@/components/learn/ExitQuiz"
-import ObjectivesCard from "@/components/learn/ObjectivesCard"
 import Anim5A from "./_components/Anim5A"
 import Anim5B from "./_components/Anim5B"
 import Anim5C from "./_components/Anim5C"
 import Anim5D from "./_components/Anim5D"
 
-// ── Exit Quiz ──────────────────────────────────────────────────────────────────
-
-const QUIZ: QuizQuestion[] = [
+const QUIZ: EngQuizQuestion[] = [
   {
     question: "What is the correct sequence of the TCP 3-way handshake?",
     options: [
@@ -20,7 +17,7 @@ const QUIZ: QuizQuestion[] = [
       "ACK → SYN → SYN-ACK",
       "SYN-ACK → SYN → ACK",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "The 3-way handshake is SYN → SYN-ACK → ACK. The client initiates with SYN, the server acknowledges and sends its own SYN in SYN-ACK, and the client confirms with ACK. This exchange ensures both sides can send and receive before data flows.",
   },
   {
@@ -31,7 +28,7 @@ const QUIZ: QuizQuestion[] = [
       "I have received all bytes up to 1500  send byte 1501 next",
       "The window size is 1501 bytes",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "TCP ACK numbers are cumulative byte counters. ACK=1501 means 'I have successfully received everything up to and including byte 1500, please send byte 1501 next.' TCP numbers individual bytes, not segments.",
   },
   {
@@ -42,7 +39,7 @@ const QUIZ: QuizQuestion[] = [
       "The sliding window reaching zero",
       "An ICMP Destination Unreachable message",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "When the sender receives 3 duplicate ACKs (all acknowledging the same byte), it infers a segment was lost and immediately retransmits  no need to wait for the RTO timer. This is TCP Fast Retransmit, and it significantly reduces recovery time.",
   },
   {
@@ -53,7 +50,7 @@ const QUIZ: QuizQuestion[] = [
       "Slow Start",
       "Fast Retransmit",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "Slow Start doubles cwnd each RTT (exponential growth) until it reaches ssthresh. Despite its name, Slow Start is only 'slow' compared to an unbounded burst  it begins at cwnd=1 MSS. Congestion Avoidance grows linearly (+1 MSS per RTT).",
   },
   {
@@ -64,7 +61,7 @@ const QUIZ: QuizQuestion[] = [
       "cwnd stays the same and fast recovery begins",
       "cwnd doubles to compensate for the lost segment",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "On timeout (the most severe congestion signal), TCP sets cwnd=1 and ssthresh=cwnd/2, then re-enters Slow Start. This is more aggressive than the 3-dup-ACK response because a timeout suggests serious congestion  the network needs to drain.",
   },
   {
@@ -75,7 +72,7 @@ const QUIZ: QuizQuestion[] = [
       "The sender pauses and periodically sends Zero Window Probes to check for window updates",
       "The sender switches to UDP for the remaining data",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "When the receiver's buffer is full it sets window=0 in the ACK. The sender stops transmitting but sends periodic Zero Window Probes to keep the connection alive. Once the receiver drains its buffer it sends a window update and data transfer resumes.",
   },
   {
@@ -86,13 +83,13 @@ const QUIZ: QuizQuestion[] = [
       "TCP with a very large window size",
       "ICMP  it has no connection overhead",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Live video can tolerate occasional dropped frames far better than delayed ones. UDP fires packets immediately with no handshake, retransmit, or ordering overhead. TCP's reliability mechanisms would introduce jitter and stalls on loss events  unacceptable for real-time media.",
   },
   {
     question: "What is the range of well-known (reserved) port numbers?",
     options: ["0–1023", "1024–49151", "49152–65535", "0–65535"],
-    correct: 0,
+    correctIndex: 0,
     explanation: "Ports 0–1023 are IANA-assigned well-known ports: HTTP=80, HTTPS=443, SSH=22, DNS=53, SMTP=25. Ports 1024–49151 are registered (e.g. MySQL=3306). Ports 49152–65535 are dynamic/ephemeral  assigned by the OS for outgoing client connections.",
   },
   {
@@ -103,7 +100,7 @@ const QUIZ: QuizQuestion[] = [
       "Source IP, Destination IP, Protocol, Sequence Number",
       "Source Port, Destination Port, TTL, Window Size",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "A TCP connection is identified by the 4-tuple: (Source IP, Source Port, Destination IP, Destination Port). This allows a server to maintain thousands of simultaneous connections on the same port because each client has a different source IP and ephemeral port.",
   },
   {
@@ -114,7 +111,7 @@ const QUIZ: QuizQuestion[] = [
       "Both sides confirm the connection is closed simultaneously",
       "The client can still receive retransmitted data segments",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "TIME_WAIT lasts 2×MSL (Maximum Segment Lifetime, typically 2 minutes). It ensures the final ACK the client sent actually reaches the server. If it was lost, the server would retransmit its FIN and the client  still in TIME_WAIT  can re-send the ACK instead of sending a confusing RST.",
   },
   {
@@ -125,7 +122,7 @@ const QUIZ: QuizQuestion[] = [
       "UDP supports larger packet sizes than TCP",
       "UDP has a built-in 3-way handshake that QUIC reuses",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "TCP multiplexes streams but a single lost segment blocks all streams (head-of-line blocking). QUIC implements per-stream reliability over UDP in userspace, so a lost packet only stalls its own stream. QUIC also combines the TLS and transport handshakes into 0–1 RTT, vs TCP+TLS's 2–3 RTT.",
   },
   {
@@ -136,7 +133,7 @@ const QUIZ: QuizQuestion[] = [
       "Reno resets to 1; Tahoe keeps cwnd at ssthresh",
       "There is no difference  both use the same algorithm",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "TCP Tahoe treats 3-dup-ACKs the same as a timeout: cwnd=1, re-enter Slow Start. TCP Reno distinguishes them  3-dup-ACKs are a 'mild' signal so it halves cwnd to ssthresh and enters Fast Recovery (staying in CA phase). Reno recovers faster because it doesn't drop back to 1.",
   },
   {
@@ -147,13 +144,13 @@ const QUIZ: QuizQuestion[] = [
       "To set the priority of each segment in the queue",
       "To map port numbers to socket descriptors in the OS",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Sequence numbers let TCP track exactly which bytes have been received. If segment 1001–2000 arrives before 501–1000, the receiver can reorder them. If a gap exists (501–1000 missing), the receiver keeps ACKing 500  triggering fast retransmit for the lost segment.",
   },
   {
     question: "UDP header size is _____ bytes. TCP header (minimum) is _____ bytes.",
     options: ["8 … 20", "20 … 8", "4 … 16", "12 … 24"],
-    correct: 0,
+    correctIndex: 0,
     explanation: "UDP has a fixed 8-byte header: Source Port (2B), Dest Port (2B), Length (2B), Checksum (2B). TCP's minimum header is 20 bytes, with optional fields extending it to 60 bytes. This overhead difference is why UDP is faster for small, latency-sensitive messages.",
   },
   {
@@ -164,7 +161,7 @@ const QUIZ: QuizQuestion[] = [
       "UDP provides encryption for DNS records",
       "UDP is required by the IANA standard for all lookup protocols",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "DNS queries are tiny request-response pairs that fit in a single UDP datagram. If no reply arrives, the client simply retries. There's no need for TCP's connection setup and retransmission machinery for such short exchanges  it would add needless latency.",
   },
   {
@@ -175,13 +172,13 @@ const QUIZ: QuizQuestion[] = [
       "Fast Recovery: cwnd jumps to ssthresh, resets on timeout",
       "Window scaling: receiver window grows additively, resets on overflow",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "AIMD describes TCP Congestion Avoidance: increase cwnd by 1 MSS per RTT (additive increase) when no congestion is detected; halve cwnd when a loss signal arrives (multiplicative decrease). This gentle sawtooth pattern allows many TCP flows to share a bottleneck link fairly.",
   },
   {
     question: "Which TCP flag is used to initiate a connection?",
     options: ["ACK", "FIN", "RST", "SYN"],
-    correct: 3,
+    correctIndex: 3,
     explanation: "SYN (synchronise) is set in the first segment of a TCP connection. It tells the receiver 'I want to establish a connection and here is my initial sequence number.' ACK acknowledges data, FIN gracefully closes, and RST abruptly resets/terminates a connection.",
   },
   {
@@ -192,12 +189,10 @@ const QUIZ: QuizQuestion[] = [
       "The retransmission timeout value in milliseconds",
       "The number of duplicate ACKs before fast retransmit fires",
     ],
-    correct: 0,
+    correctIndex: 0,
     explanation: "ssthresh (slow-start threshold) divides Slow Start from Congestion Avoidance. When cwnd < ssthresh, TCP doubles cwnd each RTT (Slow Start). When cwnd >= ssthresh, TCP adds 1 MSS per RTT (Congestion Avoidance). After loss, ssthresh is halved so CA kicks in sooner on recovery.",
   },
 ]
-
-// ── Section heading ────────────────────────────────────────────────────────────
 
 function SectionHeading({ n, title }: { n: string; title: string }) {
   return (
@@ -211,63 +206,14 @@ function SectionHeading({ n, title }: { n: string; title: string }) {
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default function Module5Page() {
-  return (
-    <div className="px-6 lg:px-10">
-
-      {/* hero */}
-      <div className="pt-8 pb-2">
-        <div className="relative overflow-hidden rounded-2xl bg-stone-900 px-8 py-10 text-white">
-          <Layers  size={180} className="pointer-events-none absolute -right-8 -top-6 text-white opacity-[0.04]" aria-hidden />
-          <Network size={80}  className="pointer-events-none absolute right-40 top-4 text-white opacity-[0.05] rotate-12" aria-hidden />
-          <Shield  size={64}  className="pointer-events-none absolute right-24 bottom-3 text-white opacity-[0.05] -rotate-6" aria-hidden />
-          <Globe   size={72}  className="pointer-events-none absolute right-6 bottom-4 text-white opacity-[0.04]" aria-hidden />
-          <Server  size={52}  className="pointer-events-none absolute right-64 top-6 text-white opacity-[0.05] rotate-3" aria-hidden />
-          <Cpu     size={44}  className="pointer-events-none absolute right-52 bottom-5 text-white opacity-[0.04] -rotate-12" aria-hidden />
-
-          <div className="relative flex items-start gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center font-display font-extrabold text-3xl shrink-0">
-              5
-            </div>
-            <div>
-              <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest mb-2">
-                Computer Networks · Module 5 of 8
-              </p>
-              <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight">
-                Transport Layer: TCP &amp; UDP
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3">
-                <span className="bg-blue-500/30 text-blue-300 border border-blue-500/30 px-2.5 py-0.5 rounded-md text-xs font-semibold">
-                  Intermediate
-                </span>
-                <span className="text-white/50 text-xs">18 quiz questions</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="relative text-white/60 text-sm leading-relaxed mt-6 max-w-2xl">
-            Understand how TCP delivers data reliably with handshakes, sequence numbers, flow
-            control, and congestion control  and when UDP's speed makes it the right choice.
-          </p>
-        </div>
-      </div>
-
-      {/* body */}
-      <div className="py-10 space-y-14">
-
-        <ObjectivesCard objectives={[
-          "Trace the TCP 3-way handshake and 4-way teardown step by step.",
-          "Explain sequence numbers, cumulative ACKs, and retransmission.",
-          "Describe TCP flow control using the sliding window mechanism.",
-          "Explain congestion control: Slow Start, Congestion Avoidance, and Fast Recovery.",
-          "Know when UDP outperforms TCP and understand key protocol differences.",
-          "Identify well-known port numbers and the role of sockets.",
-        ]} />
-
-        {/* ── Section 01: Ports & Sockets */}
-        <section className="space-y-6">
+  const tabs: EngTabDef[] = [
+    {
+      id: "s1",
+      label: "Port Numbers & Sockets",
+      icon: <Layers className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="01" title="Port Numbers &amp; Sockets" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -336,9 +282,14 @@ export default function Module5Page() {
             explanation="The server distinguishes connections by the full 4-tuple. Even though both clients connect to port 443, their source ports differ (54321 vs 54322), so the OS routes responses to the correct socket. This is how a single server serves millions of concurrent connections."
           />
         </section>
-
-        {/* ── Section 02: TCP Handshake */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s2",
+      label: "TCP Connection & Teardown",
+      icon: <Network className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="02" title="TCP Connection &amp; Teardown" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -411,9 +362,14 @@ export default function Module5Page() {
             explanation="A 2-way handshake (SYN + SYN-ACK) would only prove the client can send and the server can receive. The third ACK proves the server's SYN-ACK reached the client, confirming the reverse path. Without it, the server couldn't know the client got its SYN-ACK."
           />
         </section>
-
-        {/* ── Section 03: Reliability */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s3",
+      label: "Reliability: Seq Numbers & ACKs",
+      icon: <Shield className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="03" title="Reliability: Seq Numbers &amp; ACKs" />
 
           <ConceptCard number="5.5" title="How TCP Guarantees Delivery" tag="Key Concept">
@@ -447,9 +403,14 @@ export default function Module5Page() {
             explanation="TCP uses cumulative ACKs  it can only acknowledge a contiguous byte stream. After receiving 1–500, it sends ACK=501. When 1001–1500 arrives out of order, it still sends ACK=501 (a duplicate ACK) because bytes 501–1000 are still missing. Three of these duplicates trigger fast retransmit."
           />
         </section>
-
-        {/* ── Section 04: Flow Control */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s4",
+      label: "Flow Control  Sliding Window",
+      icon: <Server className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="04" title="Flow Control  Sliding Window" />
 
           <ConceptCard number="5.6" title="The Sliding Window" tag="Key Concept">
@@ -483,9 +444,14 @@ export default function Module5Page() {
             explanation="The sender can have at most window_size bytes unacknowledged. With 3 KB already in-flight and a window of 8 KB, the sender can send 8 - 3 = 5 KB more before it must wait for ACKs."
           />
         </section>
-
-        {/* ── Section 05: Congestion Control */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s5",
+      label: "Congestion Control",
+      icon: <Globe className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="05" title="Congestion Control" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -563,9 +529,14 @@ export default function Module5Page() {
             explanation="All major TCP variants (Tahoe, Reno, CUBIC) treat a timeout identically: cwnd=1, ssthresh=cwnd/2, re-enter Slow Start. The variants differ only in their response to 3-dup-ACKs (a milder signal). Reno's Fast Recovery is only triggered by 3-dup-ACKs, not timeouts."
           />
         </section>
-
-        {/* ── Section 06: UDP */}
-        <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s6",
+      label: "UDP & TCP vs UDP",
+      icon: <Cpu className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
           <SectionHeading n="06" title="UDP &amp; TCP vs UDP" />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -637,31 +608,19 @@ export default function Module5Page() {
             explanation="In real-time games, a position update from 100 ms ago is useless  the player has already moved. A TCP retransmit would delay all subsequent updates (head-of-line blocking), causing visible lag. UDP sends each update immediately and the game simply uses the most recent received state."
           />
         </section>
+      ),
+    },
+  ]
 
-        {/* ── Exit Quiz */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-stone-200" />
-            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-stone-900 text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-              <span className="text-xs font-bold uppercase tracking-widest">Module Exit Quiz</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-            </div>
-            <div className="flex-1 h-px bg-stone-200" />
-          </div>
-
-          <p className="text-sm text-stone-500 text-center mb-8">
-            Score <strong className="text-stone-700 dark:text-stone-300">13 / 18</strong> or higher to unlock Module 6.
-          </p>
-
-          <ExitQuiz
-            moduleName="Module 5  Transport Layer: TCP &amp; UDP"
-            questions={QUIZ}
-            passThreshold={13}
-          />
-        </section>
-
-      </div>
-    </div>
+  return (
+    <EngineeringLessonShell
+      title="Transport Layer: TCP & UDP"
+      level={5}
+      lessonNumber={5}
+      crumbLabel="computer networks"
+      crumbTail="module 05"
+      tabs={tabs}
+      quiz={QUIZ}
+    />
   )
 }

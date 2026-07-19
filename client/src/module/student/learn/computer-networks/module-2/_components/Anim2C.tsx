@@ -11,7 +11,7 @@ const STEPS: {
   color: string
   info:  string
 }[] = [
-  { dir:"right", label:"DNS Query",          layer:"L7 App / UDP",  color:"#A78BFA", info:"Resolves pandalearn.in → 203.0.113.42 via recursive DNS lookup" },
+  { dir:"right", label:"DNS Query",          layer:"L7 App / UDP",  color:"#A78BFA", info:"Resolves internhack.xyz → 203.0.113.42 via recursive DNS lookup" },
   { dir:"left",  label:"DNS Response",       layer:"L7 App / UDP",  color:"#A78BFA", info:"Authoritative NS replies: A record 203.0.113.42, TTL 300 s" },
   { dir:"right", label:"TCP SYN",            layer:"L4 Transport",  color:"#F59E0B", info:"Client initiates connection: seq=1000, flags=SYN" },
   { dir:"left",  label:"TCP SYN-ACK",        layer:"L4 Transport",  color:"#F59E0B", info:"Server responds: seq=5000, ack=1001, flags=SYN-ACK" },
@@ -45,7 +45,7 @@ export default function Anim2C() {
       <div className="flex items-center gap-2">
         <div className="flex-1 flex items-center gap-2 bg-[#1E293B] rounded-lg px-3 py-2 border border-[#334155]">
           <Lock size={11} className="text-emerald-400 shrink-0" />
-          <span className="text-stone-300 text-xs font-mono">https://pandalearn.in/api/modules</span>
+          <span className="text-stone-300 text-xs font-mono">https://internhack.xyz/api/modules</span>
         </div>
 
         {phase === 0 ? (

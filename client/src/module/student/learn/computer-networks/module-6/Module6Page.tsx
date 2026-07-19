@@ -1,22 +1,19 @@
-﻿import { Globe, Lock, Search, Network, Layers, Zap } from "lucide-react"
+import { Globe, Lock, Search, Network, Layers, Zap } from "lucide-react"
+import EngineeringLessonShell, { type EngTabDef, type EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell"
 import AnimFrame from "@/components/learn/AnimFrame"
 import ConceptCard from "@/components/learn/ConceptCard"
 import MicroCheck from "@/components/learn/MicroCheck"
-import ExitQuiz, { type QuizQuestion } from "@/components/learn/ExitQuiz"
-import ObjectivesCard from "@/components/learn/ObjectivesCard"
 import Anim6A from "./_components/Anim6A"
 import Anim6B from "./_components/Anim6B"
 import Anim6C from "./_components/Anim6C"
 import Anim6D from "./_components/Anim6D"
 import Anim6E from "./_components/Anim6E"
 
-// ── Exit Quiz ──────────────────────────────────────────────────────────────────
-
-const QUIZ: QuizQuestion[] = [
+const QUIZ: EngQuizQuestion[] = [
   {
     question: "Which HTTP method is both safe AND idempotent?",
     options: ["POST", "PUT", "GET", "PATCH"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "GET is safe (does not modify server state) and idempotent (making the same request multiple times produces the same result). POST is neither  it creates new resources. PUT is idempotent but not safe. PATCH is neither.",
   },
   {
@@ -27,7 +24,7 @@ const QUIZ: QuizQuestion[] = [
       "The server is down for maintenance",
       "The client is authenticated but lacks permission",
     ],
-    correct: 3,
+    correctIndex: 3,
     explanation: "403 Forbidden means the server understood the request and the user is authenticated, but they lack the permission to access the resource. 401 Unauthorized means the client must authenticate first. 404 means not found. 503 means service unavailable.",
   },
   {
@@ -38,13 +35,13 @@ const QUIZ: QuizQuestion[] = [
       "Larger TCP windows",
       "DNS-over-HTTPS",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "HTTP/2 introduces stream multiplexing: multiple request/response pairs can be in-flight simultaneously over a single TCP connection. HTTP/1.1 pipelining still blocked behind a slow response. Note: HTTP/2 still has TCP-level HOL blocking, which HTTP/3 (QUIC) solves.",
   },
   {
     question: "TLS 1.3 reduces the handshake to how many round-trips compared to TLS 1.2?",
     options: ["4 RTT → 2 RTT", "3 RTT → 1 RTT", "2 RTT → 1 RTT", "2 RTT → 0 RTT"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "TLS 1.2 required 2 RTTs for the handshake. TLS 1.3 cuts this to 1 RTT by combining the key exchange into the first message. With session resumption (0-RTT), a returning client can send application data on the very first message, though at some replay-attack risk.",
   },
   {
@@ -55,8 +52,8 @@ const QUIZ: QuizQuestion[] = [
       "The mail server for a domain",
       "The authoritative nameserver for a zone",
     ],
-    correct: 1,
-    explanation: "An A record maps a domain name to an IPv4 address (e.g., pandalearn.in → 203.0.113.42). CNAME stores an alias to another name. MX stores mail server entries. NS stores nameserver references. AAAA stores IPv6 addresses.",
+    correctIndex: 1,
+    explanation: "An A record maps a domain name to an IPv4 address (e.g., internhack.xyz → 203.0.113.42). CNAME stores an alias to another name. MX stores mail server entries. NS stores nameserver references. AAAA stores IPv6 addresses.",
   },
   {
     question: "In recursive DNS resolution, what is the role of the Recursive Resolver?",
@@ -66,7 +63,7 @@ const QUIZ: QuizQuestion[] = [
       "It contacts Root, TLD, and Authoritative servers on behalf of the client",
       "It is the first server contacted in a DHCP lease",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "The Recursive Resolver (typically provided by your ISP or public resolvers like 8.8.8.8) does the heavy lifting: it queries the root nameservers, follows referrals to TLD nameservers, then queries the authoritative nameserver, caches the result, and returns it to the client. The client only talks to the recursive resolver.",
   },
   {
@@ -77,7 +74,7 @@ const QUIZ: QuizQuestion[] = [
       "Discover → Offer → Request → Acknowledge",
       "Request → Discover → Offer → Acknowledge",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "DORA: Discover (client broadcasts looking for servers), Offer (server offers an IP), Request (client broadcasts requesting that specific IP  broadcast notifies all servers), Acknowledge (server confirms the lease with full config: IP, gateway, DNS, lease time).",
   },
   {
@@ -88,13 +85,13 @@ const QUIZ: QuizQuestion[] = [
       "The lease has expired and the IP is invalid",
       "The device is in the DORA discovery phase",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "At T2 (87.5% of lease duration), the device must try to rebind with any available DHCP server via broadcast, because its attempt to unicast-renew at T1 (50%) may have failed. If T2 also fails, the lease expires and the device must start DORA again from the beginning.",
   },
   {
     question: "Which API paradigm sends all queries to a single endpoint and lets the client specify exactly which fields to return?",
     options: ["REST", "gRPC", "GraphQL", "SOAP"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "GraphQL uses a single endpoint (typically POST /graphql) and the client writes a query specifying exactly which fields it needs. This eliminates over-fetching (receiving unused fields) and under-fetching (needing multiple requests to get all required data). REST uses multiple resource-based endpoints.",
   },
   {
@@ -105,13 +102,13 @@ const QUIZ: QuizQuestion[] = [
       "gRPC uses Protocol Buffers over HTTP/2  binary, typed, and highly efficient",
       "gRPC is better for public-facing APIs",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "gRPC uses Protocol Buffers (binary format) over HTTP/2, making it significantly more efficient than JSON over HTTP/1.1. It provides strong type safety via .proto schemas, supports streaming, and generates client/server code automatically. The trade-off is it's harder to debug (binary, not human-readable) and less suitable for browser clients without a proxy.",
   },
   {
     question: "What HTTP status code indicates a WebSocket upgrade was accepted?",
     options: ["200 OK", "101 Switching Protocols", "301 Moved Permanently", "204 No Content"],
-    correct: 1,
+    correctIndex: 1,
     explanation: "The WebSocket handshake begins with an HTTP upgrade request (Upgrade: websocket header). If the server accepts, it returns 101 Switching Protocols. After this, the connection is no longer HTTP  it becomes a full-duplex WebSocket connection.",
   },
   {
@@ -122,13 +119,13 @@ const QUIZ: QuizQuestion[] = [
       "Most poll responses contain no new data  the client pays HTTP overhead even for empty responses",
       "WebSockets use a more efficient compression algorithm",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "In HTTP polling, the client sends a full HTTP request (headers, cookies, etc.) every interval regardless of whether there is new data. The server often responds with an empty body and status code  still paying the HTTP header overhead (~300–500 bytes) for nothing. WebSockets send compact binary frames (2–14 bytes overhead) only when data actually needs to be pushed.",
   },
   {
     question: "Which HTTP method should be used to partially update a resource?",
     options: ["PUT", "POST", "PATCH", "UPDATE"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "PATCH is designed for partial updates  you send only the fields you want to change. PUT replaces the entire resource (idempotent  sending the same PUT multiple times has the same result). POST creates new resources. UPDATE is not an HTTP method.",
   },
   {
@@ -139,13 +136,13 @@ const QUIZ: QuizQuestion[] = [
       "Fewer DNS queries, but changes take 60 minutes to propagate",
       "No caching  every request hits the authoritative nameserver",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "Short TTL (60s) means resolvers expire cache quickly → more queries to authoritative nameservers → higher DNS infrastructure load. The benefit: DNS changes (failover, IP migration) propagate to users within 60 seconds. Long TTL reduces queries but means stale records persist longer after a change.",
   },
   {
     question: "HTTP/3 uses which transport protocol instead of TCP?",
     options: ["UDP via QUIC", "Raw IP", "SCTP", "TLS 1.3 directly"],
-    correct: 0,
+    correctIndex: 0,
     explanation: "HTTP/3 runs over QUIC, which is built on UDP. QUIC implements reliable delivery, congestion control, and TLS 1.3 in user space. The benefit: no TCP-level head-of-line blocking  a lost packet only blocks its own stream, not all multiplexed streams. Connection migration (e.g., phone switching Wi-Fi to cellular) also works seamlessly.",
   },
   {
@@ -156,13 +153,13 @@ const QUIZ: QuizQuestion[] = [
       "Site cert → Intermediate CA → Root CA",
       "Intermediate CA → Root CA → Site cert",
     ],
-    correct: 2,
+    correctIndex: 2,
     explanation: "The trust chain goes: Site certificate → Intermediate CA → Root CA. Browsers ship with a list of trusted Root CAs. The site presents its cert plus the intermediate cert(s). The browser walks the chain up to a trusted root to verify the site's identity. Root CAs are heavily protected and rarely sign site certs directly.",
   },
   {
     question: "Which DNS record type would you use to point www.example.com to example.com?",
     options: ["A record", "MX record", "CNAME record", "TXT record"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "A CNAME (Canonical Name) record creates an alias from one name to another. www.example.com CNAME example.com means 'resolve www.example.com the same as example.com'. The resolver follows the CNAME chain until it reaches an A or AAAA record. Note: CNAMEs cannot coexist with other record types at the same name.",
   },
   {
@@ -173,7 +170,7 @@ const QUIZ: QuizQuestion[] = [
       "REST supports N endpoints but needs +1 for authentication",
       "Each REST response contains N+1 status codes",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "The N+1 problem: you fetch a list of N items (1 request), then need N more requests to fetch details for each item. Example: GET /posts returns 20 posts, then you need 20 more GET /posts/:id/author calls. GraphQL and gRPC solve this through graph-aware query resolution. REST can mitigate it with endpoint composition or sparse fieldsets.",
   },
   {
@@ -184,18 +181,17 @@ const QUIZ: QuizQuestion[] = [
       "The request succeeded but there is no content to return",
       "The client must authenticate before accessing the resource",
     ],
-    correct: 1,
+    correctIndex: 1,
     explanation: "301 Moved Permanently tells the client (and caches) that the resource has a new permanent URL. Browsers and search engines update their records. The Location header provides the new URL. 302 Found is the temporary redirect (don't update bookmarks). 204 No Content means success with no response body.",
   },
   {
     question: "TLS provides three security properties. Which one ensures that a message was not tampered with in transit?",
     options: ["Confidentiality", "Authentication", "Integrity", "Non-repudiation"],
-    correct: 2,
+    correctIndex: 2,
     explanation: "TLS provides: Confidentiality (encryption prevents eavesdropping), Integrity (message authentication codes / MACs detect tampering), and Authentication (certificates prove server identity). Integrity is what ensures the data arriving is exactly what was sent  any modification breaks the MAC verification.",
   },
 ]
 
-// ── Section Heading helper ─────────────────────────────────────────────────────
 function SectionHeading({ n, title, icon }: { n: string; title: string; icon?: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-6">
@@ -208,36 +204,14 @@ function SectionHeading({ n, title, icon }: { n: string; title: string; icon?: R
   )
 }
 
-// ── Page ───────────────────────────────────────────────────────────────────────
 export default function Module6Page() {
-  return (
-    <div className="max-w-4xl mx-auto px-4 py-10 space-y-20">
-
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-lime-500">
-            Computer Networks · Module 6
-          </span>
-        </div>
-        <h1 className="text-4xl font-bold text-white font-display leading-tight">
-          Application Layer Protocols
-        </h1>
-        <p className="text-lg text-stone-400 leading-relaxed">
-          HTTP, HTTPS, DNS, DHCP, REST, GraphQL, gRPC, and WebSockets  the protocols your applications live in.
-        </p>
-        <ObjectivesCard objectives={[
-          "Trace a full HTTP/HTTPS request-response cycle and read the DevTools waterfall.",
-          "Describe the TLS 1.3 handshake and the role of certificate chains.",
-          "Trace a recursive DNS resolution from browser to root servers.",
-          "Walk through the DHCP DORA process and understand lease renewal.",
-          "Compare REST, GraphQL, and gRPC  when each wins.",
-          "Explain how WebSockets differ from HTTP polling and when to use them.",
-        ]} />
-      </div>
-
-      {/* ── Section 01: HTTP */}
-      <section className="space-y-6">
+  const tabs: EngTabDef[] = [
+    {
+      id: "s1",
+      label: "HTTP  The Language of the Web",
+      icon: <Globe className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
         <SectionHeading n="01" title="HTTP  The Language of the Web" icon={<Globe size={18} />} />
 
         <ConceptCard number="6.1" title="HTTP Request & Response" tag="Key Concept">
@@ -245,7 +219,7 @@ export default function Module6Page() {
 
           ```
           GET /api/modules HTTP/1.1
-          Host: pandalearn.in
+          Host: internhack.xyz
           Accept: application/json
           Authorization: Bearer eyJ...
           ```
@@ -307,9 +281,14 @@ export default function Module6Page() {
           explanation="HTTP/1.1 pipelining is sequential at the application layer  responses must arrive in order. A slow response to request 1 blocks 2, 3, and 4, even if the server could have processed them faster. This is HOL blocking. HTTP/2 multiplexing solves this by interleaving frames from different streams."
         />
       </section>
-
-      {/* ── Section 02: HTTPS & TLS */}
-      <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s2",
+      label: "HTTPS & TLS  Security on the Web",
+      icon: <Lock className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
         <SectionHeading n="02" title="HTTPS & TLS  Security on the Web" icon={<Lock size={18} />} />
 
         <ConceptCard number="6.5" title="What TLS Provides" tag="Definition">
@@ -366,31 +345,36 @@ export default function Module6Page() {
           explanation="TLS 1.2 required 2 RTTs: first the cipher suite negotiation (ClientHello / ServerHello), then the key exchange (ClientKeyExchange / Finished). TLS 1.3 merged these into a single round-trip by including the key share in the ClientHello. This cuts ~30 ms on a typical 15 ms RTT connection."
         />
       </section>
-
-      {/* ── Section 03: DNS */}
-      <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s3",
+      label: "DNS  The Internet's Phone Book",
+      icon: <Search className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
         <SectionHeading n="03" title="DNS  The Internet's Phone Book" icon={<Search size={18} />} />
 
         <ConceptCard number="6.8" title="DNS Record Types" tag="Remember">
           | Type | Purpose | Example |
           |------|---------|---------|
-          | **A** | IPv4 address | `pandalearn.in → 203.0.113.42` |
-          | **AAAA** | IPv6 address | `pandalearn.in → 2001:db8::1` |
-          | **CNAME** | Alias to another name | `www → pandalearn.in` |
-          | **MX** | Mail server | `pandalearn.in → mail.google.com` |
+          | **A** | IPv4 address | `internhack.xyz → 203.0.113.42` |
+          | **AAAA** | IPv6 address | `internhack.xyz → 2001:db8::1` |
+          | **CNAME** | Alias to another name | `www → internhack.xyz` |
+          | **MX** | Mail server | `internhack.xyz → mail.google.com` |
           | **TXT** | Arbitrary text | `"v=spf1 include:google.com ~all"` |
-          | **NS** | Authoritative nameservers | `pandalearn.in → ns1.cloudflare.com` |
+          | **NS** | Authoritative nameservers | `internhack.xyz → ns1.cloudflare.com` |
           | **SOA** | Zone authority / serial | Start-of-Authority record |
         </ConceptCard>
 
         <ConceptCard number="6.9" title="Recursive Resolution Flow" tag="Key Concept">
-          When you type `pandalearn.in` in a browser:
+          When you type `internhack.xyz` in a browser:
 
           1. **Browser cache**  check local DNS cache (TTL still valid?).
           2. **OS stub resolver** → queries your **Recursive Resolver** (ISP or 8.8.8.8).
           3. Resolver asks **Root Nameserver** (13 clusters): "Who handles `.in`?"
           4. Root refers to **TLD Nameserver** for `.in`.
-          5. TLD refers to **Authoritative Nameserver** for `pandalearn.in`.
+          5. TLD refers to **Authoritative Nameserver** for `internhack.xyz`.
           6. Authoritative returns the **A record** with the IP.
           7. Resolver **caches** the result per TTL, returns IP to browser.
 
@@ -407,7 +391,7 @@ export default function Module6Page() {
         </AnimFrame>
 
         <MicroCheck
-          question="A DNS TTL is set to 30 seconds for pandalearn.in. What is the consequence?"
+          question="A DNS TTL is set to 30 seconds for internhack.xyz. What is the consequence?"
           options={[
             "Faster initial DNS resolution for all users globally",
             "DNS changes (e.g. IP migration) take at most 30 s to propagate, but resolvers query the authoritative server very frequently",
@@ -418,9 +402,14 @@ export default function Module6Page() {
           explanation="TTL is the cache lifetime. At 30s, every resolver discards the cached record every 30 seconds and re-queries the authoritative server. This means failovers and IP changes propagate within 30s (great for reliability) but the authoritative nameserver sees much higher query volume. The trade-off: short TTL = fast propagation, high load. Long TTL = low load, slow propagation."
         />
       </section>
-
-      {/* ── Section 04: DHCP */}
-      <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s4",
+      label: "DHCP  Automatic IP Configuration",
+      icon: <Network className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
         <SectionHeading n="04" title="DHCP  Automatic IP Configuration" icon={<Network size={18} />} />
 
         <ConceptCard number="6.10" title="DHCP DORA Process" tag="Key Concept">
@@ -467,9 +456,14 @@ export default function Module6Page() {
           explanation="T1 is at 50% of lease duration. At T1, the client should unicast a DHCP Request to the original server to renew. At 55%, T1 has already passed  the client should have sent a renewal and may be waiting for a response. If no response arrives by T2 (87.5%), it broadcasts to any DHCP server. Lease expiry only happens if both T1 and T2 renewals fail."
         />
       </section>
-
-      {/* ── Section 05: API Paradigms */}
-      <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s5",
+      label: "API Paradigms  REST, GraphQL, gRPC",
+      icon: <Layers className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
         <SectionHeading n="05" title="API Paradigms  REST, GraphQL, gRPC" icon={<Layers size={18} />} />
 
         <ConceptCard number="6.12" title="REST vs GraphQL vs gRPC" tag="Key Concept">
@@ -514,9 +508,14 @@ export default function Module6Page() {
           explanation="Over-fetching: the API returns 25 fields but the mobile client only uses 2. This wastes bandwidth  critical on mobile connections. GraphQL solves over-fetching by letting the client specify exactly which fields to return in the query. REST can partially address it with sparse fieldsets (?fields=name,avatar) but GraphQL makes this first-class."
         />
       </section>
-
-      {/* ── Section 06: WebSockets */}
-      <section className="space-y-6">
+      ),
+    },
+    {
+      id: "s6",
+      label: "WebSockets  Full-Duplex Real-Time",
+      icon: <Zap className="w-4 h-4" />,
+      content: (
+<section className="space-y-6">
         <SectionHeading n="06" title="WebSockets  Full-Duplex Real-Time" icon={<Zap size={18} />} />
 
         <ConceptCard number="6.14" title="WebSocket Upgrade Handshake" tag="Definition">
@@ -571,15 +570,19 @@ export default function Module6Page() {
           explanation="HTTP polling: 60 × (380 B req + 42 B empty resp) = 25,320 B + some actual data responses ≈ ~27 KB. WebSocket: ~120 B handshake + 60 × 28 B = ~1,800 B ≈ 1.8 KB. WebSocket uses ~93% less bandwidth here. The advantage grows with update frequency and connection duration. HTTP polling's strength is simplicity and firewall compatibility."
         />
       </section>
+      ),
+    },
+  ]
 
-      {/* ── Exit Quiz */}
-      <section>
-        <ExitQuiz
-          moduleName="Module 6  Application Layer Protocols"
-          questions={QUIZ}
-          passThreshold={14}
-        />
-      </section>
-    </div>
+  return (
+    <EngineeringLessonShell
+      title="Application Layer Protocols"
+      level={6}
+      lessonNumber={6}
+      crumbLabel="computer networks"
+      crumbTail="module 06"
+      tabs={tabs}
+      quiz={QUIZ}
+    />
   )
 }
