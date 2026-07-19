@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GeminiProvider } from "../../lib/providers/gemini.provider.js";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import { slugify } from "../../utils/slug.utils.js";
 import type { AiGenerateInput } from "./roadmap.validation.js";
@@ -84,7 +84,7 @@ export async function generateAiRoadmap(
   input: AiGenerateInput,
   userId: number,
 ): Promise<GeneratedRoadmap> {
-  const provider = new GeminiProvider("gemini-2.5-flash-lite");
+  const provider = getProviderForService("AI_ROADMAP_GENERATION");
   const prompt = buildRoadmapPrompt(input);
 
   let lastError: Error | undefined;
@@ -202,7 +202,7 @@ export async function regenerateSection(
   input: RegenerateSectionPromptInput,
   userId: number,
 ): Promise<RegeneratedSection> {
-  const provider = new GeminiProvider("gemini-2.5-flash-lite");
+  const provider = getProviderForService("AI_ROADMAP_GENERATION");
   const prompt = buildSectionPrompt(input);
 
   let lastError: Error | undefined;

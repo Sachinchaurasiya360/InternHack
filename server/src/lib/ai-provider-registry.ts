@@ -34,7 +34,7 @@ function createProvider(type: AIProviderType, modelName: string): AIProvider {
     default:
      
       console.warn(`[AI] Unsupported provider "${type}", falling back to Gemini`);
-      return new GeminiProvider("gemini-2.5-flash-lite");
+      return new GeminiProvider("gemini-flash-lite-latest");
   }
 }
 
@@ -73,12 +73,17 @@ export function getProviderForService(service: AIServiceType): AIProvider {
   const entry = serviceCache.get(service);
   if (entry) return entry.provider;
   // Fallback, should not happen after seed + init
-  return new GeminiProvider("gemini-2.5-flash-lite");
+  return new GeminiProvider("gemini-flash-lite-latest");
 }
 
 /** Get the DB config ID for a service (used by logger). */
 export function getServiceConfigId(service: AIServiceType): number | null {
   return serviceCache.get(service)?.configId ?? null;
+}
+
+/** Get the configured model name for a service (used by logger). */
+export function getServiceModelName(service: AIServiceType): string | null {
+  return serviceCache.get(service)?.modelName ?? null;
 }
 
 /** Switch a specific service to a different provider/model. Updates DB + refreshes cache. */

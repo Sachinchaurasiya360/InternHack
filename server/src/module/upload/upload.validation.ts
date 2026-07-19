@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { Request, Response, NextFunction } from "express";
 
 // Helper function to validate S3 URLs from authorized bucket
 const validateS3Url = (url: string): boolean => {
@@ -56,18 +55,8 @@ export const uploadResumeSchema = z.object({
     validateS3Url,
     "File must be from authorized S3 bucket"
   ),
+  originalName: z.string().optional(),
+  size: z.number().optional(),
+  mimeType: z.string().optional(),
 });
 
-export const validateBody = (schema: z.ZodSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({
-        message: "Validation failed",
-        errors: result.error.issues.map((e) => e.message),
-      });
-    }
-    req.body = result.data;
-    next();
-  };
-};

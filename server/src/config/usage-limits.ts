@@ -10,21 +10,25 @@ export type UsageAction =
   | "AI_JOB_CHAT"
   | "CODE_RUN"
   | "GITHUB_STATS"
-  | "ROADMAP_GENERATION";
+  | "ROADMAP_GENERATION"
+  | "DSA_EXECUTE"
+  | "GSOC_REVIEW";
 
 export type PlanTier = "FREE" | "PREMIUM";
 
 export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
   ATS_SCORE:       { FREE: 2,  PREMIUM: 20 },
   COVER_LETTER:    { FREE: 2,  PREMIUM: 20 },
-  GENERATE_RESUME: { FREE: 1,  PREMIUM: 20 },
-  JOB_APPLICATION: { FREE: 10, PREMIUM: 9999 },
-  MOCK_INTERVIEW:  { FREE: 0,  PREMIUM: 99 },
-  BEHAVIORAL_EVAL: { FREE: 5,  PREMIUM: 999999 },
+  GENERATE_RESUME: { FREE: 2,  PREMIUM: 20 },
+  JOB_APPLICATION: { FREE: 20, PREMIUM: 9999 },
+  MOCK_INTERVIEW:  { FREE: 2,  PREMIUM: 99 }, // counted on pairing creation only, not on browsing matches
+  BEHAVIORAL_EVAL: { FREE: 5,  PREMIUM: 99 },
   AI_JOB_CHAT:     { FREE: 2,  PREMIUM: 50 },
-  CODE_RUN:        { FREE: 0,  PREMIUM: 50 },
-  GITHUB_STATS:    { FREE: 20, PREMIUM: 9999 },
-  ROADMAP_GENERATION: { FREE: 0, PREMIUM: 10 }, // placeholder — actual limits in MONTHLY_LIMITS
+  CODE_RUN:        { FREE: 0,  PREMIUM: 50 }, // DSA hints + AI code review, unchanged
+  GITHUB_STATS:    { FREE: 20, PREMIUM: 999 },
+  ROADMAP_GENERATION: { FREE: 2, PREMIUM: 20 }, // placeholder — actual limits in MONTHLY_LIMITS
+  DSA_EXECUTE:     { FREE: 30, PREMIUM: 9999 }, // runs in the browser, no server cost either tier
+  GSOC_REVIEW:     { FREE: 2,  PREMIUM: 99 }, // actual limits in MONTHLY_LIMITS; enforced there
 };
 
 export function getPlanTier(
@@ -43,6 +47,6 @@ export function getPlanTier(
 }
 
 export const MONTHLY_LIMITS: Partial<Record<UsageAction, Record<PlanTier, number>>> = {
-  ATS_SCORE: { FREE: 3, PREMIUM: 20 },
   ROADMAP_GENERATION: { FREE: 5, PREMIUM: 50 },
+  GSOC_REVIEW: { FREE: 3, PREMIUM: 9 }, // matches client copy: "3/month free, unlimited premium"
 };

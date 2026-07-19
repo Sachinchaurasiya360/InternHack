@@ -2,10 +2,14 @@ import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import { UploadController } from "./upload.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { validateBody } from "../../middleware/validation.middleware.js";
 import {
-  validateBody,
   presignRequestSchema,
   guestPresignRequestSchema,
+  uploadProfilePicSchema,
+  uploadCoverImageSchema,
+  uploadResumeSchema,
+  deleteResumeSchema,
 } from "./upload.validation.js";
 
 const uploadController = new UploadController();
@@ -46,7 +50,7 @@ uploadRouter.post(
   (req, res) => uploadController.getPresignedUrl(req, res),
 );
 
-uploadRouter.post("/profile-pic", (req, res) => uploadController.uploadProfilePic(req, res));
-uploadRouter.post("/cover-image", (req, res) => uploadController.uploadCoverImage(req, res));
-uploadRouter.post("/profile-resume", (req, res) => uploadController.uploadProfileResume(req, res));
-uploadRouter.delete("/profile-resume", (req, res) => uploadController.deleteProfileResume(req, res));
+uploadRouter.post("/profile-pic", validateBody(uploadProfilePicSchema), (req, res) => uploadController.uploadProfilePic(req, res));
+uploadRouter.post("/cover-image", validateBody(uploadCoverImageSchema), (req, res) => uploadController.uploadCoverImage(req, res));
+uploadRouter.post("/profile-resume", validateBody(uploadResumeSchema), (req, res) => uploadController.uploadProfileResume(req, res));
+uploadRouter.delete("/profile-resume", validateBody(deleteResumeSchema), (req, res) => uploadController.deleteProfileResume(req, res));

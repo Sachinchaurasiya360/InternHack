@@ -56,6 +56,107 @@ model userJobPreference {
   user             user     @relation("UserJobPreferences", fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model applicationProfile {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique
+  preferredName      String?
+  legalName          String?
+  phoneCountryCode   String?
+  address            Json     @default("{}")
+  education          Json     @default("[]")
+  experience         Json     @default("[]")
+  workAuthorization  Json     @default("{}")
+  demographics       Json     @default("{}")
+  availability       Json     @default("{}")
+  salaryExpectations Json     @default("{}")
+  links              Json     @default("{}")
+  customFields       Json     @default("{}")
+  autofillSettings   Json     @default("{}")
+  privacySettings    Json     @default("{}")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               user     @relation("UserApplicationProfile", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model applicationQuestionAnswer {
+  id                 Int      @id @default(autoincrement())
+  userId             Int
+  questionText       String
+  normalizedQuestion String
+  answer             String
+  category           String?
+  source             String   @default("USER")
+  lastUsedAt         DateTime?
+  useCount           Int      @default(0)
+  embedding          Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               user     @relation("UserApplicationQuestionAnswers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, normalizedQuestion])
+  @@index([userId])
+  @@index([normalizedQuestion])
+  @@index([userId, category])
+}
+
+model trackedJobApplication {
+  id                Int                      @id @default(autoincrement())
+  userId            Int
+  sourceType        TrackedApplicationSource @default(MANUAL)
+  sourceId          Int?
+  jobIndexId        Int?
+  adminJobId        Int?
+  scrapedJobId      Int?
+  company           String
+  role              String
+  location          String?
+  jobUrl            String?
+  applicationUrl    String?
+  jobDescription    String?
+  status            TrackedApplicationStatus @default(SAVED)
+  appliedAt         DateTime?
+  deadline          DateTime?
+  nextFollowUpAt    DateTime?
+  resumeUrl         String?
+  coverLetterId     Int?
+  notes             String                   @default("")
+  contacts          Json                     @default("[]")
+  events            Json                     @default("[]")
+  extensionMetadata Json                     @default("{}")
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  user              user                     @relation("UserTrackedJobApplications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@index([jobIndexId])
+  @@index([adminJobId])
+  @@index([scrapedJobId])
+}
+
+model extensionAutofillEvent {
+  id            Int                    @id @default(autoincrement())
+  userId        Int
+  applicationId Int?
+  host          String
+  siteType      String?
+  urlHash       String?
+  eventType     ExtensionAutofillEventType
+  fieldCount    Int                    @default(0)
+  filledCount   Int                    @default(0)
+  failedCount   Int                    @default(0)
+  metadata      Json                   @default("{}")
+  createdAt     DateTime               @default(now())
+  user          user                   @relation("UserExtensionAutofillEvents", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([host])
+  @@index([eventType])
+}
+
 model jobMatch {
   id            Int      @id @default(autoincrement())
   userId        Int
@@ -132,4 +233,33 @@ enum JobSourceType {
   INTERNAL
   SCRAPED
   ADMIN
+}
+
+enum TrackedApplicationSource {
+  INTERNHACK_ADMIN
+  SCRAPED
+  JOB_INDEX
+  EXTENSION
+  MANUAL
+}
+
+enum TrackedApplicationStatus {
+  SAVED
+  APPLIED
+  OA
+  PHONE_SCREEN
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+  GHOSTED
+}
+
+enum ExtensionAutofillEventType {
+  DETECTED
+  AUTOFILLED
+  FIELD_FAILED
+  QUESTION_GENERATED
+  TRACKED
+  SUPPORT_REQUESTED
 }

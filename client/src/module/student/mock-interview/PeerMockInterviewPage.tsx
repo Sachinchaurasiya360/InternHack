@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Loader2, Star, RotateCcw, Users, Check } from "lucide-react";
+import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, ShieldCheck, Star, Users, Check } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type { AxiosError } from "axios";
@@ -11,15 +11,50 @@ import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import { useAuthStore } from "../../../lib/auth.store";
 import { queryKeys } from "../../../lib/query-keys";
-import type { PeerMockInterview, MockInterviewPreparationMaterial } from "../../../lib/types";
+import type {
+  PeerMockInterview,
+  MockInterviewPreparationMaterial,
+  PeerMatchListResponse,
+  PeerMatchCandidate,
+  PeerLockedMatch,
+  PeerMatchStrength,
+} from "../../../lib/types";
 
 const FOCUS_AREA_OPTIONS = ["DSA", "System Design", "Frontend", "Backend", "Behavioral", "Resume Review"];
+
+const TOPIC_OPTIONS = [
+  { value: "DSA", label: "DSA" },
+  { value: "SYSTEM_DESIGN", label: "System Design" },
+  { value: "FRONTEND", label: "Frontend" },
+  { value: "BACKEND", label: "Backend" },
+  { value: "BEHAVIORAL", label: "Behavioral" },
+  { value: "DEVOPS", label: "DevOps" },
+  { value: "DATA_SCIENCE", label: "Data Science" },
+  { value: "OTHER", label: "Other" },
+] as const;
+type PeerTopic = (typeof TOPIC_OPTIONS)[number]["value"];
+
+const formatTopic = (t?: string, customTopic?: string | null) =>
+  t === "OTHER" && customTopic ? customTopic : (t || "").replace(/_/g, " ");
 const EXPERIENCE_LEVELS = [
   { value: "STUDENT", label: "Student" },
   { value: "FRESHER", label: "Fresher" },
   { value: "0_2_YEARS", label: "0-2 yrs" },
   { value: "2_PLUS_YEARS", label: "2+ yrs" },
 ] as const;
+
+const AVAILABILITY_LABELS: Record<string, string> = {
+  WEEKDAYS_MORNING: "Weekday mornings",
+  WEEKDAYS_AFTERNOON: "Weekday afternoons",
+  WEEKDAYS_EVENING: "Weekday evenings",
+  WEEKENDS: "Weekends",
+};
+
+const STRENGTH_LABELS: Record<PeerMatchStrength, string> = {
+  STRONG: "Strong match",
+  GOOD: "Good match",
+  FAIR: "Fair match",
+};
 
 /**
  * A meeting link is supplied by the matched peer, so treat it as untrusted:
@@ -70,15 +105,28 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
     );
   }
 
+  if (material.generic && material.redacted) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-400">
+          <ShieldCheck className="w-3.5 h-3.5 text-lime-500" />
+          You're the candidate this round
+        </span>
+        <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
+        <p className="text-xs text-stone-500 dark:text-stone-400">{material.note}</p>
+      </div>
+    );
+  }
+
   if (material.generic) {
     return (
       <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-3">
         <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Preparation Material</span>
         <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
 
-        {material.generic.requirements.length > 0 && (
+        {material.generic.requirements && material.generic.requirements.length > 0 && (
           <div>
-            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Requirements:</h5>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Sample Questions:</h5>
             <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
               {material.generic.requirements.map((req, i) => <li key={i}>{req}</li>)}
             </ul>
@@ -107,6 +155,251 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
   }
 
   return null;
+}
+
+function ExpertFallbackCard({ topic, customTopic }: { topic?: string; customTopic?: string | null }) {
+  const navigate = useNavigate();
+  const { data: slotData } = useQuery<{ slots: string[] }>({
+    queryKey: queryKeys.expertSession.availableSlots(),
+    queryFn: async () => {
+      const res = await api.get("/student/expert-session/available-slots");
+      return res.data;
+    },
+  });
+  const nextSlot = slotData?.slots?.[0];
+
+  return (
+    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
+      <div className="w-12 h-12 bg-stone-100 dark:bg-white/5 text-stone-400 flex items-center justify-center rounded mx-auto">
+        <Users className="w-6 h-6" />
+      </div>
+      <div>
+        <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">No peers available right now</h2>
+        <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
+          No compatible students are in the {formatTopic(topic, customTopic)} pool at the moment. You stay in
+          the pool, so students opting in later will see you as a match.
+        </p>
+      </div>
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 max-w-md mx-auto space-y-3">
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">
+          Practice with an expert instead
+        </span>
+        <p className="text-xs text-stone-600 dark:text-stone-400">
+          Book a 30-minute one-on-one mock interview with our expert for ₹49.
+          {nextSlot && (
+            <>
+              {" "}Next available slot:{" "}
+              <span className="font-semibold text-stone-900 dark:text-stone-50">
+                {new Date(nextSlot).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
+              </span>
+            </>
+          )}
+        </p>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => navigate("/student/mock-interview/expert")}
+          className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+        >
+          Book Expert Session
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function MatchCard({
+  match,
+  onSelect,
+  selecting,
+  index,
+}: {
+  match: PeerMatchCandidate;
+  onSelect: (candidateUserId: number) => void;
+  selecting: boolean;
+  index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.07 }}
+      className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3 min-w-0">
+          {match.profilePic ? (
+            <img
+              src={match.profilePic}
+              alt={match.name}
+              className="w-11 h-11 rounded object-cover border border-stone-200 dark:border-white/10 shrink-0"
+            />
+          ) : (
+            <div className="w-11 h-11 bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center text-lg font-bold text-stone-700 dark:text-stone-300 rounded shrink-0">
+              {match.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className="font-bold text-stone-900 dark:text-stone-50 truncate">{match.name}</h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{match.college || "No college specified"}</p>
+            {match.customTopic && (
+              <p className="text-xs text-stone-600 dark:text-stone-300 mt-1 truncate">
+                Wants to practice: <span className="font-semibold">{match.customTopic}</span>
+              </p>
+            )}
+            {match.verifiedSkills.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {match.verifiedSkills.map((skill) => (
+                  <span
+                    key={skill.skillName}
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-lime-400/10 text-lime-600 dark:text-lime-400 text-[10px] font-mono uppercase tracking-wider"
+                  >
+                    <BadgeCheck className="w-3 h-3" />
+                    {skill.skillName} {skill.score}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="text-right shrink-0">
+          <span className="text-2xl font-bold text-stone-900 dark:text-stone-50">{match.matchPercent}%</span>
+          <p className={`text-[10px] font-mono uppercase tracking-widest ${match.matchStrength === "STRONG" ? "text-lime-600 dark:text-lime-400" : "text-stone-400"}`}>
+            {STRENGTH_LABELS[match.matchStrength]}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-stone-100 dark:border-white/5">
+        <p className="text-xs text-stone-500 dark:text-stone-400">
+          {match.sharedAvailability.length > 0
+            ? `Shared availability: ${match.sharedAvailability.map((s) => AVAILABILITY_LABELS[s] || s).join(", ")}`
+            : "No overlapping availability, coordinate a time after pairing"}
+        </p>
+        <Button
+          variant="primary"
+          size="sm"
+          disabled={selecting}
+          onClick={() => onSelect(match.userId)}
+          className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+        >
+          Pair Now
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
+function LockedMatchCard({ match, index }: { match: PeerLockedMatch; index: number }) {
+  const navigate = useNavigate();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.07 }}
+      className="relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 overflow-hidden"
+    >
+      {/* Placeholder content; the server sends no identifying data for locked matches */}
+      <div className="blur-[6px] select-none pointer-events-none" aria-hidden="true">
+        <div className="flex items-start gap-3">
+          <div className="w-11 h-11 bg-stone-200 dark:bg-white/10 flex items-center justify-center text-lg font-bold text-stone-500 rounded shrink-0">
+            {match.nameInitial}
+          </div>
+          <div className="space-y-2 flex-1">
+            <div className="h-3.5 w-36 bg-stone-200 dark:bg-white/10 rounded" />
+            <div className="h-3 w-52 bg-stone-100 dark:bg-white/5 rounded" />
+            <div className="h-3 w-40 bg-stone-100 dark:bg-white/5 rounded" />
+          </div>
+        </div>
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center bg-white/40 dark:bg-stone-950/40">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.15 + index * 0.07 }}
+          className="flex items-center gap-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-4 py-2.5 shadow-sm"
+        >
+          <Lock className="w-4 h-4 text-stone-400 shrink-0" />
+          <div className="text-left">
+            <p className="text-xs font-bold text-stone-900 dark:text-stone-50">
+              {STRENGTH_LABELS[match.matchStrength]} hidden
+            </p>
+            <p className="text-[10px] text-stone-500">Premium unlocks every match</p>
+          </div>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate("/student/checkout")}
+            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+          >
+            Unlock
+          </Button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+function MatchListSection({
+  matchData,
+  loading,
+  onSelect,
+  selecting,
+  onLeavePool,
+  leaving,
+}: {
+  matchData?: PeerMatchListResponse;
+  loading: boolean;
+  onSelect: (candidateUserId: number) => void;
+  selecting: boolean;
+  onLeavePool: () => void;
+  leaving: boolean;
+}) {
+  if (loading || !matchData) {
+    return (
+      <div className="flex justify-center p-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
+        <Loader2 className="w-6 h-6 animate-spin text-stone-400" />
+      </div>
+    );
+  }
+
+  const hasAny = matchData.matches.length > 0 || matchData.lockedMatches.length > 0;
+
+  return (
+    <div className="space-y-4">
+      {hasAny ? (
+        <>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
+              Live matches / {formatTopic(matchData.topic, matchData.customTopic)}
+            </span>
+            <span className="text-xs text-stone-500">
+              {matchData.totalCandidates} student{matchData.totalCandidates === 1 ? "" : "s"} in the pool
+            </span>
+          </div>
+          {matchData.matches.map((match, i) => (
+            <MatchCard key={match.userId} match={match} onSelect={onSelect} selecting={selecting} index={i} />
+          ))}
+          {matchData.lockedMatches.map((match, i) => (
+            <LockedMatchCard key={`locked-${i}`} match={match} index={matchData.matches.length + i} />
+          ))}
+        </>
+      ) : (
+        <ExpertFallbackCard topic={matchData.topic} customTopic={matchData.customTopic} />
+      )}
+      <div className="text-center">
+        <Button
+          variant="ghost"
+          mode="link"
+          onClick={onLeavePool}
+          disabled={leaving}
+          className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 underline"
+        >
+          Leave matching pool
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 function HistorySection({ userId }: { userId: number }) {
@@ -147,7 +440,7 @@ function HistorySection({ userId }: { userId: number }) {
             <div className="flex justify-between items-start">
               <div>
                 <span className="text-xs font-mono uppercase tracking-widest text-stone-400">{new Date(pairing.completedAt || pairing.createdAt).toLocaleDateString()}</span>
-                <h3 className="font-bold text-stone-900 dark:text-stone-50 mt-1">{pairing.topic} Mock Interview</h3>
+                <h3 className="font-bold text-stone-900 dark:text-stone-50 mt-1">{formatTopic(pairing.topic, pairing.customTopic)} Mock Interview</h3>
                 {partner && (
                   <p className="text-xs text-stone-500 mt-1">
                     Partner: <span className="font-medium text-stone-700 dark:text-stone-300">{partner.name}</span>
@@ -277,8 +570,11 @@ export default function PeerMockInterviewPage() {
   });
 
   const acceptTimeMutation = useMutation({
-    mutationFn: async ({ pairingId }: { pairingId: number }) => {
-      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/accept-time`, {});
+    mutationFn: async ({ pairingId, meetingLink }: { pairingId: number; meetingLink?: string }) => {
+      const res = await api.post(
+        `/student/peer-mock-interview/pairings/${pairingId}/accept-time`,
+        meetingLink ? { meetingLink } : {},
+      );
       return res.data;
     },
     onSuccess: () => {
@@ -304,9 +600,47 @@ export default function PeerMockInterviewPage() {
     },
   });
 
-  const [topic, setTopic] = useState<"DSA" | "SYSTEM_DESIGN" | "FRONTEND">("DSA");
+  const selectMatchMutation = useMutation({
+    mutationFn: async (candidateUserId: number) => {
+      const res = await api.post("/student/peer-mock-interview/matches/select", { candidateUserId });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Matched! Propose a time to meet.");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to pair with this student.");
+    },
+  });
+
+  const declineMutation = useMutation({
+    mutationFn: async (pairingId: number) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/decline`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Pairing declined. You are back in the matching pool.");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to decline pairing.");
+    },
+  });
+
+  const [topic, setTopic] = useState<PeerTopic>("DSA");
+  const [customTopic, setCustomTopic] = useState("");
   const [availability, setAvailability] = useState<string[]>([]);
   const [enabled, setEnabled] = useState(false);
+
+  const { data: matchData, isLoading: loadingMatches } = useQuery<PeerMatchListResponse>({
+    queryKey: queryKeys.peerMockInterview.matches(),
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/matches");
+      return res.data;
+    },
+    enabled: enabled && !loadingPairing && !pairing,
+  });
   const [targetRole, setTargetRole] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("");
   const [focusAreas, setFocusAreas] = useState<string[]>([]);
@@ -315,7 +649,9 @@ export default function PeerMockInterviewPage() {
   const [rating, setRating] = useState(5);
   const [feedbackText, setFeedbackText] = useState("");
 
-  const [proposedDate, setProposedDate] = useState("");
+  const [proposedDateStr, setProposedDateStr] = useState("");
+  const [proposedTimeStr, setProposedTimeStr] = useState("");
+  const [manualMeetingLink, setManualMeetingLink] = useState("");
 
   const [activeTab, setActiveTab] = useState<"upcoming" | "history">("upcoming");
 
@@ -381,6 +717,7 @@ export default function PeerMockInterviewPage() {
   useEffect(() => {
     if (preference) {
       setTopic(preference.topic || "DSA");
+      setCustomTopic(preference.customTopic || "");
       setAvailability(preference.availability || []);
       setEnabled(preference.enabled ?? true);
       setTargetRole(preference.targetRole || "");
@@ -394,6 +731,7 @@ export default function PeerMockInterviewPage() {
 
   const buildPayload = (overrides: Partial<{ enabled: boolean }> = {}) => ({
     topic,
+    customTopic: topic === "OTHER" ? customTopic.trim() || undefined : undefined,
     availability,
     enabled,
     targetRole: targetRole.trim() || undefined,
@@ -402,11 +740,21 @@ export default function PeerMockInterviewPage() {
     ...overrides,
   });
 
+  const requireCustomTopic = () => {
+    if (topic === "OTHER" && !customTopic.trim()) {
+      toast.error("Enter your interview topic first.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSavePreferences = () => {
+    if (!requireCustomTopic()) return;
     upsertPreferenceMutation.mutate(buildPayload());
   };
 
   const handleToggleOptIn = () => {
+    if (!enabled && !requireCustomTopic()) return;
     const nextEnabled = !enabled;
     setEnabled(nextEnabled);
     upsertPreferenceMutation.mutate(buildPayload({ enabled: nextEnabled }));
@@ -433,6 +781,7 @@ export default function PeerMockInterviewPage() {
   }
 
   const currentUserId = useAuthStore.getState().user?.id;
+  const todayStr = new Date().toISOString().slice(0, 10);
   const isA = pairing && pairing.studentAId === currentUserId;
   const partner = pairing ? (isA ? pairing.studentB : pairing.studentA) : null;
   const alreadyRated = pairing ? (isA ? pairing.ratingAForB !== null : pairing.ratingBForA !== null) : false;
@@ -453,7 +802,7 @@ export default function PeerMockInterviewPage() {
                 Peer mock interview matching.
               </h1>
               <p className="mt-2 text-sm text-stone-500 max-w-xl">
-                Match weekly with students for live mock interviews. Practice, rate, and level up together.
+                Get matched instantly with students for live mock interviews. Practice, rate, and level up together.
               </p>
             </div>
             <Button
@@ -505,7 +854,7 @@ export default function PeerMockInterviewPage() {
                       <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-1">Upcoming Practice Session</h2>
                     </div>
                     <span className="px-2.5 py-1 rounded bg-lime-400/10 text-lime-500 text-xs font-mono uppercase tracking-wider">
-                      {pairing.topic}
+                      {formatTopic(pairing.topic, pairing.customTopic)}
                     </span>
                   </div>
 
@@ -543,25 +892,50 @@ export default function PeerMockInterviewPage() {
 
                   <div className="flex flex-col gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
                     {pairing.status === "PENDING_SCHEDULE" && !pairing.proposedTime && (
-                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10">
-                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Propose a meeting time</p>
-                        <div className="flex flex-wrap gap-2">
-                          <input
-                            type="datetime-local"
-                            value={proposedDate}
-                            onChange={(e) => setProposedDate(e.target.value)}
-                            className="text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1"
-                          />
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            disabled={!proposedDate || proposeTimeMutation.isPending}
-                            onClick={() => proposeTimeMutation.mutate({ pairingId: pairing.id, proposedTime: new Date(proposedDate).toISOString() })}
-                            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
-                          >
-                            Propose Time
-                          </Button>
+                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-4 rounded-md border border-stone-200 dark:border-white/10">
+                        <div className="flex items-center gap-2">
+                          <CalendarClock className="w-4 h-4 text-lime-500 shrink-0" />
+                          <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Propose a meeting time</p>
                         </div>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                              Date
+                            </label>
+                            <input
+                              type="date"
+                              value={proposedDateStr}
+                              min={todayStr}
+                              onChange={(e) => setProposedDateStr(e.target.value)}
+                              className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                              Time
+                            </label>
+                            <input
+                              type="time"
+                              value={proposedTimeStr}
+                              onChange={(e) => setProposedTimeStr(e.target.value)}
+                              className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                            />
+                          </div>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={!proposedDateStr || !proposedTimeStr || proposeTimeMutation.isPending}
+                          onClick={() =>
+                            proposeTimeMutation.mutate({
+                              pairingId: pairing.id,
+                              proposedTime: new Date(`${proposedDateStr}T${proposedTimeStr}`).toISOString(),
+                            })
+                          }
+                          className="w-full bg-lime-400 text-stone-950 hover:bg-lime-300"
+                        >
+                          Propose Time
+                        </Button>
                       </div>
                     )}
 
@@ -582,14 +956,32 @@ export default function PeerMockInterviewPage() {
                         </div>
                         <div className="space-y-2">
                           <p className="text-xs text-stone-400 dark:text-stone-500">
-                            Accepting creates a Google Meet link automatically and emails it to both of you.
+                            Accepting tries to auto-generate a Google Meet link. If that is not set up, paste your own
+                            below (Meet, Zoom, anything) so it still goes out in the confirmation email.
                           </p>
-                          <div className="flex gap-2">
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                              Meeting link (optional)
+                            </label>
+                            <input
+                              type="url"
+                              value={manualMeetingLink}
+                              onChange={(e) => setManualMeetingLink(e.target.value)}
+                              placeholder="https://meet.google.com/..."
+                              className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                            />
+                          </div>
+                          <div className="flex gap-2 pt-1">
                             <Button
                               variant="primary"
                               size="sm"
                               disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
-                              onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id })}
+                              onClick={() =>
+                                acceptTimeMutation.mutate({
+                                  pairingId: pairing.id,
+                                  meetingLink: manualMeetingLink.trim() || undefined,
+                                })
+                              }
                               className="bg-lime-400 text-stone-950 hover:bg-lime-300"
                             >
                               Accept Time
@@ -633,6 +1025,18 @@ export default function PeerMockInterviewPage() {
                         <span className="text-xs text-stone-400 italic">Session marked as completed.</span>
                       ) : null}
 
+                      {pairing.status === "PENDING_SCHEDULE" && (
+                        <Button
+                          variant="ghost"
+                          mode="link"
+                          onClick={() => declineMutation.mutate(pairing.id)}
+                          disabled={declineMutation.isPending}
+                          className="text-xs font-bold text-red-500 hover:underline"
+                        >
+                          Decline Pairing
+                        </Button>
+                      )}
+
                       {(pairing.status === "SCHEDULED" || pairing.status === "PENDING_SCHEDULE") && (
                         <Button
                           variant="ghost"
@@ -649,35 +1053,14 @@ export default function PeerMockInterviewPage() {
                   </div>
                 </div>
               ) : enabled && !pairing ? (
-                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
-                  <div className="w-12 h-12 bg-lime-400/10 text-lime-500 flex items-center justify-center rounded mx-auto">
-                    <RotateCcw className="w-6 h-6 animate-spin" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Searching for a partner...</h2>
-                    <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
-                      You are in the matching pool! We match students every week on Sunday based on roadmap progress and availability.
-                    </p>
-                  </div>
-                  <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 text-left max-w-md mx-auto space-y-2">
-                    <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Your matching settings</span>
-                    <p className="text-xs text-stone-600 dark:text-stone-400">
-                      Topic: <span className="font-semibold text-stone-950 dark:text-stone-50">{topic}</span>
-                    </p>
-                    <p className="text-xs text-stone-600 dark:text-stone-400">
-                      Availability: <span className="font-semibold text-stone-950 dark:text-stone-50">{availability.join(", ") || "Anytime"}</span>
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    mode="link"
-                    onClick={handleToggleOptIn}
-                    disabled={upsertPreferenceMutation.isPending}
-                    className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 underline"
-                  >
-                    Leave matching pool
-                  </Button>
-                </div>
+                <MatchListSection
+                  matchData={matchData}
+                  loading={loadingMatches}
+                  onSelect={(candidateUserId) => selectMatchMutation.mutate(candidateUserId)}
+                  selecting={selectMatchMutation.isPending}
+                  onLeavePool={handleToggleOptIn}
+                  leaving={upsertPreferenceMutation.isPending}
+                />
               ) : (
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
                   <div className="w-12 h-12 bg-stone-100 dark:bg-white/5 text-stone-400 flex items-center justify-center rounded mx-auto">
@@ -686,7 +1069,7 @@ export default function PeerMockInterviewPage() {
                   <div>
                     <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Peer Mock Interviews are disabled</h2>
                     <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
-                      Opt-in on the right to start receiving weekly peer mock interview pairings.
+                      Opt in on the right to instantly see your top peer matches.
                     </p>
                   </div>
                   <Button
@@ -753,21 +1136,36 @@ export default function PeerMockInterviewPage() {
                   <div className="space-y-2">
                     <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Select Topic</label>
                     <div className="grid grid-cols-3 gap-2">
-                      {(["DSA", "SYSTEM_DESIGN", "FRONTEND"] as const).map((t) => (
+                      {TOPIC_OPTIONS.map((t) => (
                         <button
-                          key={t}
+                          key={t.value}
                           type="button"
-                          onClick={() => setTopic(t)}
+                          onClick={() => setTopic(t.value)}
                           className={`px-3 py-2 text-center text-xs font-semibold rounded border transition-colors cursor-pointer ${
-                            topic === t
+                            topic === t.value
                               ? "border-lime-400 bg-lime-50 dark:bg-lime-400/10 text-stone-900 dark:text-stone-50"
                               : "border-stone-200 dark:border-white/10 bg-transparent text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
                           }`}
                         >
-                          {t.replace("_", " ")}
+                          {t.label}
                         </button>
                       ))}
                     </div>
+                    {topic === "OTHER" && (
+                      <div className="space-y-1 pt-1">
+                        <input
+                          type="text"
+                          value={customTopic}
+                          onChange={(e) => setCustomTopic(e.target.value)}
+                          maxLength={60}
+                          placeholder="e.g. Android, Blockchain, Machine Learning"
+                          className="w-full text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1.5"
+                        />
+                        <p className="text-[11px] text-stone-400 dark:text-stone-500">
+                          You'll rank highest with students who entered the same topic.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">

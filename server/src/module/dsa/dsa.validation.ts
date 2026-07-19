@@ -1,8 +1,22 @@
 import { z } from "zod";
 
+// Code now executes in the student's own browser (Web Worker for JS, Pyodide
+// for Python) — the server never sees the runtime, only the outcome each test
+// case produced, which it compares against the stored expected output.
 export const executeCodeSchema = z.object({
-  language: z.enum(["python", "cpp", "java"]),
+  language: z.enum(["python", "javascript"]),
   code: z.string().min(1, "Code is required").max(50000, "Code too long"),
+  results: z
+    .array(
+      z.object({
+        testCaseId: z.number().int().positive(),
+        actual: z.string().max(20000, "Output too long"),
+        timeMs: z.number().min(0).max(30000),
+        error: z.string().max(4000).optional(),
+      }),
+    )
+    .min(1, "No results provided")
+    .max(50, "Too many test case results"),
 });
 
 export const syncLeetCodeSchema = z.object({

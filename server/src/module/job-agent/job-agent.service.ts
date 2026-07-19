@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import { jobIndexService } from "../job-index/job-index.service.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -441,31 +442,13 @@ export class JobAgentService {
     const now = new Date();
     const context = truncateContext(input.context);
 
-    const [user, lastEmail] = await Promise.all([
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { name: true, email: true },
-      }),
-      prisma.jobAgentEmailLog.findFirst({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        select: { createdAt: true },
-      }),
-    ]);
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    });
 
     if (!user) {
       throw new JobAgentEmailError(401, "User not found");
-    }
-
-    if (lastEmail) {
-      const secondsSinceLastSend = Math.floor((now.getTime() - lastEmail.createdAt.getTime()) / 1000);
-      if (secondsSinceLastSend < JOB_EMAIL_COOLDOWN_SECONDS) {
-        throw new JobAgentEmailError(
-          429,
-          "Email sent recently. Please wait before trying again.",
-          JOB_EMAIL_COOLDOWN_SECONDS - secondsSinceLastSend,
-        );
-      }
     }
 
     const uniqueJobIds = [...new Set(input.jobIds)];
@@ -526,29 +509,65 @@ export class JobAgentService {
       settingsUrl,
     };
 
-    // Atomic limit check + log insert: insert a row only if the daily cap
-    // has not been reached. The WHERE clause in the INSERT ... SELECT
-    // ensures at most one concurrent request succeeds.
-    const orderedJobIds = orderedJobs.map((job) => job.id);
-    const inserted = await prisma.$queryRaw<{ id: number }[]>`
-      INSERT INTO "jobAgentEmailLog" ("userId", "jobIds", "context", "sentCount", "createdAt")
-      SELECT ${userId}, ${orderedJobIds}, ${context}, ${count}, now()
-      WHERE (
-        SELECT COUNT(*)::int FROM "jobAgentEmailLog"
-        WHERE "userId" = ${userId} AND "createdAt" >= ${startOfToday()}
-      ) < ${JOB_EMAIL_DAILY_LIMIT}
-      RETURNING "id"
-    `;
+    const reserveEmailLog = async () => {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          return await prisma.$transaction(
+            async (tx) => {
+              const [lastEmail, sentToday] = await Promise.all([
+                tx.jobAgentEmailLog.findFirst({
+                  where: { userId },
+                  orderBy: { createdAt: "desc" },
+                  select: { createdAt: true },
+                }),
+                tx.jobAgentEmailLog.count({
+                  where: { userId, createdAt: { gte: startOfToday() } },
+                }),
+              ]);
 
-    if (inserted.length === 0) {
-      const tomorrow = startOfToday();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const retryAfter = Math.max(1, Math.ceil((tomorrow.getTime() - now.getTime()) / 1000));
-      throw new JobAgentEmailError(429, "Daily email limit reached. Try again tomorrow.", retryAfter);
-    }
+              if (lastEmail) {
+                const secondsSinceLastSend = Math.floor((now.getTime() - lastEmail.createdAt.getTime()) / 1000);
+                if (secondsSinceLastSend < JOB_EMAIL_COOLDOWN_SECONDS) {
+                  throw new JobAgentEmailError(
+                    429,
+                    "Email sent recently. Please wait before trying again.",
+                    JOB_EMAIL_COOLDOWN_SECONDS - secondsSinceLastSend,
+                  );
+                }
+              }
 
-    const logId = inserted[0].id;
+              if (sentToday >= JOB_EMAIL_DAILY_LIMIT) {
+                const tomorrow = startOfToday();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const retryAfter = Math.max(1, Math.ceil((tomorrow.getTime() - now.getTime()) / 1000));
+                throw new JobAgentEmailError(429, "Daily email limit reached. Try again tomorrow.", retryAfter);
+              }
 
+              return tx.jobAgentEmailLog.create({
+                data: {
+                  userId,
+                  jobIds: orderedJobs.map((job) => job.id),
+                  context,
+                  sentCount: count,
+                },
+              });
+            },
+            { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+          );
+        } catch (err) {
+          const code = typeof err === "object" && err !== null && "code" in err ? (err as { code: unknown }).code : undefined;
+          if (code === "P2034" && attempt === 0) continue;
+          if (code === "P2034") {
+            throw new JobAgentEmailError(429, "Email sent recently. Please wait before trying again.", JOB_EMAIL_COOLDOWN_SECONDS);
+          }
+          throw err;
+        }
+      }
+
+      throw new JobAgentEmailError(429, "Email sent recently. Please wait before trying again.", JOB_EMAIL_COOLDOWN_SECONDS);
+    };
+
+    const logRow = await reserveEmailLog();
     let emailSent = false;
     try {
       emailSent = await sendEmail({
@@ -559,22 +578,17 @@ export class JobAgentService {
         unsubscribeUrl: buildUnsubscribeUrl(userId),
       });
     } catch (err) {
+      await prisma.jobAgentEmailLog.delete({ where: { id: logRow.id } }).catch((deleteErr) => {
+        console.error("[JobAgent] Failed to remove reserved email log:", deleteErr);
+      });
       console.error("[JobAgent] Failed to send jobs email:", err);
-      // Clean up the log row so the slot is not permanently burned
-      try {
-        await prisma.jobAgentEmailLog.delete({ where: { id: logId } });
-      } catch (deleteErr) {
-        console.error("[JobAgent] Failed to clean up email log after send failure:", deleteErr);
-      }
       throw new JobAgentEmailError(503, "Email service is temporarily unavailable");
     }
 
     if (!emailSent) {
-      try {
-        await prisma.jobAgentEmailLog.delete({ where: { id: logId } });
-      } catch (deleteErr) {
-        console.error("[JobAgent] Failed to clean up email log after send failure:", deleteErr);
-      }
+      await prisma.jobAgentEmailLog.delete({ where: { id: logRow.id } }).catch((deleteErr) => {
+        console.error("[JobAgent] Failed to remove reserved email log:", deleteErr);
+      });
       throw new JobAgentEmailError(503, "Email service is not configured");
     }
 

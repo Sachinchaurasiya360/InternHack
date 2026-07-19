@@ -11,14 +11,14 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
-let hasReloaded = false;
+const retryState = new Map<() => Promise<{ default: ComponentType<unknown> }>, boolean>();
 
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
   return lazy(
     () =>
       factory().catch((err: unknown) => {
-        if (!hasReloaded) {
-          hasReloaded = true;
+        if (!retryState.get(factory)) {
+          retryState.set(factory, true);
           window.location.reload();
           return new Promise<never>(() => { });
         }
@@ -33,10 +33,6 @@ const LoginPage = lazyWithRetry(() => import("./module/auth/LoginPage"));
 const RegisterPage = lazyWithRetry(() => import("./module/auth/RegisterPage"));
 const VerifyEmailPage = lazyWithRetry(() => import("./module/auth/VerifyEmailPage"));
 const ForgotPasswordPage = lazyWithRetry(() => import("./module/auth/ForgotPasswordPage"));
-const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
-const JobDetailPage = lazyWithRetry(() => import("./module/student/jobs/JobDetailPage"));
-const JobLandingPage = lazyWithRetry(() => import("./module/student/jobs/JobLandingPage"));
-const SavedJobsPage = lazyWithRetry(() => import("./module/student/jobs/SavedJobsPage"));
 const ScrapedJobsPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobsPage"));
 const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
 const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
@@ -46,17 +42,12 @@ const PublicAtsTryPage = lazyWithRetry(() => import("./module/student/ats/Public
 const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
 const RepoPublicPage = lazyWithRetry(() => import("./module/student/opensource/RepoPublicPage"));
-const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
-const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
 const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
 const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
 const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicsPage"));
-const DsaAnalyticsPage = lazyWithRetry(() => import("./module/student/dsa/DsaAnalyticsPage"));
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
 const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
-const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
-const DsaListsPage = lazyWithRetry(() => import("./module/student/dsa/DsaListsPage"));
 const DsaBookmarksPage = lazyWithRetry(() => import("./module/student/dsa/DsaBookmarksPage"));
 const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaProblemDetailPage"));
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
@@ -67,6 +58,7 @@ const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/s
 const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
 const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
 const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/YCCompanyDetailPage"));
+const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
@@ -79,14 +71,11 @@ const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("./module/legal/PrivacyPage"));
 const ShippingPage = lazyWithRetry(() => import("./module/legal/ShippingPage"));
 const ContactPage = lazyWithRetry(() => import("./module/legal/ContactPage"));
-const AboutPage = lazyWithRetry(() => import("./module/legal/AboutPage"));
 const RefundPage = lazyWithRetry(() => import("./module/legal/RefundPage"));
 
 // Student pages
-const ApplyPage = lazyWithRetry(() => import("./module/student/applications/ApplyPage"));
 const StudentLayout = lazyWithRetry(() => import("./module/student/StudentLayout"));
 const MyApplicationsPage = lazyWithRetry(() => import("./module/student/applications/MyApplicationsPage"));
-const ApplicationProgressPage = lazyWithRetry(() => import("./module/student/applications/ApplicationProgressPage"));
 const AtsLandingPage = lazyWithRetry(() => import("./module/student/ats/AtsLandingPage"));
 const AtsScorePage = lazyWithRetry(() =>
   import("./module/student/ats/AtsScorePage").then((m) => ({
@@ -215,14 +204,11 @@ const AdminLayout = lazyWithRetry(() => import("./module/admin/AdminLayout"));
 const AdminDashboard = lazyWithRetry(() => import("./module/admin/AdminDashboard"));
 const UsersListPage = lazyWithRetry(() => import("./module/admin/users/UsersListPage"));
 const UserDetailPage = lazyWithRetry(() => import("./module/admin/users/UserDetailPage"));
-const AdminJobsListPage = lazyWithRetry(() => import("./module/admin/jobs/AdminJobsListPage"));
 const ErrorLogsPage = lazyWithRetry(() => import("./module/admin/activity/ActivityLogsPage"));
 const AdminCompaniesPage = lazyWithRetry(() => import("./module/admin/companies/AdminCompaniesPage"));
 const AdminReviewsPage = lazyWithRetry(() => import("./module/admin/reviews/AdminReviewsPage"));
 const AdminContributionsPage = lazyWithRetry(() => import("./module/admin/contributions/AdminContributionsPage"));
 const AdminSubscribersPage = lazyWithRetry(() => import("./module/admin/AdminSubscribersPage"));
-const AdminBlogPage = lazyWithRetry(() => import("./module/admin/blog/AdminBlogPage"));
-const AdminBlogEditor = lazyWithRetry(() => import("./module/admin/blog/AdminBlogEditor"));
 const AdminDsaPage = lazyWithRetry(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazyWithRetry(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazyWithRetry(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
@@ -233,24 +219,6 @@ const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broad
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
 const AdminExpertAvailabilityPage = lazyWithRetry(() => import("./module/admin/expert-availability/AdminExpertAvailabilityPage"));
-const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
-
-function JobBrowseOrRedirect() {
-  const { isAuthenticated, user } = useAuthStore();
-  if (isAuthenticated && user?.role === "STUDENT") {
-    return <Navigate to="/student/jobs" replace />;
-  }
-  return <JobBrowsePage />;
-}
-
-function JobDetailOrRedirect() {
-  const { isAuthenticated, user } = useAuthStore();
-  const { id } = useParams();
-  if (isAuthenticated && user?.role === "STUDENT") {
-    return <Navigate to={`/student/jobs/${id}`} replace />;
-  }
-  return <JobDetailPage />;
-}
 
 function CompanyListOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -276,11 +244,6 @@ function YCCompanyOrRedirect() {
     return <Navigate to={`/student/yc/${slug}`} replace />;
   }
   return <YCCompanyDetailPage />;
-}
-
-function ApplyRedirect() {
-  const { jobId } = useParams();
-  return <Navigate to={`/student/jobs/${jobId}/apply`} replace />;
 }
 
 function ProfileRedirect() {
@@ -322,9 +285,6 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/verify/:token" element={<SkillVerificationBadgePage />} />
-            <Route path="/jobs" element={<JobBrowseOrRedirect />} />
-            <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
-            <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
             <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
             <Route path="/internships" element={<GovInternshipsPage />} />
             <Route path="/external-jobs" element={<ScrapedJobsPage />} />
@@ -353,15 +313,12 @@ function App() {
             <Route path="/learn/roadmaps/certificates/:slug/:shareToken" element={<RoadmapCertificatePage />}/>
             <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
-            <Route path="/blog" element={<BlogListPage />} />
             <Route path="/contributors" element={<ContributorsPage />} />
-            <Route path="/blog/:slug" element={<BlogPostPage />} />
             {/* Legal Pages */}
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/shipping" element={<ShippingPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/about" element={<AboutPage />} />
             <Route path="/refund" element={<RefundPage />} />
             {/* Learning Hub - all learning content under /learn */}
             <Route path="/learn" element={<LearnLayout />}>
@@ -402,10 +359,7 @@ function App() {
               <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
               <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
               <Route path="dsa" element={<DsaTopicsPage />} />
-              <Route path="dsa/analytics" element={<ProtectedRoute role="STUDENT"><DsaAnalyticsPage /></ProtectedRoute>} />
               <Route path="dsa/companies" element={<DsaCompaniesPage />} />
-              <Route path="dsa/patterns" element={<DsaPatternsPage />} />
-              <Route path="dsa/lists" element={<DsaListsPage />} />
               <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
               <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
               <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />
@@ -481,19 +435,15 @@ function App() {
             <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
 
             {/* Student protected routes */}
-            <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyRedirect /></ProtectedRoute>} />
             <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
               <Route index element={<Navigate to="applications" replace />} />
               <Route path="jobs" element={<JobBrowsePage />} />
-              <Route path="jobs/saved" element={<SavedJobsPage />} />
-              <Route path="jobs/:id" element={<JobDetailPage />} />
-              <Route path="jobs/:id/apply" element={<ApplyPage />} />
+              <Route path="job-hub" element={<Navigate to="/student/applications" replace />} />
               <Route path="internships" element={<GovInternshipsPage />} />
               <Route path="companies" element={<CompanyListPage />} />
               <Route path="companies/:slug" element={<CompanyDetailPage />} />
               <Route path="yc/:slug" element={<YCCompanyDetailPage />} />
               <Route path="applications" element={<MyApplicationsPage />} />
-              <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
               <Route path="ats" element={<AtsLandingPage />} />
               <Route path="ats/score" element={<AtsScorePage />} />
               <Route path="ats/resume-generator" element={<ResumeGeneratorPage />} />
@@ -506,7 +456,7 @@ function App() {
               <Route path="mock-interview/expert" element={<ExpertSessionPage />} />
               <Route path="mock-interview/peer" element={<PeerMockInterviewPage />} />
               <Route path="companies/add" element={<AddCompanyPage />} />
-              <Route path="grants" element={<GrantsPage />} />
+              <Route path="grants" element={<Navigate to="/student/applications" replace />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
                 <Route index element={<OpenSourceDashboardPage />} />
                 <Route path="discover" element={<RepoDiscoveryPage />} />
@@ -556,7 +506,6 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="users" element={<UsersListPage />} />
               <Route path="users/:id" element={<UserDetailPage />} />
-              <Route path="jobs" element={<AdminJobsListPage />} />
               <Route path="errors" element={<ErrorLogsPage />} />
               <Route path="companies" element={<AdminCompaniesPage />} />
               <Route path="reviews" element={<AdminReviewsPage />} />
@@ -572,10 +521,6 @@ function App() {
               <Route path="expert-availability" element={<AdminExpertAvailabilityPage />} />
               <Route path="signals" element={<AdminSignalsPage />} />
               <Route path="broadcast-email" element={<AdminBroadcastEmailPage />} />
-              <Route path="blog" element={<AdminBlogPage />} />
-              <Route path="blog/editor" element={<AdminBlogEditor />} />
-              <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-              <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>
 

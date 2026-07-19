@@ -6,20 +6,19 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, Link2, ArrowUpRight,
-  History, Terminal, Lock, Crown, ChevronLeft, ChevronRight, Play, Flag, X, Sparkles,
+  History, Terminal, Lock, Crown, ChevronLeft, ChevronRight, Play, Flag, X,
 } from "lucide-react";
 import type { SolutionStep } from "../../../lib/types";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary, DsaSimilarProblem, DsaCodeReview } from "../../../lib/types";
-import { DsaAiReviewPanel } from "./components/DsaAiReviewPanel";
+import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary, DsaSimilarProblem, DsaRunTestCase, UsageStats } from "../../../lib/types";
+import { warmDsaRuntime, runTestCasesInBrowser } from "./lib/dsa-runner";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import { AiHintPanel } from "./components/AiHintPanel";
 import { cleanHint } from "../../../lib/sanitize";
 import { SafeHtml } from "../../../components/common/SafeHtml";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
@@ -49,39 +48,15 @@ class Solution:
 # --- Do not modify below ---
 Solution().solve()
 `,
-  cpp: `#include <bits/stdc++.h>
-using namespace std;
+  javascript: `function solve() {
+  // Read input line-by-line with readLine(), or the whole thing via the
+  // \`input\` string. Print your answer with console.log.
+  // Example: const n = parseInt(readLine()); const arr = readLine().split(" ").map(Number);
 
-class Solution {
-public:
-    void solve() {
-        // Read input from stdin
-        // Example: int n; cin >> n;
-
-    }
-};
+}
 
 // --- Do not modify below ---
-int main() {
-    Solution().solve();
-    return 0;
-}
-`,
-  java: `import java.util.*;
-
-public class Main {
-    public void solve() {
-        Scanner sc = new Scanner(System.in);
-        // Read input from stdin
-        // Example: int n = sc.nextInt();
-
-    }
-
-    // --- Do not modify below ---
-    public static void main(String[] args) {
-        new Main().solve();
-    }
-}
+solve();
 `,
 };
 
@@ -119,17 +94,16 @@ export default function DsaProblemDetailPage() {
   const [reportMessage, setReportMessage] = useState("");
 
   const [activeTab, setActiveTab] = useState<"problem" | "code">("problem");
-  const [rightTab, setRightTab] = useState<"results" | "history" | "output" | "ai-review">("results");
+  const [rightTab, setRightTab] = useState<"results" | "history" | "output">("results");
   const [language, setLanguage] = useState<DsaLanguage>("python");
   const [codeMap, setCodeMap] = useState<Record<DsaLanguage, string>>({
     python: DEFAULT_CODE.python,
-    cpp: DEFAULT_CODE.cpp,
-    java: DEFAULT_CODE.java,
+    javascript: DEFAULT_CODE.javascript,
   });
 
   useEffect(() => {
     if (!slug) return;
-    for (const lang of ["python", "cpp", "java"] as DsaLanguage[]) {
+    for (const lang of ["python", "javascript"] as DsaLanguage[]) {
       const saved = localStorage.getItem(`dsa-code-${slug}-${lang}`);
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved) setCodeMap((prev) => ({ ...prev, [lang]: saved }));
@@ -144,6 +118,7 @@ export default function DsaProblemDetailPage() {
   }, [language, slug]);
 
   const handleLoadSubmission = useCallback((code: string, lang: DsaLanguage) => {
+    if (!(lang in DEFAULT_CODE)) return; // old submissions may use retired languages (cpp/java)
     setLanguage(lang);
     setCodeMap((prev) => ({ ...prev, [lang]: code }));
     setRightTab("results");
@@ -174,6 +149,29 @@ export default function DsaProblemDetailPage() {
     enabled: !!problem && showNextPanel,
     staleTime: 10 * 60 * 1000,
   });
+
+  // Test cases (stdin/label only — expected output withheld until submission)
+  const { data: testCases } = useQuery({
+    queryKey: queryKeys.dsa.testCases(problem?.id ?? 0),
+    queryFn: () =>
+      api.get<{ testCases: DsaRunTestCase[] }>(`/dsa/problems/${problem!.id}/testcases`)
+        .then((r) => r.data.testCases),
+    enabled: !!user && !!problem,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  // Daily run count — code executes for free in the browser, this just reflects the shared cap
+  const { data: usageData } = useQuery<UsageStats>({
+    queryKey: queryKeys.ats.usage(),
+    queryFn: () => api.get("/ats/usage").then((r) => r.data),
+    enabled: !!user,
+    staleTime: 30 * 1000,
+  });
+  const dsaUsage = usageData?.usage.find((u) => u.action === "DSA_EXECUTE");
+
+  useEffect(() => {
+    if (user) warmDsaRuntime(language);
+  }, [user, language]);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setShowNextPanel(false); }, [slug]);
@@ -223,8 +221,17 @@ export default function DsaProblemDetailPage() {
   });
 
   const executeMutation = useMutation({
-    mutationFn: ({ problemId, lang, code }: { problemId: number; lang: string; code: string }) =>
-      api.post<DsaExecutionResult>(`/dsa/problems/${problemId}/execute`, { language: lang, code }).then((r) => r.data),
+    mutationFn: async ({ problemId, lang, code }: { problemId: number; lang: DsaLanguage; code: string }) => {
+      let cases: DsaRunTestCase[];
+      if (testCases) {
+        cases = testCases;
+      } else {
+        const res = await api.get<{ testCases: DsaRunTestCase[] }>(`/dsa/problems/${problemId}/testcases`);
+        cases = res.data.testCases;
+      }
+      const results = await runTestCasesInBrowser(lang, code, cases);
+      return api.post<DsaExecutionResult>(`/dsa/problems/${problemId}/execute`, { language: lang, code, results }).then((r) => r.data);
+    },
     onSuccess: (data) => {
       setRightTab("results");
       if (data.allPassed) {
@@ -234,6 +241,7 @@ export default function DsaProblemDetailPage() {
         setShowNextPanel(true);
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.submissions(problem!.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
     },
     onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
       if (err?.response?.status === 429) {
@@ -244,24 +252,10 @@ export default function DsaProblemDetailPage() {
     },
   });
 
-  const aiReviewMutation = useMutation({
-    mutationFn: (submissionId: number) =>
-      api.post<DsaCodeReview>(`/dsa/submissions/${submissionId}/review`).then((r) => r.data),
-    onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
-      if (err?.response?.status === 429) {
-        toast.error(err.response?.data?.message ?? "Daily limit reached");
-      } else {
-        toast.error(err?.response?.data?.message ?? "AI review failed");
-      }
-    },
-  });
-
-  useEffect(() => { aiReviewMutation.reset(); }, [problem?.id, aiReviewMutation]);
-
   const handleRun = useCallback(() => {
-    if (!problem || !user || !isPremium) return;
+    if (!problem || !user) return;
     executeMutation.mutate({ problemId: problem.id, lang: language, code: codeMap[language] });
-  }, [problem, user, isPremium, language, codeMap, executeMutation]);
+  }, [problem, user, language, codeMap, executeMutation]);
 
   if (isLoading) return <LoadingScreen />;
   if (!problem) {
@@ -540,11 +534,6 @@ export default function DsaProblemDetailPage() {
               {/* Approaches */}
               <DsaApproachesPanel slug={problem.slug} />
 
-              {/* AI Hints */}
-              {user && (
-                <AiHintPanel problemId={problem.id} />
-              )}
-
               {/* Notes */}
               {user && (
                 <NotesPanel contentType="DSA_PROBLEM" contentId={problem.id} />
@@ -614,27 +603,16 @@ export default function DsaProblemDetailPage() {
               <>
                 {/* Editor */}
                 <div className="h-[55%] max-lg:h-screen-minus-180 min-h-0 border-b border-stone-200 dark:border-white/10 relative overflow-hidden">
-                  {isPremium ? (
-                    <DsaCodeEditor
-                      value={codeMap[language]}
-                      onChange={handleCodeChange}
-                      onRun={handleRun}
-                      language={language}
-                      onLanguageChange={setLanguage}
-                      isRunning={executeMutation.isPending}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-stone-950/40 backdrop-blur-[2px] z-10 transition-all">
-                      <div className="text-center max-w-xs px-6">
-                        <Lock className="w-5 h-5 text-amber-500 mx-auto mb-2 opacity-80" />
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-stone-900 dark:text-stone-50">Premium Feature</h4>
-                        <p className="mt-1 text-[10px] text-stone-600 dark:text-stone-400">Upgrade to run and test your code against cases.</p>
-                        <Link to="/student/checkout" className="mt-4 px-3 py-1.5 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-[9px] font-mono uppercase tracking-widest hover:bg-lime-400 hover:text-stone-900 transition-colors inline-block no-underline">
-                          Subscribe
-                        </Link>
-                      </div>
-                    </div>
-                  )}
+                  <DsaCodeEditor
+                    value={codeMap[language]}
+                    onChange={handleCodeChange}
+                    onRun={handleRun}
+                    language={language}
+                    onLanguageChange={setLanguage}
+                    isRunning={executeMutation.isPending}
+                    runsUsed={dsaUsage?.used}
+                    runsLimit={dsaUsage?.limit}
+                  />
                 </div>
 
                 {/* Results / Output / History tabs */}
@@ -644,7 +622,6 @@ export default function DsaProblemDetailPage() {
                       { key: "results" as const, label: "test results", icon: null },
                       { key: "output" as const, label: "output", icon: Terminal },
                       { key: "history" as const, label: "history", icon: History },
-                      { key: "ai-review" as const, label: "ai review", icon: Sparkles },
                     ]).map(({ key, label, icon: Icon }) => (
                       <button
                         key={key}
@@ -673,18 +650,6 @@ export default function DsaProblemDetailPage() {
                       <DsaTestResults result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
                     ) : rightTab === "output" ? (
                       <DsaConsoleOutput result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
-                    ) : rightTab === "ai-review" ? (
-                      <DsaAiReviewPanel
-                        review={aiReviewMutation.data ?? null}
-                        isLoading={aiReviewMutation.isPending}
-                        error={aiReviewMutation.error}
-                        onRequestReview={() => {
-                          if (executeMutation.data?.submissionId) {
-                            aiReviewMutation.mutate(executeMutation.data.submissionId);
-                          }
-                        }}
-                        hasSubmission={!!executeMutation.data?.submissionId}
-                      />
                     ) : rightTab === "history" ? (
                       isPremium ? (
                         <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
@@ -1030,6 +995,10 @@ function ExtLink({ href, label }: { href: string; label: string }) {
 
 function formatDescription(md: string): string {
   return md
+    .replace(
+      /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g,
+      "<img src=\"$2\" alt=\"$1\" loading=\"lazy\" class=\"max-w-full rounded-md border border-stone-200 dark:border-white/10 my-2\" />",
+    )
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/`(.*?)`/g, "<code class='px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded-sm text-sm font-mono'>$1</code>")
     .replace(/_([^_]+)_/g, "<em>$1</em>")

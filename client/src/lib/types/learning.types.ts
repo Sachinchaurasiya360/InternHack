@@ -231,7 +231,7 @@ export interface DsaPaginatedProblems {
 }
 
 // DSA Code Execution
-export type DsaLanguage = "python" | "cpp" | "java";
+export type DsaLanguage = "python" | "javascript";
 
 export interface DsaTestCaseResult {
   input: string;
@@ -240,11 +240,7 @@ export interface DsaTestCaseResult {
   passed: boolean;
   label: string | null;
   timeMs: number;
-  memoryKb: number;
-  statusId: number;
-  statusDescription: string;
-  stderr: string | null;
-  compileOutput: string | null;
+  error?: string | null;
 }
 
 export interface DsaExecutionResult {
@@ -253,55 +249,14 @@ export interface DsaExecutionResult {
   allPassed: boolean;
   results: DsaTestCaseResult[];
   submissionId: number;
+  usage?: { used: number; limit: number; action: string; tier: string };
 }
 
-export interface DsaCodeReview {
-  timeComplexity: string;
-  spaceComplexity: string;
-  readability: {
-    score: number;
-    feedback: string;
-  };
-  edgeCases: string[];
-  suggestions: string[];
-}
-
-export interface DsaStreak {
-  currentStreak: number;
-  longestStreak: number;
-  solvedToday: boolean;
-  lastSolvedDate: string | null;
-  activeDays: string[];
-}
-
-export interface DsaTopicAccuracy {
-  topic: string;
-  total: number;
-  solved: number;
-  percentage: number;
-}
-
-export interface DsaWeeklyTrend {
-  weekStart: string;
-  count: number;
-}
-
-export interface DsaMonthlyTrend {
-  month: string;
-  count: number;
-}
-
-export interface DsaAnalytics {
-  totalSolved: number;
-  totalProblems: number;
-  byDifficulty: {
-    easy: { total: number; solved: number };
-    medium: { total: number; solved: number };
-    hard: { total: number; solved: number };
-  };
-  topicAccuracy: DsaTopicAccuracy[];
-  weeklyTrend: DsaWeeklyTrend[];
-  monthlyTrend: DsaMonthlyTrend[];
+/** A test case to run against, fetched before execution — expected output withheld until submission. */
+export interface DsaRunTestCase {
+  id: number;
+  input: string;
+  label: string | null;
 }
 
 export interface DsaSubmissionSummary {
@@ -314,45 +269,6 @@ export interface DsaSubmissionSummary {
   timeMs: number | null;
   memoryKb: number | null;
   createdAt: string;
-}
-
-// LeetCode Import
-export interface LeetcodeImportPreviewItem {
-  problemId: number;
-  title: string;
-  difficulty: string;
-  slug: string;
-  solvedAt: string | null;
-}
-
-export interface LeetcodeImportPreview {
-  matched: number;
-  unmatched: number;
-  alreadySolved: number;
-  newSolves: number;
-  token: string;
-  preview: LeetcodeImportPreviewItem[];
-  lastImport?: {
-    importedAt: string;
-    username: string | null;
-    source: string;
-  } | null;
-}
-
-export interface LeetcodeImportResult {
-  imported: number;
-  skipped: number;
-  importedAt: string;
-}
-
-export interface LeetcodeImportStatus {
-  lastImport: {
-    importedAt: string;
-    username: string | null;
-    source: string;
-    matched: number;
-    imported: number;
-  } | null;
 }
 
 // Aptitude Practice

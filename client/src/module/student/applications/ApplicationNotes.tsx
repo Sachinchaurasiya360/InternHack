@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { Application, ExternalApplication } from "../../../lib/types";
+import type { TrackedApplication } from "../../../lib/types";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import toast from "@/components/ui/toast";
@@ -11,28 +11,25 @@ import toast from "@/components/ui/toast";
 const NOTES_LIMIT = 4000;
 const NOTES_WARNING_AT = 3500;
 
-type ApplicationsCache = {
-  applications: Application[];
-  externalApplications: ExternalApplication[];
+type TrackerCache = {
+  applications: TrackedApplication[];
 };
 
 type ApplicationNotesProps = {
-  applicationId: number;
-  kind: "internal" | "external";
+  // Composite tracker id ("tracked-1" / "legacy-1"), used for cache targeting.
+  id: string;
+  recordType: TrackedApplication["recordType"];
+  numericId: number;
   notes: string | null;
-  progressKeyId?: string | number;
 };
 
 export function ApplicationNotes({
-  applicationId,
-  kind,
+  id,
+  recordType,
+  numericId,
   notes,
-  progressKeyId,
 }: ApplicationNotesProps) {
   const queryClient = useQueryClient();
-  const progressQueryKey = progressKeyId
-    ? queryKeys.applications.progress(String(progressKeyId))
-    : undefined;
   const [value, setValue] = useState(notes ?? "");
   const [isEditing, setIsEditing] = useState(false);
   const [savedVisible, setSavedVisible] = useState(false);
@@ -55,71 +52,50 @@ export function ApplicationNotes({
     };
   }, []);
 
+  const listKey = queryKeys.applicationTracker.list();
+
   const mutation = useMutation({
     mutationFn: async (variables: { notes: string; requestId: number }) => {
-      const endpoint =
-        kind === "internal"
-          ? `/student/applications/${applicationId}/notes`
-          : `/student/external-applications/${applicationId}/notes`;
-      const res = await api.patch(endpoint, { notes: variables.notes });
-      return res.data as { notes: string; updatedAt: string };
+      if (recordType === "LEGACY_EXTERNAL") {
+        const res = await api.patch(
+          `/student/external-applications/${numericId}/notes`,
+          { notes: variables.notes },
+        );
+        return (res.data as { notes: string }).notes;
+      }
+      const res = await api.patch(`/application-tracker/${numericId}`, {
+        notes: variables.notes,
+      });
+      return (res.data as { application: TrackedApplication }).application.notes;
     },
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.applications.mine() });
-      if (kind === "internal" && progressQueryKey) {
-        await queryClient.cancelQueries({ queryKey: progressQueryKey });
-      }
+      await queryClient.cancelQueries({ queryKey: listKey });
 
-      const previousMine = queryClient.getQueryData<ApplicationsCache>(queryKeys.applications.mine());
-      const previousProgress = progressQueryKey
-        ? queryClient.getQueryData<Application>(progressQueryKey)
-        : undefined;
+      const previous = queryClient.getQueryData<TrackerCache>(listKey);
 
-      queryClient.setQueryData<ApplicationsCache>(queryKeys.applications.mine(), (old) => {
+      queryClient.setQueryData<TrackerCache>(listKey, (old) => {
         if (!old) return old;
-        if (kind === "internal") {
-          return {
-            ...old,
-            applications: old.applications.map((app) =>
-              app.id === applicationId ? { ...app, studentNotes: variables.notes } : app
-            ),
-          };
-        }
         return {
           ...old,
-          externalApplications: old.externalApplications.map((app) =>
-            app.id === applicationId ? { ...app, studentNotes: variables.notes } : app
+          applications: old.applications.map((app) =>
+            app.id === id ? { ...app, notes: variables.notes } : app,
           ),
         };
       });
 
-      if (kind === "internal" && progressQueryKey) {
-        queryClient.setQueryData<Application>(progressQueryKey, (old) =>
-          old ? { ...old, studentNotes: variables.notes } : old
-        );
-      }
-
-      return { previousMine, previousProgress };
+      return { previous };
     },
     onError: (_error, variables, context) => {
       if (variables.requestId !== saveSeqRef.current) return;
-      if (context?.previousMine) {
-        queryClient.setQueryData(queryKeys.applications.mine(), context.previousMine);
-      }
-      if (progressQueryKey && context?.previousProgress) {
-        queryClient.setQueryData(progressQueryKey, context.previousProgress);
+      if (context?.previous) {
+        queryClient.setQueryData(listKey, context.previous);
       }
       setValue(lastSavedRef.current);
       toast.error("Failed to save notes");
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (savedNotes, variables) => {
       if (variables.requestId !== saveSeqRef.current) return;
-      lastSavedRef.current = data.notes;
-      if (kind === "internal" && progressQueryKey) {
-        queryClient.setQueryData<Application>(progressQueryKey, (old) =>
-          old ? { ...old, studentNotes: data.notes, updatedAt: data.updatedAt } : old
-        );
-      }
+      lastSavedRef.current = savedNotes;
       setSavedVisible(true);
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       savedTimerRef.current = setTimeout(() => setSavedVisible(false), 1800);
@@ -170,18 +146,21 @@ export function ApplicationNotes({
         </div>
       </div>
 
-      {isEditing || !hasNotes ? (
+      {isEditing ? (
         <Textarea
           value={value}
           maxLength={NOTES_LIMIT}
           rows={4}
+          autoFocus
           placeholder="Add private notes - only you can see these"
           onChange={(event) => handleChange(event.target.value)}
-          onFocus={() => setIsEditing(true)}
-          onBlur={handleBlur}
+          onBlur={() => {
+            handleBlur();
+            setIsEditing(false);
+          }}
           className="min-h-28 resize-y text-sm"
         />
-      ) : (
+      ) : hasNotes ? (
         <div className="space-y-3">
           <p className="whitespace-pre-wrap text-sm leading-6 text-stone-700 dark:text-stone-300">
             {value}
@@ -191,6 +170,11 @@ export function ApplicationNotes({
             Edit
           </Button>
         </div>
+      ) : (
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+          <Pencil className="h-4 w-4" />
+          Add private notes
+        </Button>
       )}
     </section>
   );

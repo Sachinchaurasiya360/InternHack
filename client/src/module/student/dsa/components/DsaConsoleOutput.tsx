@@ -1,4 +1,3 @@
-import { AlertTriangle } from "lucide-react";
 import type { DsaExecutionResult } from "../../../../lib/types";
 
 interface Props {
@@ -24,63 +23,43 @@ export function DsaConsoleOutput({ result, isRunning }: Props) {
     );
   }
 
-  const firstResult = result.results[0];
-  const hasCompileError =
-    firstResult &&
-    firstResult.compileOutput &&
-    firstResult.statusId !== 3 &&
-    firstResult.statusId !== 4;
-
   return (
     <div className="bg-gray-950 text-gray-200 font-mono text-xs h-full overflow-y-auto">
-      {/* Compile error */}
-      {hasCompileError && (
-        <div className="border-b border-red-900/50 p-3">
-          <div className="flex items-center gap-2 mb-1.5">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-            <span className="text-red-400 font-semibold text-xs">
-              Compilation Error
-            </span>
-          </div>
-          <pre className="text-red-400 whitespace-pre-wrap">
-            {firstResult.compileOutput}
-          </pre>
-        </div>
-      )}
+      {result.results.map((tc, idx) => {
+        const notExecuted = tc.error === "Not executed";
+        return (
+          <div key={idx} className="border-b border-gray-800 p-3">
+            <div className="text-gray-500 mb-1">
+              {tc.label || `Test Case ${idx + 1}`}
+              {tc.error && !notExecuted && (
+                <span className="ml-2 text-yellow-500">
+                  [{tc.error === "Time Limit Exceeded" ? "Time Limit Exceeded" : "Error"}]
+                </span>
+              )}
+            </div>
 
-      {/* Per-test-case output */}
-      {result.results.map((tc, idx) => (
-        <div key={idx} className="border-b border-gray-800 p-3">
-          <div className="text-gray-500 mb-1">
-            {tc.label || `Test Case ${idx + 1}`}
-            {tc.statusId !== -1 && tc.statusId !== 3 && tc.statusId !== 4 && (
-              <span className="ml-2 text-yellow-500">
-                [{tc.statusDescription}]
-              </span>
+            {/* stdout */}
+            {tc.actual ? (
+              <pre
+                className={`whitespace-pre-wrap ${tc.passed ? "text-green-400" : "text-gray-200"}`}
+              >
+                {tc.actual}
+              </pre>
+            ) : notExecuted ? (
+              <span className="text-gray-600 italic">{"(skipped)"}</span>
+            ) : (
+              <span className="text-gray-600 italic">{"(no output)"}</span>
+            )}
+
+            {/* runtime error */}
+            {tc.error && !notExecuted && (
+              <pre className="text-red-400 whitespace-pre-wrap mt-1">
+                {tc.error}
+              </pre>
             )}
           </div>
-
-          {/* stdout */}
-          {tc.actual ? (
-            <pre
-              className={`whitespace-pre-wrap ${tc.passed ? "text-green-400" : "text-gray-200"}`}
-            >
-              {tc.actual}
-            </pre>
-          ) : tc.statusId !== -1 ? (
-            <span className="text-gray-600 italic">{"(no output)"}</span>
-          ) : (
-            <span className="text-gray-600 italic">{"(skipped)"}</span>
-          )}
-
-          {/* stderr */}
-          {tc.stderr && (
-            <pre className="text-red-400 whitespace-pre-wrap mt-1">
-              {tc.stderr}
-            </pre>
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

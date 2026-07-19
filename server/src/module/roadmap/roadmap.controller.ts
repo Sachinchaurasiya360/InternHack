@@ -860,6 +860,12 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
       message: "Roadmap generated",
       slug: enrollment.roadmap.slug,
       enrollmentId: enrollment.id,
+      title: generated.title,
+      sections: sections.map((s) => ({
+        title: s.title,
+        estimatedHours: s.topics.reduce((sum, t) => sum + t.estimatedHours, 0),
+      })),
+      totalHours: generated.estimatedHours,
     });
   } catch (err) {
     next(err);

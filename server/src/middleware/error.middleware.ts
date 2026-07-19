@@ -159,15 +159,15 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
   // Fallback: try partial matches for dynamic error messages
   const msg = err.message.toLowerCase();
   if (msg.includes("not found")) {
-    respond(req, res, 404, err.message, err);
+    respond(req, res, 404, "Resource not found", err);
     return;
   }
   if (msg.includes("already") && (msg.includes("exists") || msg.includes("registered") || msg.includes("applied"))) {
-    respond(req, res, 409, err.message, err);
+    respond(req, res, 409, "Resource already exists", err);
     return;
   }
   if (msg.includes("unauthorized") || msg.includes("not authorized")) {
-    respond(req, res, 403, err.message, err);
+    respond(req, res, 403, "Unauthorized", err);
     return;
   }
 

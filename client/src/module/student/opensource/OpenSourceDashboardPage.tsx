@@ -35,16 +35,7 @@ import { LEARNING_PATHS } from "./learning-paths.data";
 import { GUIDE_CATALOG } from "./guides.catalog";
 import { formatCount } from "./_shared/repo-utils";
 import { SuggestRepoModal } from "./SuggestRepoModal";
-import type { OpenSourceRepo, RepoRequest } from "../../../lib/types";
-
-const STATUS_STYLE: Record<string, string> = {
-  PENDING:
-    "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-white/10",
-  APPROVED:
-    "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
-  REJECTED:
-    "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
-};
+import type { OpenSourceRepo } from "../../../lib/types";
 
 const GUIDE_ICONS: Record<string, LucideIcon> = {
   "first-pr": GitPullRequest,
@@ -130,19 +121,6 @@ export default function OpenSourceDashboardPage() {
   const { selectedPath, selectedPathId, setSelectedPathId, progress, nextIncompleteItem } =
     useLearningPath();
   const [showSuggestModal, setShowSuggestModal] = useState(false);
-  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
-
-  const {
-    data: myRequests,
-    isLoading: isMyRequestsLoading,
-    isError: isMyRequestsError,
-    refetch: refetchMyRequests,
-  } = useQuery({
-    queryKey: queryKeys.opensource.myRequests(),
-    queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000,
-  });
 
   const { data: recommendedData, isLoading: recommendedLoading } = useQuery({
     queryKey: ["opensource", "recommended"],
@@ -191,7 +169,6 @@ export default function OpenSourceDashboardPage() {
   const pathComplete = totalItems > 0 && completedItems === totalItems;
 
   const recommended = (recommendedData ?? []).slice(0, 3);
-  const approvedCount = myRequests?.filter((r) => r.status === "APPROVED").length ?? 0;
 
   return (
     <div className="pb-16 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 transition-colors">
@@ -546,91 +523,6 @@ export default function OpenSourceDashboardPage() {
             </div>
             <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
-
-          {/* My submissions */}
-          {!!user && (
-            <div className="pt-3">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-3">
-                <div className="h-1 w-1 bg-lime-400" />
-                my suggested repos
-                {approvedCount > 0 && (
-                  <span className="text-stone-400 dark:text-stone-600 normal-case tracking-normal">
-                    &middot; {approvedCount} approved
-                  </span>
-                )}
-              </div>
-
-              {isMyRequestsLoading && (
-                <div className="space-y-2">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="h-10 bg-stone-100 dark:bg-stone-800 rounded-md animate-pulse"
-                    />
-                  ))}
-                </div>
-              )}
-
-              {!isMyRequestsLoading && isMyRequestsError && (
-                <div className="flex items-center justify-between py-2 px-1">
-                  <p className="text-sm text-red-500">Failed to load submissions</p>
-                  <button
-                    type="button"
-                    onClick={() => refetchMyRequests()}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
-                  >
-                    Retry ↻
-                  </button>
-                </div>
-              )}
-
-              {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
-                <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
-                  You haven't suggested any repos yet. Spotted a beginner-friendly project? Submit
-                  it above.
-                </p>
-              )}
-
-              {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
-                <div className="space-y-2">
-                  {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map((req) => (
-                    <div
-                      key={req.id}
-                      className="flex items-center justify-between px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-sm text-stone-700 dark:text-stone-300 truncate font-medium">
-                          {req.owner}/{req.name}
-                        </span>
-                        <span className="text-xs text-stone-400 shrink-0">
-                          {new Date(req.createdAt).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING}`}
-                      >
-                        {req.status}
-                      </span>
-                    </div>
-                  ))}
-
-                  {myRequests.length > 3 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowAllSubmissions((v) => !v)}
-                      className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
-                    >
-                      {showAllSubmissions ? "Show less ↑" : `Show all ${myRequests.length} →`}
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </section>
       </div>
 

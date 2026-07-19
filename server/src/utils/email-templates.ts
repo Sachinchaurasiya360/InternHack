@@ -26,7 +26,7 @@ export function welcomeEmailHtml(name: string): string {
             <td style="padding:16px 18px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
               <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#3730a3;">Learning Hub</p>
               <p style="margin:0;font-size:13px;color:#4338ca;line-height:1.5;">
-                Curated questions and study material crafted by engineers from Google, Amazon, and Meta, 3,300+ DSA problems, interview prep, SQL practice, aptitude, and 500+ lessons across 12 technologies.
+                Curated questions and study material crafted by engineers from Google, Amazon, and Meta: 3,300+ DSA problems, interview prep, and aptitude practice across 12 technologies.
               </p>
             </td>
           </tr>
@@ -39,20 +39,8 @@ export function welcomeEmailHtml(name: string): string {
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;width:50%;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI ATS Resume Scorer</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Score your resume against real ATS systems instantly</p>
-            </td>
-          </tr>
-          <tr><td colspan="3" style="height:4px;"></td></tr>
-          <tr>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI Cover Letter Gen</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Tailored cover letters for any job in seconds</p>
-            </td>
-            <td style="width:4px;"></td>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI Resume Builder</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Build a LaTeX-quality resume with AI assistance</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">AI Resume Tools</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">ATS scorer, cover letter generator, and AI resume builder</p>
             </td>
           </tr>
           <tr><td colspan="3" style="height:4px;"></td></tr>
@@ -64,7 +52,7 @@ export function welcomeEmailHtml(name: string): string {
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
               <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Mock Interviews</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">AI-powered mock interview practice sessions</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">AI-powered and peer practice sessions with structured feedback</p>
             </td>
           </tr>
           <tr><td colspan="3" style="height:4px;"></td></tr>
@@ -75,18 +63,6 @@ export function welcomeEmailHtml(name: string): string {
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">SQL Practice</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">188 interactive exercises running in your browser</p>
-            </td>
-          </tr>
-          <tr><td colspan="3" style="height:4px;"></td></tr>
-          <tr>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">500+ Lessons</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">JS, Python, React, Node.js, TypeScript, and more</p>
-            </td>
-            <td style="width:4px;"></td>
-            <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
               <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Company Research</p>
               <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Reviews, salaries, and insider info on companies</p>
             </td>
@@ -94,13 +70,13 @@ export function welcomeEmailHtml(name: string): string {
           <tr><td colspan="3" style="height:4px;"></td></tr>
           <tr>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Skill Verification</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Get verified badges for your technical skills</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Startup Grants</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Fund your startup: curated grants, deadline alerts, and application tracking</p>
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Mock Interviews</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Practice with peers and get structured feedback</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Open Source</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">First PR guides, GSoC prep, repo discovery, and many more features</p>
             </td>
           </tr>
         </table>
@@ -1408,7 +1384,7 @@ type JobAgentJobsEmailArgs = {
   settingsUrl: string;
 };
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -1514,9 +1490,9 @@ export function jobAgentJobsEmailHtml(args: JobAgentJobsEmailArgs): string {
 </html>`;
 }
 
-export function deadlineAlertEmailHtml(
+export function grantDeadlineAlertEmailHtml(
   name: string,
-  programName: string,
+  grantName: string,
   daysAway: number,
   deadline: Date,
 ): string {
@@ -1532,17 +1508,17 @@ export function deadlineAlertEmailHtml(
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Deadline Reminder: ${programName}</title></head>
+<title>Grant Deadline Reminder: ${grantName}</title></head>
 <body style="margin:0;padding:0;background:#ffffff;font-family:'Segoe UI',Arial,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 <tr><td style="background:#0a0a0a;padding:28px 24px;text-align:center;">
   <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;">InternHack</h1>
 </td></tr>
 <tr><td style="padding:28px 24px;">
-  <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Deadline Reminder</h2>
+  <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Grant Deadline Reminder</h2>
   <p style="margin:0 0 20px;font-size:15px;color:#52525b;line-height:1.6;">Hi ${firstName},</p>
   <p style="margin:0 0 20px;font-size:15px;color:#52525b;line-height:1.6;">
-    <strong>${programName}</strong> ${
+    Your tracked grant <strong>${grantName}</strong> ${
       daysAway === 0
         ? "deadline is today!"
         : daysAway === 1
@@ -1555,14 +1531,136 @@ export function deadlineAlertEmailHtml(
     <p style="margin:0;font-size:18px;font-weight:700;color:${urgencyColor};">${deadlineStr}</p>
   </div>
   <p style="margin:0 0 20px;font-size:15px;color:#52525b;line-height:1.6;">
-    Visit your InternHack Program Tracker to prepare a strong application.
+    Visit your InternHack grant tracker to prepare a strong application.
   </p>
-  <a href="https://internhack.xyz/student/opensource/programs"
+  <a href="https://internhack.xyz/student/grants"
      style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 28px;border-radius:6px;">
-    Open Program Tracker
+    Open Grant Tracker
   </a>
 </td></tr>
 </table>
+</body>
+</html>`;
+}
+
+export interface NewFundingSignalEmailItem {
+  companyName: string;
+  companyWebsite?: string | null | undefined;
+  fundingRound?: string | null | undefined;
+  fundingAmount?: string | null | undefined;
+  amountUsd?: bigint | null | undefined;
+  industry?: string | null | undefined;
+  hqLocation?: string | null | undefined;
+  investors?: string[] | undefined;
+  sourceUrl: string;
+  source: string;
+  announcedAt: Date;
+}
+
+function formatAmountLabel(
+  fundingAmount?: string | null,
+  amountUsd?: bigint | null,
+): string | null {
+  if (fundingAmount) return fundingAmount;
+  if (amountUsd !== undefined && amountUsd !== null) {
+    return `$${amountUsd.toLocaleString("en-US")}`;
+  }
+  return null;
+}
+
+/**
+ * Build a ready-to-use image-generation prompt from a batch of new funding
+ * signals. The admin copies this straight into an image AI (ChatGPT, Gemini,
+ * Midjourney, etc.) to produce a social media graphic announcing the raises.
+ */
+export function newFundingSignalsImagePrompt(
+  signals: NewFundingSignalEmailItem[],
+): string {
+  const count = signals.length;
+
+  const companyLines = signals.map((s) => {
+    const amount = formatAmountLabel(s.fundingAmount, s.amountUsd);
+    const details = [s.fundingRound, amount].filter((v): v is string =>
+      Boolean(v),
+    );
+    const detailStr = details.length > 0 ? `: ${details.join(", ")}` : "";
+    const context = [s.industry, s.hqLocation].filter((v): v is string =>
+      Boolean(v),
+    );
+    const contextStr = context.length > 0 ? ` (${context.join(", ")})` : "";
+    return `- ${s.companyName}${detailStr}${contextStr}`;
+  });
+
+  return [
+    `Create a bold, modern social media graphic (1080x1080 square, works for LinkedIn and Instagram) announcing fresh startup funding rounds.`,
+    ``,
+    `Brand style: dark charcoal background (#0a0a0a) with a bright lime accent (#a3e635), crisp sans-serif typography, generous whitespace, subtle vertical grid lines, flat and premium editorial look. No photos of people, no real company logos, no trademarked marks. Use clean typographic placeholders only.`,
+    ``,
+    `Headline text: "Fresh Funding Signals".`,
+    `Subhead text: "${count} ${count === 1 ? "startup" : "startups"} just raised".`,
+    ``,
+    `Lay out these companies as clean cards, each showing the company name, funding round, and amount:`,
+    ...companyLines,
+    ``,
+    `Add a small "InternHack" wordmark in one corner. Keep it uncluttered and easy to read at a glance on a phone screen.`,
+  ].join("\n");
+}
+
+export function newFundingSignalsEmailHtml(
+  signals: NewFundingSignalEmailItem[],
+): string {
+  const count = signals.length;
+  const prompt = newFundingSignalsImagePrompt(signals);
+  const safePrompt = escapeHtml(prompt);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social image prompt</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;">
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;">InternHack</h1>
+        <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">funding signals</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#ffffff;padding:30px 24px;">
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">${count} new funding signal${count === 1 ? "" : "s"}: image prompt ready</h2>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+          The signals cron just picked up ${count === 1 ? "this company" : "these companies"} raising money. Copy the prompt below and paste it into your image AI (ChatGPT, Gemini, Midjourney, etc.) to generate a social post graphic for these raises.
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
+          <tr>
+            <td style="font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:1.5px;text-transform:uppercase;color:#71717a;vertical-align:middle;">image prompt</td>
+            <td style="text-align:right;vertical-align:middle;">
+              <button type="button"
+                onclick="var el=document.getElementById('ih-prompt');var t=(el.innerText||el.textContent||'');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t);}else{var r=document.createRange();r.selectNode(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');}catch(e){}s.removeAllRanges();}this.innerHTML='Copied';"
+                style="cursor:pointer;border:0;background-color:#a3e635;color:#18181b;font-size:12px;font-weight:700;padding:9px 18px;border-radius:6px;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+                Copy prompt
+              </button>
+            </td>
+          </tr>
+        </table>
+        <pre id="ih-prompt" style="margin:0 0 8px;padding:18px;background-color:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.6;color:#18181b;white-space:pre-wrap;word-break:break-word;">${safePrompt}</pre>
+        <p style="margin:0 0 20px;font-size:11px;color:#a1a1aa;line-height:1.5;">
+          If the button does nothing (some email clients block it), just select the text above and copy it.
+        </p>
+        <p style="margin:0;font-size:12px;color:#a1a1aa;line-height:1.6;text-align:center;">
+          Manage these in the <a href="https://internhack.xyz/admin/signals" style="color:#18181b;text-decoration:underline;">admin signals dashboard</a>.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 }
@@ -1599,4 +1697,195 @@ ${jobLines}
 You received this because you clicked "Email me these jobs" in your InternHack chat.
 Manage email preferences: ${args.settingsUrl}
 `;
+}
+
+const PEER_MOCK_DASHBOARD_URL = "https://www.internhack.xyz/student/mock-interview/peer";
+
+function peerMockLayout(heading: string, bodyHtml: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+    </td></tr>
+    <tr><td style="padding:32px 24px;">
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">${heading}</h2>
+      ${bodyHtml}
+    </td></tr>
+    <tr><td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function peerMockCard(label: string, contentHtml: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;">
+    <tr><td style="padding:16px 18px;background-color:#f7fee7;border:1px solid #d9f99d;border-radius:8px;">
+      <p style="margin:0 0 6px;font-size:12px;font-weight:700;color:#3f6212;text-transform:uppercase;letter-spacing:0.4px;">${label}</p>
+      <div style="font-size:14px;color:#365314;line-height:1.65;">${contentHtml}</div>
+    </td></tr>
+  </table>`;
+}
+
+function peerMockCta(label: string, url: string = PEER_MOCK_DASHBOARD_URL): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0 0;">
+    <tr><td style="background-color:#0a0a0a;border-radius:8px;">
+      <a href="${url}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">${label}</a>
+    </td></tr>
+  </table>`;
+}
+
+/**
+ * Sent to both students the moment one picks the other from the live match
+ * list. `prepHtml` is the pre-built prep section (DSA problem link, generic
+ * practice prompt, or custom-topic note) so the same content that seeds the
+ * dashboard prep card also lands in the inbox.
+ */
+export function peerMockMatchedEmailHtml(args: {
+  recipientName: string;
+  partnerName: string;
+  partnerCollege?: string | null;
+  topicLabel: string;
+  prepHtml: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const collegeLine = args.partnerCollege ? ` from ${escapeHtml(args.partnerCollege)}` : "";
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      You've been matched with <strong>${escapeHtml(args.partnerName)}</strong>${collegeLine} for a <strong>${args.topicLabel}</strong> practice mock interview.
+    </p>
+    ${peerMockCard("What to prepare", args.prepHtml)}
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Log in and propose a time that works for both of you. Sessions go best when you've both looked at the material beforehand: one of you interviews while the other answers, then swap roles.
+    </p>
+    ${peerMockCta("Propose a time")}
+  `;
+  return peerMockLayout(`You're paired up, ${firstName}!`, body);
+}
+
+/**
+ * Sent to both students once a proposed time is accepted. Carries the full
+ * session detail (not just the confirmation line the old plain-text version
+ * had) plus the prep reminder, and pairs with an .ics attachment the caller
+ * attaches separately so the event lands on each student's calendar even
+ * when Google Calendar isn't wired up.
+ */
+export function peerMockScheduledEmailHtml(args: {
+  recipientName: string;
+  partnerName: string;
+  topicLabel: string;
+  whenUtc: string;
+  meetingLink?: string | null;
+  prepHtml?: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const detailsHtml = `
+    <p style="margin:0 0 6px;">Date &amp; time: <strong>${args.whenUtc}</strong></p>
+    <p style="margin:0;">Partner: <strong>${escapeHtml(args.partnerName)}</strong></p>
+    ${
+      args.meetingLink
+        ? `<p style="margin:6px 0 0;">Meeting link: <a href="${args.meetingLink}" style="color:#365314;">${args.meetingLink}</a></p>`
+        : `<p style="margin:6px 0 0;">No meeting link yet, coordinate one with your partner before the session.</p>`
+    }
+  `;
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      Your <strong>${args.topicLabel}</strong> mock interview is confirmed.
+    </p>
+    ${peerMockCard("Session details", detailsHtml)}
+    ${args.prepHtml ? peerMockCard("What to prepare", args.prepHtml) : ""}
+    <p style="margin:0;font-size:13px;line-height:1.6;color:#71717a;">
+      A calendar invite (.ics) is attached to this email, add it to your calendar so neither of you misses it.
+    </p>
+    ${peerMockCta("View pairing")}
+  `;
+  return peerMockLayout(`You're all set, ${firstName}`, body);
+}
+
+export function peerMockTimeProposedEmailHtml(args: {
+  recipientName: string;
+  proposerName: string;
+  whenUtc: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      <strong>${escapeHtml(args.proposerName)}</strong> proposed a time for your upcoming practice session.
+    </p>
+    ${peerMockCard("Proposed time", `<p style="margin:0;"><strong>${args.whenUtc}</strong></p>`)}
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Log in to accept or reject this time. If you accept, you'll both get a confirmation with a calendar invite.
+    </p>
+    ${peerMockCta("Review proposed time")}
+  `;
+  return peerMockLayout(`New time proposed, ${firstName}`, body);
+}
+
+export function peerMockTimeRejectedEmailHtml(args: {
+  recipientName: string;
+  rejecterName: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      <strong>${escapeHtml(args.rejecterName)}</strong> couldn't make your proposed time.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Log in to propose a different time, or reach out to them directly to sort out a slot that works for both of you.
+    </p>
+    ${peerMockCta("Propose a new time")}
+  `;
+  return peerMockLayout(`Time didn't work, ${firstName}`, body);
+}
+
+export function peerMockDeclinedEmailHtml(args: {
+  recipientName: string;
+  declinerName: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      <strong>${escapeHtml(args.declinerName)}</strong> declined the practice pairing before it was scheduled.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      You're back in the matching pool: log in to pick a new partner instantly.
+    </p>
+    ${peerMockCta("Find a new match")}
+  `;
+  return peerMockLayout(`Pairing declined, ${firstName}`, body);
+}
+
+export function peerMockCancelledEmailHtml(args: {
+  recipientName: string;
+  cancellerName: string;
+}): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      Your upcoming mock interview with <strong>${escapeHtml(args.cancellerName)}</strong> was cancelled because they opted out of mock interviews.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      You're back in the matching pool: log in to pick a new partner.
+    </p>
+    ${peerMockCta("Find a new match")}
+  `;
+  return peerMockLayout(`Session cancelled, ${firstName}`, body);
+}
+
+export function peerMockCompletedEmailHtml(args: { recipientName: string }): string {
+  const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#3f3f46;">
+      Your practice mock interview session has been marked as completed. Great work showing up and putting in the reps.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#3f3f46;">
+      Rate your session and leave feedback for your partner, it helps them improve and keeps the matching pool healthy for everyone.
+    </p>
+    ${peerMockCta("Rate your session")}
+  `;
+  return peerMockLayout(`Nicely done, ${firstName}`, body);
 }

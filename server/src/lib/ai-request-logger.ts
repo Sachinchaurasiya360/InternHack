@@ -1,7 +1,7 @@
 import type { AIServiceType } from "@prisma/client";
 import { prisma } from "../database/db.js";
 import type { AIProviderResponse } from "./ai-provider.js";
-import { getProviderForService, getServiceConfigId } from "./ai-provider-registry.js";
+import { getProviderForService, getServiceConfigId, getServiceModelName } from "./ai-provider-registry.js";
 
 /** Fire-and-forget: log an AI request to the database. */
 export function logAIRequest(
@@ -21,7 +21,7 @@ export function logAIRequest(
         serviceConfigId: configId,
         service,
         providerName: provider.providerType,
-        modelName: provider.providerType, // will use the modelName from cache
+        modelName: getServiceModelName(service) ?? provider.providerType,
         latencyMs: response.latencyMs,
         inputTokens: response.inputTokens ?? null,
         outputTokens: response.outputTokens ?? null,

@@ -39,7 +39,7 @@ jobs:
               'scope:frontend':  { color: '1D76DB', description: 'Changes to client-side / UI code' },
               'scope:backend':   { color: '0075CA', description: 'Changes to server-side / API code' },
               'scope:database':  { color: 'E4E669', description: 'Database schema or migration changes' },
-              'scope:ci-cd':     { color: 'BFD4F2', description: 'CI/CD pipeline, GitHub Actions, or Docker changes' },
+              'scope:ci-cd':     { color: 'BFD4F2', description: 'CI/CD pipeline or GitHub Actions changes' },
               'scope:docs':      { color: 'C5DEF5', description: 'Documentation changes' },
               'scope:config':    { color: 'F9D0C4', description: 'Project configuration or dependency changes' },
             };
@@ -78,9 +78,6 @@ jobs:
                 label: 'scope:ci-cd',
                 patterns: [
                   /^\.github\//,
-                  /dockerfile/i,
-                  /docker-compose/i,
-                  /^\.docker\//,
                 ]
               },
               {

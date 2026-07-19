@@ -102,9 +102,6 @@ export class AdminService {
   deleteRepo(...args: Parameters<AdminOpensourceService["deleteRepo"]>) {
     return this.opensourceSvc.deleteRepo(...args);
   }
-  getGuideFeedbackAnalytics() {
-    return this.opensourceSvc.getGuideFeedbackAnalytics();
-  }
 
   // ── Learning (DSA + Aptitude + Skill Tests) ───────────────────────────
   listDsaTopics(...args: Parameters<AdminLearningService["listDsaTopics"]>) {

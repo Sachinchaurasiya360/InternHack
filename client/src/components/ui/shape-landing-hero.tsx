@@ -2,7 +2,7 @@ import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion
 import { Link } from "react-router";
 import { useEffect, useCallback, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
-import { ArrowRight, Play, Star } from "lucide-react";
+import { ArrowRight, Play, Star, PlugZap } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
 
 const ROTATING_WORDS = ["offer.", "internship.", "interview.", "callback.", "dream job."];
@@ -137,6 +137,16 @@ function HeroGeometric() {
             </button>
           </a>
         </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.32 }}
+          className="mt-6 inline-flex items-center gap-2 text-xs md:text-sm text-stone-600 dark:text-stone-400"
+        >
+          <PlugZap className="w-4 h-4 text-lime-500" />
+          Plus a free browser extension that autofills applications on Greenhouse, Lever, Workday and more.
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0 }}

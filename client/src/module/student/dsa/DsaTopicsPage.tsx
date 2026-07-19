@@ -3,14 +3,14 @@ import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-quer
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download, X, List, BarChart3,
+CheckCircle2, Building2, Bookmark, ArrowRight,
+  Lock, Search, BookOpen, TrendingUp, Target, X,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus, DsaTopic, User } from "../../../lib/types";
+import type { DsaTopicsResponse, DsaProgress, DsaTopic, User } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl,SITE_URL } from "../../../lib/seo.utils";
@@ -18,15 +18,11 @@ import { courseSchema, breadcrumbSchema, faqSchema } from "../../../lib/structur
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
 import { LeetCodeSync } from "./components/LeetCodeSync";
-import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
-import { DsaStreakWidget } from "./components/DsaStreakWidget";
 import { ResultCount } from "../../../components/ui/ResultCount";
 import { FilterChip } from "../../../components/ui/FilterChip";
-import { buildTopicAccuracy } from "./topic-accuracy";
 
 const TOPICS_PER_PAGE = 20;
-const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
 
 type DifficultyTab = "all" | "easy" | "medium-hard";
 
@@ -192,7 +188,6 @@ export default function DsaTopicsPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
-  const [showImport, setShowImport] = useState(false);
   const [page, setPage] = useState(1);
   const [topicSearch, setTopicSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -238,20 +233,6 @@ const clearFilters = () => {
     enabled: !!user,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
-  const { data: allTopicsData } = useQuery({
-    queryKey: queryKeys.dsa.topics("__all__"),
-    queryFn: () => api.get<DsaTopicsResponse>("/dsa/topics").then((r) => r.data),
-    enabled: !!user && filterKey !== "",
-    staleTime: 15 * 24 * 60 * 60 * 1000,
-  });
-
-  const { data: importStatus } = useQuery({
-    queryKey: queryKeys.dsa.importStatus(),
-    queryFn: () => api.get<LeetcodeImportStatus>("/dsa/import/status").then((r) => r.data),
-    enabled: !!user && IMPORT_ENABLED,
-    staleTime: 5 * 60 * 1000,
-  });
-
   const totalProblems = uniqueProblems;
   const rawSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
   const totalSolved = Math.max(0, Math.min(rawSolved, totalProblems));
@@ -261,8 +242,6 @@ const clearFilters = () => {
   const totalTopics = topics?.length ?? 0;
   const totalPages = Math.ceil(totalTopics / TOPICS_PER_PAGE);
   const paginatedTopics = topics?.slice((page - 1) * TOPICS_PER_PAGE, page * TOPICS_PER_PAGE);
-  const allTopicsForHeatmap = filterKey === "" ? topics ?? [] : allTopicsData?.topics ?? topics ?? [];
-  const { topicAccuracy, strongestTopic, needsWorkTopic, notStartedTopic } = buildTopicAccuracy(allTopicsForHeatmap);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -274,13 +253,8 @@ const clearFilters = () => {
 
   const quickLinks = [
     { to: "/learn/dsa/companies", icon: Building2, label: "companies" },
-    { to: "/learn/dsa/patterns", icon: Puzzle, label: "patterns" },
-    { to: "/learn/dsa/lists", icon: List, label: "lists" },
     ...(user
-      ? [
-          { to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" },
-          { to: "/learn/dsa/analytics", icon: BarChart3, label: "analytics" },
-        ]
+      ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" }]
       : []),
   ];
 
@@ -342,16 +316,6 @@ const clearFilters = () => {
                 <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
                 <span className="text-lime-600 dark:text-lime-400 tabular-nums">{overallPct}% complete</span>
               </div>
-              {user && IMPORT_ENABLED && (
-                <button
-                  id="lc-import-open-btn"
-                  onClick={() => setShowImport(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-lime-400 dark:hover:border-lime-500 hover:text-lime-600 dark:hover:text-lime-400 transition-colors bg-white dark:bg-stone-900"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Import from LeetCode
-                </button>
-              )}
             </div>
           </div>
         </motion.div>
@@ -386,30 +350,6 @@ const clearFilters = () => {
             </div>
           ))}
         </motion.div>
-
-        {/* "Already imported" banner */}
-        {user && IMPORT_ENABLED && importStatus?.lastImport && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between gap-3 px-4 py-2.5 mb-4 rounded-md bg-lime-50 dark:bg-lime-950/20 border border-lime-200 dark:border-lime-800"
-          >
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400 shrink-0" />
-              <span className="text-[11px] text-stone-700 dark:text-stone-300">
-                Imported{importStatus.lastImport.username ? ` from @${importStatus.lastImport.username}` : " via CSV"} on{" "}
-                {new Date(importStatus.lastImport.importedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
-                {" "}· {importStatus.lastImport.imported} problems
-              </span>
-            </div>
-            <button
-              onClick={() => setShowImport(true)}
-              className="text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400 hover:underline shrink-0 cursor-pointer"
-            >
-              re-import
-            </button>
-          </motion.div>
-        )}
 
         {/* Difficulty breakdown (logged-in) */}
         {user && progress && (
@@ -457,103 +397,15 @@ const clearFilters = () => {
           </motion.div>
         )}
 
-        {/* Streak widget + Heatmap (logged-in) */}
-        {user && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mb-4"
-          >
-            <DsaStreakWidget />
-          </motion.div>
-        )}
+        {/* Practice history heatmap (logged-in) */}
         {user && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.09 }}
-          >
-            <DsaHeatmap />
-          </motion.div>
-        )}
-
-        {user && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.095 }}
             className="mb-8"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-1 w-1 bg-lime-400"></div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                topic accuracy heatmap
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 mb-4">
-              <div className="p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
-                  / strongest
-                </p>
-                <p className="text-sm text-stone-800 dark:text-stone-200">
-                  You&apos;re strongest in:{" "}
-                  <span className="font-semibold text-stone-900 dark:text-stone-50">
-                    {strongestTopic ? `${strongestTopic.name} (${strongestTopic.pct}%)` : "No started topics yet"}
-                  </span>
-                </p>
-              </div>
-              <div className="p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
-                  / needs work
-                </p>
-                <p className="text-sm text-stone-800 dark:text-stone-200">
-                  Needs work:{" "}
-                  <span className="font-semibold text-stone-900 dark:text-stone-50">
-                    {needsWorkTopic ? `${needsWorkTopic.name} (${needsWorkTopic.pct}%)` : "None right now"}
-                  </span>
-                </p>
-              </div>
-              <div className="p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
-                  / not started
-                </p>
-                <p className="text-sm text-stone-800 dark:text-stone-200">
-                  Not started:{" "}
-                  <span className="font-semibold text-stone-900 dark:text-stone-50">
-                    {notStartedTopic ? notStartedTopic.name : "All topics started"}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-3 sm:p-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                {topicAccuracy.map((topic) => {
-                  const colorClass =
-                    topic.pct > 70
-                      ? "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-200 dark:border-emerald-800"
-                      : topic.pct >= 40
-                      ? "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/30 dark:text-amber-200 dark:border-amber-800"
-                      : "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/30 dark:text-rose-200 dark:border-rose-800";
-
-                  return (
-                    <Link
-                      key={topic.id}
-                      to={`/learn/dsa/${topic.slug}`}
-                      title={`${topic.name}: ${topic.solvedCount}/${topic.problemCount} solved (${topic.pct}%)`}
-                      className={`min-h-16 rounded-md border px-2.5 py-2 transition-colors hover:opacity-90 no-underline ${colorClass}`}
-                    >
-                      <div className="text-[11px] font-mono uppercase tracking-widest opacity-80 truncate mb-1">
-                        {topic.pct}%
-                      </div>
-                      <div className="text-xs font-medium truncate">{topic.name}</div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
+            <DsaHeatmap />
           </motion.div>
         )}
 
@@ -581,8 +433,8 @@ const clearFilters = () => {
           ))}
         </motion.div>
 
-        {/* LeetCode Sync — only for logged-in students */}
-        {user && (
+        {/* LeetCode Sync — only when the profile already has a LeetCode URL, never asks inline */}
+        {user?.leetcodeUrl && (
           <LeetCodeSync
             onSyncSuccess={() => {
               queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topics("") });
@@ -671,7 +523,6 @@ const clearFilters = () => {
       </div>
 
       <LoginGate open={showGate} onClose={() => setShowGate(false)} />
-      <LeetcodeImportModal open={showImport} onClose={() => setShowImport(false)} />
     </div>
   );
 }

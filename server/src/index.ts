@@ -26,7 +26,6 @@ import { AdminController } from "./module/admin/admin.controller.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
 import { paymentRouter } from "./module/payment/payment.routes.js";
-import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
 import { universityRouter } from "./module/university/university.routes.js";
 import { ycRouter } from "./module/yc/yc.routes.js";
@@ -42,7 +41,11 @@ import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
+import { grantsRouter } from "./module/grants/grants.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
+import { applicationProfileRouter } from "./module/application-profile/application-profile.routes.js";
+import { applicationTrackerRouter } from "./module/application-tracker/application-tracker.routes.js";
+import { extensionRouter } from "./module/extension/extension.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { emailPrefsRouter } from "./module/email-prefs/email-prefs.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
@@ -65,9 +68,7 @@ import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/sche
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
-import { startOpensourceRepoStatsCron, stopOpensourceRepoStatsCron } from "./cron/opensource-repo-stats.cron.js";
-import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
-import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
+import { startGrantDeadlineAlertCron, stopGrantDeadlineAlertCron } from "./cron/grant-deadline-alerts.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
@@ -240,7 +241,6 @@ app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/opensource", opensourceRouter);
 app.use("/api/payments", paymentRouter);
-app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
 app.use("/api/universities", universityRouter);
 app.use("/api/yc", ycRouter);
@@ -252,10 +252,14 @@ app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/internships", internshipRouter);
 app.use("/api/leetcode", leetcodeRouter);
+app.use("/api/grants", grantsRouter);
 
 // ── InternHack AI Routes ──
 app.use("/api/job-feed", jobFeedRouter);
 app.use("/api/job-agent", jobAgentRouter);
+app.use("/api/application-profile", applicationProfileRouter);
+app.use("/api/application-tracker", applicationTrackerRouter);
+app.use("/api/extension", extensionRouter);
 
 // ── HR routes removed (recruiter/HR feature archived to /archived) ──
 app.use("/api/email-inbound", emailInboundRouter);
@@ -287,7 +291,7 @@ app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", in
 
 // ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;
-let isRefreshingStats = false;
+let statsRefreshPromise: Promise<void> | null = null;
 const STATS_TTL = 30 * 60 * 1000;
 
 app.get("/api/stats", async (_req, res) => {
@@ -297,26 +301,28 @@ app.get("/api/stats", async (_req, res) => {
       return res.json(statsCache.data);
     }
 
-    // Stale-while-revalidate pattern: if someone is already fetching, 
-    // serve the stale cache to prevent a database stampede.
-    if (isRefreshingStats && statsCache) {
-      return res.json(statsCache.data);
+    // If a refresh is already in flight, await it rather than
+    // running a duplicate DB query (avoids the TOCTOU that
+    // the previous boolean flag had when statsCache was null).
+    if (statsRefreshPromise) {
+      await statsRefreshPromise;
+      return res.json(statsCache ? statsCache.data : { users: 0, jobs: 0, companies: 0 });
     }
 
-    isRefreshingStats = true;
+    statsRefreshPromise = (async () => {
+      const [users, jobs, companies] = await Promise.all([
+        prisma.user.count({ where: { role: "STUDENT" } }),
+        prisma.scrapedJob.count({ where: { status: "ACTIVE" } }),
+        prisma.company.count(),
+      ]);
+      statsCache = { data: { users, jobs, companies }, expiresAt: Date.now() + STATS_TTL };
+    })();
 
-    const [users, jobs, companies] = await Promise.all([
-      prisma.user.count({ where: { role: "STUDENT" } }),
-      prisma.scrapedJob.count({ where: { status: "ACTIVE" } }),
-      prisma.company.count(),
-    ]);
-
-    const data = { users, jobs, companies };
-    statsCache = { data, expiresAt: Date.now() + STATS_TTL };
-    isRefreshingStats = false;
-    return res.json(data);
+    await statsRefreshPromise;
+    statsRefreshPromise = null;
+    return res.json(statsCache!.data);
   } catch {
-    isRefreshingStats = false;
+    statsRefreshPromise = null;
     return res.json(statsCache ? statsCache.data : { users: 0, jobs: 0, companies: 0 });
   }
 });
@@ -418,26 +424,21 @@ const server = app.listen(PORT, async () => {
     fn: () => stopJobCleanupCron(),
   });
 
-  // Start OSS deadline alert cron (daily at 9 AM)
-  startDeadlineAlertCron();
+  // Start grant tracker deadline alert cron (daily at 9 AM)
+  startGrantDeadlineAlertCron();
   shutdownManager.register({
-    name: "Deadline Alert Cron",
+    name: "Grant Deadline Alert Cron",
     priority: 10,
-    fn: () => stopDeadlineAlertCron(),
+    fn: () => stopGrantDeadlineAlertCron(),
   });
 
-  // Start weekly peer mock interview matching from one owner only in production.
+  // Peer mock interview matching is live (students browse and pair via the
+  // /matches endpoints), so there is no match cron anymore. Only the session
+  // reminders still run on a schedule, from one owner only in production.
   const runPeerMockInterviewCron =
     process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] === "true" ||
     (process.env["NODE_ENV"] !== "production" && process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] !== "false");
   if (runPeerMockInterviewCron) {
-    startPeerMockInterviewMatchCron();
-    shutdownManager.register({
-      name: "Peer Mock Interview Match Cron",
-      priority: 10,
-      fn: () => stopPeerMockInterviewMatchCron(),
-    });
-
     startPeerMockInterviewRemindersCron();
     shutdownManager.register({
       name: "Peer Mock Interview Reminders Cron",
@@ -445,24 +446,7 @@ const server = app.listen(PORT, async () => {
       fn: () => stopPeerMockInterviewRemindersCron(),
     });
   } else {
-    logger.info("Peer mock interview match cron disabled on this process");
-  }
-
-  // Env var names kept as-is (RUN_GITHUB_CONTRIBUTIONS_CRON / GITHUB_CONTRIBUTIONS_CRON)
-  // for deploy compatibility with existing Vercel config, even though this cron
-  // no longer does any GitHub sync — it only refreshes opensource repo stats now.
-  const runOpensourceRepoStatsCron =
-    process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
-    (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
-  if (runOpensourceRepoStatsCron) {
-    startOpensourceRepoStatsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
-    shutdownManager.register({
-      name: "Opensource Repo Stats Cron",
-      priority: 10,
-      fn: () => stopOpensourceRepoStatsCron(),
-    });
-  } else {
-    logger.info("Opensource repo stats cron disabled on this process");
+    logger.info("Peer mock interview reminders cron disabled on this process");
   }
 
   // Register Prisma disconnect
