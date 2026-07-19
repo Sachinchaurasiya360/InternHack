@@ -1,4 +1,6 @@
 import { prisma } from "../../database/db.js";
+import { type z } from "zod";
+import { createGovInternshipSchema, updateGovInternshipSchema } from "./internship.validation.js";
 
 interface ListParams {
   page: number;
@@ -59,11 +61,11 @@ export class InternshipService {
     };
   }
 
-  async create(data: any) {
+  async create(data: z.infer<typeof createGovInternshipSchema>) {
     return prisma.govInternship.create({ data });
   }
 
-  async update(id: number, data: any) {
+  async update(id: number, data: z.infer<typeof updateGovInternshipSchema>) {
     return prisma.govInternship.update({
       where: { id },
       data,
