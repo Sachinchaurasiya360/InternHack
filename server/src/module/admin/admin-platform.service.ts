@@ -192,11 +192,13 @@ export class AdminPlatformService {
     if (userId === adminId) throw new Error("Cannot modify your own status");
 
     try {
-      return await prisma.user.update({
+      const user = await prisma.user.update({
         where: { id: userId },
-        data: { isActive },
+        data: { isActive, tokenVersion: { increment: 1 } },
         select: { id: true, name: true, email: true, role: true, isActive: true },
       });
+      invalidateVersionCache(userId);
+      return user;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
         throw new Error("User not found");
