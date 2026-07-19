@@ -26,8 +26,9 @@ export const getLearnAnalytics = async (req: Request, res: Response) => {
   try {
     const stats = await analyticsService.getLearnAnalytics();
     res.status(200).json(stats);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -35,7 +36,8 @@ export const getUnderperformingItems = async (req: Request, res: Response) => {
   try {
     const result = await analyticsService.highlightUnderperformingItems();
     res.status(200).json(result);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
