@@ -332,7 +332,7 @@ export class PaymentService {
 
     await prisma.user.update({
       where: { id: payment.userId },
-      data: { subscriptionStatus: "CANCELLED" },
+      data: { subscriptionStatus: "CANCELLED", subscriptionPlan: "FREE" },
     });
     await invalidateUserTierCache(payment.userId);
   }
