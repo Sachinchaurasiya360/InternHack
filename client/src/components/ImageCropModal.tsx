@@ -6,7 +6,7 @@ import { X, ZoomIn, ZoomOut, Check } from "lucide-react";
 interface Props {
   imageSrc: string;
   aspect: number;
-  onCrop: (blob: Blob) => void;
+  onCrop: (blob: Blob) => Promise<void> | void;
   onClose: () => void;
 }
 
@@ -48,8 +48,10 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
     setSaving(true);
     try {
       const blob = await getCroppedImg(imageSrc, croppedArea);
-      onCrop(blob);
+      await onCrop(blob);
     } catch {
+      // swallow — parent handles errors
+    } finally {
       setSaving(false);
     }
   };
