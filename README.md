@@ -99,7 +99,7 @@ cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
 
-Fill values as described below. You need a running PostgreSQL instance reachable via `DATABASE_URL`.
+Fill the values as described below. Before proceeding, verify that both `server/.env` and `client/.env` have been created from their respective `.env.example` files. You also need a running PostgreSQL instance reachable via `DATABASE_URL`.
 
 ### 3. Install dependencies
 
