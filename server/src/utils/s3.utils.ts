@@ -79,7 +79,8 @@ export async function getBufferFromS3(key: string): Promise<Buffer> {
       Key: key,
     }),
   );
-  return Buffer.from(await response.Body!.transformToByteArray());
+  if (!response.Body) throw new Error("S3 returned an empty body");
+  return Buffer.from(await response.Body.transformToByteArray());
 }
 
 export function getS3KeyFromUrl(url: string): string | null {
