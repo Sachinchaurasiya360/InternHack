@@ -231,14 +231,17 @@ export class PaymentService {
     // race conditions where concurrent webhooks create duplicate records.
     // All operations must succeed atomically or entire transaction rolls back.
     await prisma.$transaction(async (tx) => {
-      // Check if subscription is already active to prevent duplicate activations
-      const existingSubscription = await tx.user.findUnique({
-        where: { id: userId },
-        select: { subscriptionStatus: true },
+      // Check if this specific subscription ID has already been activated to prevent
+      // duplicate webhook deliveries from creating duplicate records or placeholders.
+      // We do NOT check `user.subscriptionStatus === "ACTIVE"` here, because that would
+      // incorrectly block legitimate subscription upgrades (e.g. Monthly to Yearly).
+      const alreadyActivated = await tx.payment.findFirst({
+        where: { dodoSubscriptionId: sub.subscription_id },
+        select: { id: true },
       });
 
-      if (existingSubscription?.subscriptionStatus === "ACTIVE") {
-        console.log(`[Webhook] Subscription already active for user ${userId}, skipping duplicate activation`);
+      if (alreadyActivated) {
+        console.log(`[Webhook] Subscription ${sub.subscription_id} already activated, skipping duplicate delivery`);
         return;
       }
 
