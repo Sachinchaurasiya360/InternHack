@@ -11,8 +11,15 @@ export class ExpertSessionController {
     try {
       const slots = await service.getAvailableSlots();
       res.json({ slots: slots.map((s) => s.toISOString()) });
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to fetch available slots" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -49,18 +56,20 @@ export class ExpertSessionController {
         await service.deletePendingSession(session.id);
         throw checkoutErr;
       }
-    } catch (err: any) {
-      // A payment-provider failure (e.g. Dodo returning 401 for a bad/rotated API
-      // key) is a server-side misconfiguration, not a client auth problem. Never
-      // mirror the provider's status to the browser: the global axios interceptor
-      // logs the user out on any 401, so passing Dodo's 401 through would silently
-      // sign the student out mid-checkout. Surface it as 502 and log the real cause.
+    } catch (err: unknown) {
+      console.error(err);
       if (err instanceof DodoPaymentsError) {
         console.error("[ExpertSession] Payment provider error during checkout:", err);
         res.status(502).json({ message: "Payment is temporarily unavailable. Please try again shortly." });
         return;
       }
-      res.status(err.status || 500).json({ message: err.message || "Failed to start checkout" });
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -77,8 +86,15 @@ export class ExpertSessionController {
       }
       const session = await service.getStatus(req.user.id, id);
       res.json(session);
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to fetch session status" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -90,8 +106,15 @@ export class ExpertSessionController {
       }
       const sessions = await service.getMySessions(req.user.id);
       res.json(sessions);
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to fetch sessions" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -100,8 +123,15 @@ export class ExpertSessionController {
     try {
       const blocks = await service.listAvailabilityBlocks();
       res.json(blocks);
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to fetch availability blocks" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -115,8 +145,15 @@ export class ExpertSessionController {
         reason,
       });
       res.status(201).json(block);
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to create availability block" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -129,8 +166,15 @@ export class ExpertSessionController {
       }
       await service.deleteAvailabilityBlock(id);
       res.json({ message: "Availability block removed" });
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to delete availability block" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 
@@ -138,8 +182,15 @@ export class ExpertSessionController {
     try {
       const bookings = await service.listBookings();
       res.json(bookings);
-    } catch (err: any) {
-      res.status(err.status || 500).json({ message: err.message || "Failed to fetch bookings" });
+    } catch (err: unknown) {
+      console.error(err);
+      const status = typeof err === "object" && err !== null && "status" in err
+        ? (err as { status: number }).status || 500
+        : 500;
+      const message = status < 500
+        ? ((err as { message?: string }).message || "Operation failed")
+        : "Internal Server Error";
+      res.status(status).json({ message });
     }
   }
 }
