@@ -53,7 +53,7 @@ function createPanel(context: JobContext) {
       const normalized = normalizeProfile(profile);
       const adapter = getAdapter();
       const fields = adapter.findFields();
-      const result = fillFields(normalized, fields);
+      const result = fillFields(normalized, fields, profile.applicationProfile?.autofillSettings as Record<string, unknown>);
       status.textContent = `Filled ${result.filledCount} of ${result.fieldCount} fields.`;
       void sendMessage({
         type: "LOG_EVENT",

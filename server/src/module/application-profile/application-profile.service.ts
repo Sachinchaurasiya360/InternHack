@@ -225,9 +225,25 @@ Projects JSON: ${compactText(JSON.stringify(user.projects), 1000)}
 Links: LinkedIn ${compactText(user.linkedinUrl, 160)}, GitHub ${compactText(user.githubUrl, 160)}, Portfolio ${compactText(user.portfolioUrl, 160)}`;
 
     const result = await model.generateContent(prompt);
-    const text = result.response.text().replace(/```json|```/g, "").trim();
+    const text = result.response.text();
+    let jsonString = text;
+    const startIndex = text.indexOf('{');
+    if (startIndex !== -1) {
+      for (let i = startIndex + 1; i <= text.length; i++) {
+        if (text[i - 1] === '}') {
+          try {
+            const candidate = text.slice(startIndex, i);
+            JSON.parse(candidate);
+            jsonString = candidate;
+            break;
+          } catch {
+            // keep looking for the closing brace that makes it valid JSON
+          }
+        }
+      }
+    }
     try {
-      const parsed = JSON.parse(text) as { answer?: string; confidence?: number; needsUserInput?: boolean };
+      const parsed = JSON.parse(jsonString) as { answer?: string; confidence?: number; needsUserInput?: boolean };
       return {
         answer: parsed.answer || "",
         confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
