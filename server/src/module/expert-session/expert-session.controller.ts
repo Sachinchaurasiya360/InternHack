@@ -6,20 +6,29 @@ import { PaymentService } from "../payment/payment.service.js";
 const service = new ExpertSessionService();
 const paymentService = new PaymentService();
 
+/**
+ * Sends a sanitized error response. 5xx errors never leak internal details to
+ * the client (the real cause is logged server-side instead); errors that carry
+ * a client-safe status < 500 keep their own message.
+ */
+function sendError(res: Response, err: unknown) {
+  console.error(err);
+  const status = typeof err === "object" && err !== null && "status" in err
+    ? (err as { status: number }).status || 500
+    : 500;
+  const message = status < 500
+    ? ((err as { message?: string }).message || "Operation failed")
+    : "Internal Server Error";
+  res.status(status).json({ message });
+}
+
 export class ExpertSessionController {
   async getAvailableSlots(_req: Request, res: Response) {
     try {
       const slots = await service.getAvailableSlots();
       res.json({ slots: slots.map((s) => s.toISOString()) });
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -57,19 +66,17 @@ export class ExpertSessionController {
         throw checkoutErr;
       }
     } catch (err: unknown) {
-      console.error(err);
+      // A payment-provider failure (e.g. Dodo returning 401 for a bad/rotated API
+      // key) is a server-side misconfiguration, not a client auth problem. Never
+      // mirror the provider's status to the browser: the global axios interceptor
+      // logs the user out on any 401, so passing Dodo's 401 through would silently
+      // sign the student out mid-checkout. Surface it as 502 and log the real cause.
       if (err instanceof DodoPaymentsError) {
         console.error("[ExpertSession] Payment provider error during checkout:", err);
         res.status(502).json({ message: "Payment is temporarily unavailable. Please try again shortly." });
         return;
       }
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -87,14 +94,7 @@ export class ExpertSessionController {
       const session = await service.getStatus(req.user.id, id);
       res.json(session);
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -107,14 +107,7 @@ export class ExpertSessionController {
       const sessions = await service.getMySessions(req.user.id);
       res.json(sessions);
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -124,14 +117,7 @@ export class ExpertSessionController {
       const blocks = await service.listAvailabilityBlocks();
       res.json(blocks);
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -146,14 +132,7 @@ export class ExpertSessionController {
       });
       res.status(201).json(block);
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -167,14 +146,7 @@ export class ExpertSessionController {
       await service.deleteAvailabilityBlock(id);
       res.json({ message: "Availability block removed" });
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 
@@ -183,14 +155,7 @@ export class ExpertSessionController {
       const bookings = await service.listBookings();
       res.json(bookings);
     } catch (err: unknown) {
-      console.error(err);
-      const status = typeof err === "object" && err !== null && "status" in err
-        ? (err as { status: number }).status || 500
-        : 500;
-      const message = status < 500
-        ? ((err as { message?: string }).message || "Operation failed")
-        : "Internal Server Error";
-      res.status(status).json({ message });
+      sendError(res, err);
     }
   }
 }
