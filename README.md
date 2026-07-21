@@ -2,8 +2,6 @@
 
 **Prepare. Practice. Placed.**
 
-## Table of Contents 📑
-
 - [About InternHack](#about-internhack)
 - [Tech Stack](#tech-stack)
 - [Features](#features)

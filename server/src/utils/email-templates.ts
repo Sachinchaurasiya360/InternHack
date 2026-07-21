@@ -1634,21 +1634,10 @@ export function newFundingSignalsEmailHtml(
         <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
           The signals cron just picked up ${count === 1 ? "this company" : "these companies"} raising money. Copy the prompt below and paste it into your image AI (ChatGPT, Gemini, Midjourney, etc.) to generate a social post graphic for these raises.
         </p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
-          <tr>
-            <td style="font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:1.5px;text-transform:uppercase;color:#71717a;vertical-align:middle;">image prompt</td>
-            <td style="text-align:right;vertical-align:middle;">
-              <button type="button"
-                onclick="var el=document.getElementById('ih-prompt');var t=(el.innerText||el.textContent||'');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t);}else{var r=document.createRange();r.selectNode(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');}catch(e){}s.removeAllRanges();}this.innerHTML='Copied';"
-                style="cursor:pointer;border:0;background-color:#a3e635;color:#18181b;font-size:12px;font-weight:700;padding:9px 18px;border-radius:6px;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
-                Copy prompt
-              </button>
-            </td>
-          </tr>
-        </table>
-        <pre id="ih-prompt" style="margin:0 0 8px;padding:18px;background-color:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.6;color:#18181b;white-space:pre-wrap;word-break:break-word;">${safePrompt}</pre>
-        <p style="margin:0 0 20px;font-size:11px;color:#a1a1aa;line-height:1.5;">
-          If the button does nothing (some email clients block it), just select the text above and copy it.
+        <p style="margin:0 0 6px;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:1.5px;text-transform:uppercase;color:#71717a;">image prompt</p>
+        <pre style="margin:0 0 10px;padding:18px;background-color:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;font-family:'Courier New',Courier,monospace;font-size:13px;line-height:1.6;color:#18181b;white-space:pre-wrap;word-break:break-word;-webkit-user-select:all;user-select:all;">${safePrompt}</pre>
+        <p style="margin:0 0 20px;font-size:12px;color:#71717a;line-height:1.6;">
+          <strong style="color:#18181b;">To copy on your phone:</strong> long-press the prompt above, tap <strong style="color:#18181b;">Select All</strong>, then <strong style="color:#18181b;">Copy</strong>. On a computer, click into the box, select all with Ctrl+A (Cmd+A on Mac), then copy.
         </p>
         <p style="margin:0;font-size:12px;color:#a1a1aa;line-height:1.6;text-align:center;">
           Manage these in the <a href="https://internhack.xyz/admin/signals" style="color:#18181b;text-decoration:underline;">admin signals dashboard</a>.
