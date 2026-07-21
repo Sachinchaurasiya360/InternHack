@@ -12,4 +12,4 @@ export const behavioralRouter = Router();
 
 behavioralRouter.use(authMiddleware, requireRole("STUDENT"));
 
-behavioralRouter.post("/evaluate", usageLimit("BEHAVIORAL_EVAL" as any), (req, res, next) => behavioralController.evaluate(req, res, next));
+behavioralRouter.post("/evaluate", usageLimit("BEHAVIORAL_EVAL"), (req, res, next) => behavioralController.evaluate(req, res, next));
