@@ -50,6 +50,8 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
       const blob = await getCroppedImg(imageSrc, croppedArea);
       onCrop(blob);
     } catch {
+      // Error logged by getCroppedImg
+    } finally {
       setSaving(false);
     }
   };
