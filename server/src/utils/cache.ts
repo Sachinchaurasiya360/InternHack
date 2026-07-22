@@ -23,13 +23,23 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
     store.delete(key);
     return null;
   }
+  // Move to end to mark as recently used
+  store.delete(key);
+  store.set(key, entry);
   return JSON.parse(entry.val) as T;
 }
 
+function evictLRU(): void {
+  const oldest = store.keys().next().value;
+  if (oldest !== undefined) store.delete(oldest);
+}
+
 export async function cacheSet(key: string, value: unknown, ttlSeconds: number): Promise<void> {
-  if (store.size >= MAX_ENTRIES && !store.has(key)) {
-    sweepExpired();
-    if (store.size >= MAX_ENTRIES) return;
+  if (!store.has(key)) {
+    if (store.size >= MAX_ENTRIES) {
+      sweepExpired();
+      while (store.size >= MAX_ENTRIES) evictLRU();
+    }
   }
   store.set(key, { val: JSON.stringify(value), exp: Date.now() + ttlSeconds * 1000 });
 }
