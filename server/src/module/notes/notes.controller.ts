@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { NoteContentType } from "@prisma/client";
 import { NotesService } from "./notes.service.js";
 
 export class NotesController {
@@ -8,7 +9,8 @@ export class NotesController {
     try {
       const userId = req.user?.id;
       if (!userId) return res.status(401).json({ error: "Unauthorized" });
-      const notes = await this.notesService.getNotes(userId, req.query as any);
+      const { contentType, search } = req.query as { contentType?: NoteContentType; search?: string };
+      const notes = await this.notesService.getNotes(userId, { contentType, search });
       res.json({ notes });
     } catch (err) {
       next(err);
@@ -22,8 +24,8 @@ export class NotesController {
       const { contentType, contentId } = req.params;
       const note = await this.notesService.getNote(
         userId,
-        contentType as any,
-        contentId as string
+        contentType as NoteContentType,
+        contentId
       );
       res.json({ note });
     } catch (err) {
@@ -39,8 +41,8 @@ export class NotesController {
       const { note } = req.body;
       const saved = await this.notesService.saveNote(
         userId,
-        contentType as any,
-        contentId as string,
+        contentType as NoteContentType,
+        contentId,
         note
       );
       res.json({ note: saved });
@@ -56,8 +58,8 @@ export class NotesController {
       const { contentType, contentId } = req.params;
       const result = await this.notesService.deleteNote(
         userId,
-        contentType as any,
-        contentId as string
+        contentType as NoteContentType,
+        contentId
       );
       res.json(result);
     } catch (err) {
