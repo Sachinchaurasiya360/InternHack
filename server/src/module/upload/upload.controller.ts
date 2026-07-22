@@ -251,21 +251,27 @@ export class UploadController {
       }
 
       const userId = req.user.id;
-      const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
 
-      let updatedResumes = current?.resumes ?? [];
-      if (updatedResumes.length >= MAX_RESUMES) {
-        const oldest = updatedResumes[0]!;
-        deleteFile(oldest);
-        updatedResumes = [...updatedResumes.slice(1), fileUrl];
-      } else {
-        updatedResumes = [...updatedResumes, fileUrl];
-      }
+      const user = await prisma.$transaction(async (tx) => {
+        const current = await tx.user.findUnique({
+          where: { id: userId },
+          select: { resumes: true },
+        });
 
-      const user = await prisma.user.update({
-        where: { id: userId },
-        data: { resumes: updatedResumes },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+        let updatedResumes = current?.resumes ?? [];
+        if (updatedResumes.length >= MAX_RESUMES) {
+          const oldest = updatedResumes[0]!;
+          deleteFile(oldest);
+          updatedResumes = [...updatedResumes.slice(1), fileUrl];
+        } else {
+          updatedResumes = [...updatedResumes, fileUrl];
+        }
+
+        return tx.user.update({
+          where: { id: userId },
+          data: { resumes: updatedResumes },
+          select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+        });
       });
 
       const signedResumes = await signUrls(user.resumes);
