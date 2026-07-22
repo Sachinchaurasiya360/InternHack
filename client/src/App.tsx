@@ -11,14 +11,15 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
-const retryState = new Map<() => Promise<{ default: ComponentType<unknown> }>, boolean>();
+const RETRY_KEY_PREFIX = "lazy-retry:";
 
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
+  const retryKey = RETRY_KEY_PREFIX + factory.toString();
   return lazy(
     () =>
       factory().catch((err: unknown) => {
-        if (!retryState.get(factory)) {
-          retryState.set(factory, true);
+        if (!sessionStorage.getItem(retryKey)) {
+          sessionStorage.setItem(retryKey, "1");
           window.location.reload();
           return new Promise<never>(() => { });
         }
