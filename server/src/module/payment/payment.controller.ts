@@ -42,17 +42,23 @@ export class PaymentController {
 
       await this.paymentService.handleWebhook(rawBody, headers);
 
-      // Always return 200 quickly to acknowledge receipt
+      // Always return 200 to acknowledge receipt for processed/unknown events
       res.json({ received: true });
     } catch (err) {
       console.error("[Webhook] Error processing webhook:", err);
-      // Still return 200 to avoid retries for known errors
-      // Return 401 only for signature verification failures
+      // Signature verification failures are not retryable — reject with 401
       if (err instanceof Error && err.message.includes("signature")) {
         res.status(401).json({ error: "Invalid signature" });
         return;
       }
+      // Genuine processing failures (DB timeout, Prisma errors) should return 500
+      // so Dodo retries the webhook and the event can be processed on retry.
+      // The handlers are idempotent (e.g. activateSubscription guards on status === "ACTIVE"),
+      // so retries are safe and will not cause duplicate side effects.
       next(err);
+    }
+  }
+      res.status(200).json({ received: true });
     }
   }
 
