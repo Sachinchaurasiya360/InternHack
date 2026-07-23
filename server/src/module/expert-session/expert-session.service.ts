@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { whatsAppLink } from "../../utils/phone.utils.js";
 
 /** Anything that exposes the model delegates we need — either the top-level
  * PrismaClient or a `tx` handed to us inside `prisma.$transaction`. */
@@ -261,7 +262,7 @@ export class ExpertSessionService {
 
     const updated = await prisma.expertSession.findUnique({
       where: { dodoPaymentId },
-      include: { user: { select: { name: true, email: true } } },
+      include: { user: { select: { name: true, email: true, contactNo: true } } },
     });
     if (!updated) return;
 
@@ -271,11 +272,17 @@ export class ExpertSessionService {
       timeStyle: "short",
     });
 
+    const studentWaLink = whatsAppLink(updated.user.contactNo);
+    const studentContactHtml = updated.user.contactNo
+      ? `<p><strong>Contact / WhatsApp:</strong> ${updated.user.contactNo}${studentWaLink ? ` (<a href="${studentWaLink}">chat on WhatsApp</a>)` : ""}</p>`
+      : `<p><strong>Contact / WhatsApp:</strong> Not provided</p>`;
+
     sendEmail({
       to: ADMIN_ALERT_EMAIL,
       subject: `New expert session booking: ${updated.user.name}`,
       html: `<h2>New Expert Session Booking</h2>
         <p><strong>Student:</strong> ${updated.user.name} (${updated.user.email})</p>
+        ${studentContactHtml}
         <p><strong>Scheduled for:</strong> ${scheduledLabel} IST</p>
         <p><strong>Target role:</strong> ${updated.targetRole ?? "Not specified"}</p>
         <p><strong>Experience level:</strong> ${updated.experienceLevel ?? "Not specified"}</p>

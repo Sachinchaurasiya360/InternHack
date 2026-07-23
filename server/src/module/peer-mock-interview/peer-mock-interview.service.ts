@@ -259,6 +259,23 @@ export class PeerMockInterviewService {
     return { ...pairing, preparationMaterial };
   }
 
+  /**
+   * Phone numbers are only meant for coordinating a confirmed session, so a
+   * partner's contactNo is stripped from the response until the pairing is
+   * actually SCHEDULED (or already COMPLETED). Email is shared from the moment
+   * of matching, but a WhatsApp number is more sensitive, so it stays hidden
+   * during the matching/proposal phase. Applied symmetrically to both students,
+   * so no per-viewer logic is needed.
+   */
+  private redactContactUntilScheduled(pairing: any) {
+    if (!pairing) return pairing;
+    const canShare = pairing.status === "SCHEDULED" || pairing.status === "COMPLETED";
+    if (canShare) return pairing;
+    if (pairing.studentA) pairing.studentA = { ...pairing.studentA, contactNo: null };
+    if (pairing.studentB) pairing.studentB = { ...pairing.studentB, contactNo: null };
+    return pairing;
+  }
+
   private async invalidateMatchCaches(...userIds: number[]) {
     await Promise.all(userIds.map((id) => cacheDel(matchListCacheKey(id))));
   }
@@ -414,6 +431,7 @@ export class PeerMockInterviewService {
             profilePic: true,
             college: true,
             linkedinUrl: true,
+            contactNo: true,
           }
         },
         studentB: {
@@ -424,12 +442,13 @@ export class PeerMockInterviewService {
             profilePic: true,
             college: true,
             linkedinUrl: true,
+            contactNo: true,
           }
         },
         assignedProblem: true,
       }
     });
-    return this.attachPreparationMaterial(pairing, userId);
+    return this.redactContactUntilScheduled(this.attachPreparationMaterial(pairing, userId));
   }
 
   /**
@@ -447,6 +466,7 @@ export class PeerMockInterviewService {
             profilePic: true,
             college: true,
             linkedinUrl: true,
+            contactNo: true,
           }
         },
         studentB: {
@@ -457,6 +477,7 @@ export class PeerMockInterviewService {
             profilePic: true,
             college: true,
             linkedinUrl: true,
+            contactNo: true,
           }
         },
         assignedProblem: true,
@@ -471,7 +492,7 @@ export class PeerMockInterviewService {
       throw Object.assign(new Error("Unauthorized access to pairing"), { status: 403 });
     }
 
-    return this.attachPreparationMaterial(pairing, userId);
+    return this.redactContactUntilScheduled(this.attachPreparationMaterial(pairing, userId));
   }
 
   /**
@@ -498,6 +519,7 @@ export class PeerMockInterviewService {
             profilePic: true,
             college: true,
             linkedinUrl: true,
+            contactNo: true,
           }
         },
         studentB: {
@@ -508,13 +530,14 @@ export class PeerMockInterviewService {
             profilePic: true,
             college: true,
             linkedinUrl: true,
+            contactNo: true,
           }
         },
         assignedProblem: true,
       }
     });
 
-    return pairings.map(p => this.attachPreparationMaterial(p, userId));
+    return pairings.map(p => this.redactContactUntilScheduled(this.attachPreparationMaterial(p, userId)));
   }
 
   /**
@@ -717,6 +740,7 @@ export class PeerMockInterviewService {
         const html = peerMockScheduledEmailHtml({
           recipientName: updated.studentA.name,
           partnerName: updated.studentB?.name ?? "your partner",
+          partnerContactNo: updated.studentB?.contactNo ?? null,
           topicLabel,
           whenUtc,
           meetingLink: resolvedMeetingLink,
@@ -728,6 +752,7 @@ export class PeerMockInterviewService {
         const html = peerMockScheduledEmailHtml({
           recipientName: updated.studentB.name,
           partnerName: updated.studentA?.name ?? "your partner",
+          partnerContactNo: updated.studentA?.contactNo ?? null,
           topicLabel,
           whenUtc,
           meetingLink: resolvedMeetingLink,

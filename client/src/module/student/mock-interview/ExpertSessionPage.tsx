@@ -11,7 +11,6 @@ import {
   CheckCircle,
   Calendar,
   Clock,
-  Sparkle,
   IndianRupee,
   Check,
 } from "lucide-react";
@@ -19,6 +18,7 @@ import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
+import { useAuthStore } from "../../../lib/auth.store";
 import { queryKeys } from "../../../lib/query-keys";
 
 type Step = "prep" | "slot" | "review" | "confirmed";
@@ -101,8 +101,36 @@ export default function ExpertSessionPage() {
   const [paying, setPaying] = useState(false);
   const [failedNotice, setFailedNotice] = useState(false);
   const [confirmTimeout, setConfirmTimeout] = useState(false);
+  const [contactInput, setContactInput] = useState("");
   const dodoInitialized = useRef(false);
   const bookingIdRef = useRef<number | null>(null);
+
+  const authUser = useAuthStore((s) => s.user);
+  const setAuthUser = useAuthStore((s) => s.setUser);
+  // The expert coordinates over WhatsApp, so capture the student's number at
+  // booking if it isn't on their profile yet, persist it (PUT /auth/me), and
+  // let confirmBooking forward it to the expert. Blank is allowed so it never
+  // blocks a payment.
+  const hasContact = !!authUser?.contactNo?.trim();
+
+  const persistContactIfNeeded = async (): Promise<boolean> => {
+    if (hasContact) return true;
+    const val = contactInput.trim();
+    if (!val) return true;
+    const normalized = val.replace(/[\s-]/g, "");
+    if (!/^\+\d{11,13}$/.test(normalized)) {
+      toast.error("Phone must include country code (e.g. +91 9876543210)");
+      return false;
+    }
+    try {
+      const res = await api.put("/auth/me", { contactNo: val });
+      if (authUser) setAuthUser({ ...authUser, contactNo: res.data.user.contactNo });
+      return true;
+    } catch {
+      toast.error("Could not save your number. Please try again.");
+      return false;
+    }
+  };
 
   const { data: slots, isLoading: loadingSlots } = useQuery({
     queryKey: queryKeys.expertSession.availableSlots(),
@@ -529,6 +557,24 @@ export default function ExpertSessionPage() {
                     </p>
                   </div>
 
+                  {!hasContact && (
+                    <div className="space-y-1.5 rounded-md border border-stone-200 dark:border-white/10 p-4">
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                        Your WhatsApp number (optional)
+                      </label>
+                      <input
+                        type="tel"
+                        value={contactInput}
+                        onChange={(e) => setContactInput(e.target.value)}
+                        placeholder="+91 9876543210"
+                        className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                      />
+                      <p className="text-[11px] text-stone-400 dark:text-stone-500">
+                        Shared with your interviewer so they can reach you on WhatsApp to coordinate the session.
+                      </p>
+                    </div>
+                  )}
+
                   {paying && (
                     <div className="rounded-md border border-lime-200 bg-lime-50 px-4 py-3 text-xs text-lime-700 dark:border-lime-400/30 dark:bg-lime-400/10 dark:text-lime-300 flex items-center gap-2">
                       <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
@@ -577,7 +623,10 @@ export default function ExpertSessionPage() {
                               setPaying(true);
                               void pollStatus(bookingIdRef.current);
                             }
-                          : () => checkoutMutation.mutate()
+                          : async () => {
+                              if (!(await persistContactIfNeeded())) return;
+                              checkoutMutation.mutate();
+                            }
                       }
                       className="bg-lime-400 text-stone-950 hover:bg-lime-300 disabled:opacity-60"
                     >
@@ -629,7 +678,7 @@ export default function ExpertSessionPage() {
           {mySessions && mySessions.length > 0 && step !== "confirmed" && (
             <div className="mt-8">
               <span className="text-xs font-mono uppercase tracking-widest text-stone-400 flex items-center gap-1.5 mb-3">
-                <Sparkle className="w-3 h-3" />
+                <Clock className="w-3 h-3" />
                 Your sessions
               </span>
               <div className="space-y-2">

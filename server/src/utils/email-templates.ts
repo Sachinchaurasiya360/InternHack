@@ -1,3 +1,5 @@
+import { whatsAppLink } from "./phone.utils.js";
+
 export function welcomeEmailHtml(name: string): string {
   const firstName = name.split(" ")[0];
 
@@ -1766,15 +1768,22 @@ export function peerMockMatchedEmailHtml(args: {
 export function peerMockScheduledEmailHtml(args: {
   recipientName: string;
   partnerName: string;
+  partnerContactNo?: string | null;
   topicLabel: string;
   whenUtc: string;
   meetingLink?: string | null;
   prepHtml?: string;
 }): string {
   const firstName = escapeHtml(args.recipientName.split(" ")[0] || args.recipientName);
+  const partnerWaLink = whatsAppLink(args.partnerContactNo);
   const detailsHtml = `
     <p style="margin:0 0 6px;">Date &amp; time: <strong>${args.whenUtc}</strong></p>
     <p style="margin:0;">Partner: <strong>${escapeHtml(args.partnerName)}</strong></p>
+    ${
+      partnerWaLink
+        ? `<p style="margin:6px 0 0;">Partner on WhatsApp: <a href="${partnerWaLink}" style="color:#365314;">${escapeHtml(args.partnerContactNo || "")}</a> (tap to coordinate)</p>`
+        : ""
+    }
     ${
       args.meetingLink
         ? `<p style="margin:6px 0 0;">Meeting link: <a href="${args.meetingLink}" style="color:#365314;">${args.meetingLink}</a></p>`

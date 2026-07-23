@@ -160,8 +160,8 @@ export interface PeerMockInterview {
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  studentA: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;
-  studentB: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;
+  studentA: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null; contactNo: string | null } | null;
+  studentB: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null; contactNo: string | null } | null;
   assignedProblem: { id: number; title: string; slug: string; difficulty: string } | null;
   preparationMaterial?: MockInterviewPreparationMaterial | null;
 }

@@ -3,13 +3,14 @@ import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, ShieldCheck, Star, Users, Check } from "lucide-react";
+import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, MessageCircle, ShieldCheck, Star, Users, Check } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type { AxiosError } from "axios";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import { useAuthStore } from "../../../lib/auth.store";
+import { whatsAppLink } from "../../../lib/whatsapp";
 import { queryKeys } from "../../../lib/query-keys";
 import type {
   PeerMockInterview,
@@ -68,6 +69,16 @@ function isSafeHttpUrl(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+// People routinely paste a meeting link without a scheme ("meet.google.com/abc"),
+// which the server rejects because it requires an http(s):// URL, so accepting
+// the time silently 400s. Prepend https:// when there's no scheme so the common
+// case just works. Empty input stays empty (the link is optional).
+function normalizeMeetingLink(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
 function PreparationCard({ material }: { material?: MockInterviewPreparationMaterial | null }) {
@@ -652,6 +663,9 @@ export default function PeerMockInterviewPage() {
   const [proposedDateStr, setProposedDateStr] = useState("");
   const [proposedTimeStr, setProposedTimeStr] = useState("");
   const [manualMeetingLink, setManualMeetingLink] = useState("");
+  const [contactInput, setContactInput] = useState("");
+  const authUser = useAuthStore((s) => s.user);
+  const setAuthUser = useAuthStore((s) => s.setUser);
 
   const [activeTab, setActiveTab] = useState<"upcoming" | "history">("upcoming");
 
@@ -785,6 +799,50 @@ export default function PeerMockInterviewPage() {
   const isA = pairing && pairing.studentAId === currentUserId;
   const partner = pairing ? (isA ? pairing.studentB : pairing.studentA) : null;
   const alreadyRated = pairing ? (isA ? pairing.ratingAForB !== null : pairing.ratingBForA !== null) : false;
+
+  // Contact sharing: numbers are exchanged so partners can coordinate on
+  // WhatsApp once scheduled. If the user hasn't set a number on their profile,
+  // prompt for one right in the propose/accept step and persist it (reusing
+  // PUT /auth/me) before the scheduling call goes through. Leaving it blank is
+  // allowed, they just won't share a WhatsApp contact.
+  const hasContact = !!authUser?.contactNo?.trim();
+
+  const persistContactIfNeeded = async (): Promise<boolean> => {
+    if (hasContact) return true;
+    const val = contactInput.trim();
+    if (!val) return true;
+    const normalized = val.replace(/[\s-]/g, "");
+    if (!/^\+\d{11,13}$/.test(normalized)) {
+      toast.error("Phone must include country code (e.g. +91 9876543210)");
+      return false;
+    }
+    try {
+      const res = await api.put("/auth/me", { contactNo: val });
+      if (authUser) setAuthUser({ ...authUser, contactNo: res.data.user.contactNo });
+      return true;
+    } catch {
+      toast.error("Could not save your number. Please try again.");
+      return false;
+    }
+  };
+
+  const contactCaptureField = !hasContact ? (
+    <div className="space-y-1">
+      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-400">
+        Your WhatsApp number (optional)
+      </label>
+      <input
+        type="tel"
+        value={contactInput}
+        onChange={(e) => setContactInput(e.target.value)}
+        placeholder="+91 9876543210"
+        className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+      />
+      <p className="text-[11px] text-stone-400 dark:text-stone-500">
+        Shared with your partner once the session is scheduled, so you can coordinate on WhatsApp.
+      </p>
+    </div>
+  ) : null;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
@@ -922,16 +980,18 @@ export default function PeerMockInterviewPage() {
                             />
                           </div>
                         </div>
+                        {contactCaptureField}
                         <Button
                           variant="primary"
                           size="sm"
                           disabled={!proposedDateStr || !proposedTimeStr || proposeTimeMutation.isPending}
-                          onClick={() =>
+                          onClick={async () => {
+                            if (!(await persistContactIfNeeded())) return;
                             proposeTimeMutation.mutate({
                               pairingId: pairing.id,
                               proposedTime: new Date(`${proposedDateStr}T${proposedTimeStr}`).toISOString(),
-                            })
-                          }
+                            });
+                          }}
                           className="w-full bg-lime-400 text-stone-950 hover:bg-lime-300"
                         >
                           Propose Time
@@ -971,17 +1031,19 @@ export default function PeerMockInterviewPage() {
                               className="w-full text-sm rounded-md border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
                             />
                           </div>
+                          {contactCaptureField}
                           <div className="flex gap-2 pt-1">
                             <Button
                               variant="primary"
                               size="sm"
                               disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
-                              onClick={() =>
+                              onClick={async () => {
+                                if (!(await persistContactIfNeeded())) return;
                                 acceptTimeMutation.mutate({
                                   pairingId: pairing.id,
-                                  meetingLink: manualMeetingLink.trim() || undefined,
-                                })
-                              }
+                                  meetingLink: normalizeMeetingLink(manualMeetingLink) || undefined,
+                                });
+                              }}
                               className="bg-lime-400 text-stone-950 hover:bg-lime-300"
                             >
                               Accept Time
@@ -1006,6 +1068,17 @@ export default function PeerMockInterviewPage() {
                         {pairing.meetingLink && isSafeHttpUrl(pairing.meetingLink) && (
                           <a href={pairing.meetingLink} target="_blank" rel="noreferrer" className="text-xs text-lime-600 dark:text-lime-400 underline mt-1 block">
                             Join Meeting Link
+                          </a>
+                        )}
+                        {partner?.contactNo && whatsAppLink(partner.contactNo) && (
+                          <a
+                            href={whatsAppLink(partner.contactNo)!}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-lime-700 dark:text-lime-400 hover:underline"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            Message {partner.name?.split(" ")[0] || "partner"} on WhatsApp
                           </a>
                         )}
                       </div>

@@ -59,6 +59,10 @@ export async function createGoogleMeetEvent(
     `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?conferenceDataVersion=1&sendUpdates=none`,
     {
       method: "POST",
+      // Cap the call so a slow/unreachable Google API can't hang the request
+      // past the serverless timeout. On abort this rejects and the caller
+      // (acceptTime) falls back to the manually-supplied meeting link.
+      signal: AbortSignal.timeout(8000),
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
