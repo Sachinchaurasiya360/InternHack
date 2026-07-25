@@ -14,8 +14,8 @@ export class AttendanceController {
       return res.status(201).json({ message: "Checked in successfully", record });
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === "Employee not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Already checked in today") return res.status(409).json({ message: error.message });
+        if (error instanceof Error && error.message === "Employee not found") return res.status(404).json({ message: error.message });
+        if (error instanceof Error && error.message === "Already checked in today") return res.status(409).json({ message: error.message });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });

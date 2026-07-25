@@ -27,6 +27,11 @@ export function formatDate(
     if (ahead < 3600) return `in ${Math.floor(ahead / 60)} minutes`;
     if (ahead < 86400) return `in ${Math.floor(ahead / 3600)} hours`;
     if (ahead < 2592000) return `in ${Math.floor(ahead / 86400)} days`;
+    return d.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   }
 
   if (diff < 60) return "just now";
