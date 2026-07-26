@@ -95,7 +95,7 @@ export default function Anim6B() {
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex rounded-lg overflow-hidden border border-[#334155]">
           {(["first", "cached"] as const).map(m => (
-            <button key={m} onClick={() => switchMode(m)}
+            <button type="button" key={m} onClick={() => switchMode(m)}
               className="px-3 py-1.5 text-xs font-semibold transition-colors"
               style={{ backgroundColor: mode === m ? "#7C3AED" : "transparent", color: mode === m ? "#fff" : "#64748B" }}
             >
@@ -103,12 +103,12 @@ export default function Anim6B() {
             </button>
           ))}
         </div>
-        <button disabled={running} onClick={() => run(mode === "first" ? STEPS_FIRST : STEPS_CACHED)}
+        <button type="button" disabled={running} onClick={() => run(mode === "first" ? STEPS_FIRST : STEPS_CACHED)}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-lime-600 hover:bg-lime-500 disabled:opacity-40 text-white rounded-lg text-xs font-semibold transition-colors"
         >
           <Play size={10} /> Resolve
         </button>
-        <button onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
           <RotateCcw size={10} />
         </button>
         <div className="ml-auto flex items-center gap-2">

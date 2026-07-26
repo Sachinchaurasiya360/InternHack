@@ -55,7 +55,7 @@ export default function AdminReviewsPage() {
       {/* Status Tabs */}
       <div className="flex gap-2 mb-6">
         {statusTabs.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)}
+          <button type="button" key={s} onClick={() => setStatusFilter(s)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"
             }`}>
@@ -103,12 +103,12 @@ export default function AdminReviewsPage() {
 
                 {review.status === "PENDING" && (
                   <div className="flex items-center gap-2 shrink-0 ml-4">
-                    <button onClick={() => handleStatus(review.id, "APPROVED")}
+                    <button type="button" onClick={() => handleStatus(review.id, "APPROVED")}
                       className="p-2 rounded-lg bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors"
                       title="Approve">
                       <Check className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleStatus(review.id, "REJECTED")}
+                    <button type="button" onClick={() => handleStatus(review.id, "REJECTED")}
                       className="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors"
                       title="Reject">
                       <X className="w-4 h-4" />

@@ -104,13 +104,13 @@ export default function AdminCompaniesPage() {
 
               <div className="flex items-center gap-2 shrink-0">
                 {!company.isApproved && (
-                  <button onClick={() => handleApprove(company.id)}
+                  <button type="button" onClick={() => handleApprove(company.id)}
                     className="p-2 rounded-lg bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors"
                     title="Approve">
                     <Check className="w-4 h-4" />
                   </button>
                 )}
-                <button onClick={() => handleDelete(company.id)}
+                <button type="button" onClick={() => handleDelete(company.id)}
                   className="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors"
                   title="Delete">
                   <Trash2 className="w-4 h-4" />

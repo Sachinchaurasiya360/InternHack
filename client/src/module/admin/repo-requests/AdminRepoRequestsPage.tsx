@@ -185,7 +185,7 @@ const [page, setPage] = useState(1);
       {/* Status Tabs */}
       <div className="flex gap-2 mb-6">
         {statusTabs.map((s) => (
-          <button key={s} onClick={() => handleFilterChange(setStatusFilter, s)}
+          <button type="button" key={s} onClick={() => handleFilterChange(setStatusFilter, s)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"
             }`}>

@@ -113,7 +113,7 @@ export default function UserDetailPage() {
   return (
     <div>
       <SEO title="User Detail" noIndex />
-      <button onClick={() => navigate("/admin/users")} className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors">
+      <button type="button" onClick={() => navigate("/admin/users")} className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Back to Users
       </button>
@@ -160,6 +160,7 @@ export default function UserDetailPage() {
             </div>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={toggleStatus}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                   user.isActive
@@ -170,6 +171,7 @@ export default function UserDetailPage() {
                 {user.isActive ? "Deactivate" : "Activate"}
               </button>
               <button
+                type="button"
                 onClick={deleteUser}
                 className="px-4 py-2 text-sm font-medium rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors"
               >

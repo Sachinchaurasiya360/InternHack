@@ -172,7 +172,7 @@ export default function Anim4C() {
       {showAdd && (
         <div className="flex items-center gap-2 bg-[#1E293B] p-3 rounded-xl border border-[#334155] text-[10px] text-stone-400">
           <span>Injecting a static route would redirect traffic. In a real router: <code className="text-lime-300">ip route add 10.0.3.0/24 via 10.0.1.2</code></span>
-          <button onClick={() => setShowAdd(false)} className="ml-auto text-stone-500 hover:text-stone-300"><X size={12} /></button>
+          <button type="button" onClick={() => setShowAdd(false)} className="ml-auto text-stone-500 hover:text-stone-300"><X size={12} /></button>
         </div>
       )}
 

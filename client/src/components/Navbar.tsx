@@ -170,7 +170,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
             {isAuthenticated ? (
                 <Popover>
                 <PopoverTrigger asChild>
-                  <button aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
+                  <button type="button" aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
                     <Avatar className="h-full w-full rounded-none">
                       {user?.profilePic && (
                         <AvatarImage
@@ -260,7 +260,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
             {isAuthenticated && (
               <Popover modal>
                 <PopoverTrigger asChild>
-                  <button aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
+                  <button type="button" aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
                     <Avatar className="h-full w-full rounded-none">
                       {user?.profilePic && (
                         <AvatarImage
@@ -321,6 +321,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               </Popover>
             )}
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
               aria-expanded={isOpen}
               aria-controls={mobileMenuId}

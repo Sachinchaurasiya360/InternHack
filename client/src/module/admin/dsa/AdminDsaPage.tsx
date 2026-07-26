@@ -347,12 +347,14 @@ export default function AdminDsaPage() {
                 <h2 className="text-lg font-bold text-white">{walkthroughProblem.title}</h2>
                 <div className="flex gap-2">
                   <button
+                    type="button"
                     onClick={() => { setWalkthroughProblem(null); setWalkthroughSteps([]); setWalkthroughCode(""); }}
                     className="px-3 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2"
                   >
                     <X className="w-4 h-4" /> Close
                   </button>
                   <button
+                    type="button"
                     onClick={saveWalkthrough}
                     disabled={savingWalkthrough}
                     className="px-3 py-2 bg-lime-600 text-white rounded-lg hover:bg-lime-500 text-sm flex items-center gap-2 disabled:opacity-50"
@@ -391,7 +393,7 @@ export default function AdminDsaPage() {
                     <div key={idx} className="bg-gray-800 rounded-lg p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-mono text-indigo-400">Step {step.stepNumber}</span>
-                        <button onClick={() => removeStep(idx)} className="text-red-400 hover:text-red-300">
+                        <button type="button" onClick={() => removeStep(idx)} className="text-red-400 hover:text-red-300">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

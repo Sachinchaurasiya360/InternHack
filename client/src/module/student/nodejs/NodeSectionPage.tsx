@@ -162,6 +162,7 @@ export default function NodeSectionPage() {
           </div>
           {diffFilter !== "all" && (
             <button 
+              type="button"
               onClick={() => setDiffFilter("all")}
               className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
             >

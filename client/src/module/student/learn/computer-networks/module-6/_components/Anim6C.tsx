@@ -89,13 +89,14 @@ export default function Anim6C() {
       {/* controls */}
       <div className="flex items-center gap-2">
         <button
+          type="button"
           disabled={running}
           onClick={start}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-lime-600 hover:bg-lime-500 disabled:opacity-40 text-white rounded-lg text-xs font-semibold transition-colors"
         >
           <Play size={10} /> Start DORA
         </button>
-        <button onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
           <RotateCcw size={10} /> Reset
         </button>
       </div>

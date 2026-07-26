@@ -278,7 +278,8 @@ export default function InterviewLessonsPage() {
           {visibleSections.length === 0 ? (
             <div className="col-span-full py-20 text-center border border-dashed border-stone-200 dark:border-white/10 rounded-md">
               <p className="text-sm text-stone-500 mb-2">No sections match this level.</p>
-              <button 
+              <button
+                type="button" 
                 onClick={() => setDiffFilter("all")}
                 className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
               >

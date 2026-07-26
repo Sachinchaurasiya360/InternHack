@@ -263,7 +263,7 @@ function Sorter() {
             <strong>{score}</strong> / <strong>{answered}</strong> correct.
             {score === CARDS.length && <span style={{ color: "#16a34a", fontWeight: 700, marginLeft: 8 }}>All correct!</span>}
           </div>
-          <button onClick={reset} className="btn-eng" style={{ padding: "6px 14px", fontSize: "0.8rem" }}>
+          <button type="button" onClick={reset} className="btn-eng" style={{ padding: "6px 14px", fontSize: "0.8rem" }}>
             <RotateCcw className="w-3.5 h-3.5 inline" /> Reset
           </button>
         </div>

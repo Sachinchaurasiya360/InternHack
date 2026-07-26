@@ -334,7 +334,7 @@ export default function DsaProblemDetailPage() {
                 >
                   {problem.bookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
                 </button>
-                <button onClick={() => setShowReportModal(true)} title="Report issue" className="w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30">
+                <button type="button" onClick={() => setShowReportModal(true)} title="Report issue" className="w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30">
                     <Flag className="w-4 h-4" />
                 </button>
               </>

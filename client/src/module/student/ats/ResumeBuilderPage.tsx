@@ -231,7 +231,7 @@ const ExperienceRow = React.memo(function ExperienceRow({
       exit={{ opacity: 0, height: 0 }}
       className={itemRowCls}
     >
-      <button onClick={() => onRemove(exp.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+      <button type="button" onClick={() => onRemove(exp.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
@@ -296,7 +296,7 @@ const EducationRow = React.memo(function EducationRow({
       exit={{ opacity: 0, height: 0 }}
       className={itemRowCls}
     >
-      <button onClick={() => onRemove(edu.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+      <button type="button" onClick={() => onRemove(edu.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
@@ -345,7 +345,7 @@ const ProjectRow = React.memo(function ProjectRow({
       exit={{ opacity: 0, height: 0 }}
       className={itemRowCls}
     >
-      <button onClick={() => onRemove(proj.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+      <button type="button" onClick={() => onRemove(proj.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
@@ -391,7 +391,7 @@ const CertificationRow = React.memo(function CertificationRow({
       exit={{ opacity: 0, height: 0 }}
       className={itemRowCls}
     >
-      <button onClick={() => onRemove(cert.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+      <button type="button" onClick={() => onRemove(cert.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">

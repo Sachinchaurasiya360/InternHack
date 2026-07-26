@@ -170,7 +170,7 @@ export default function AdminExternalJobsPage() {
           <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold dark:text-white">{editingId ? "Edit Job" : "Add External Job"}</h2>
-              <button onClick={closeForm} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+              <button type="button" onClick={closeForm} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             {/* JSON quick-fill */}
             {!editingId && (
@@ -213,8 +213,9 @@ export default function AdminExternalJobsPage() {
             <Input label="Apply Link" value={form.applyLink} onChange={(v) => setForm({ ...form, applyLink: v })} placeholder="https://..." />
             <Input label="Tags (comma-separated)" value={form.tags} onChange={(v) => setForm({ ...form, tags: v })} placeholder="React, Remote, Internship" />
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={closeForm} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white">Cancel</button>
+              <button type="button" onClick={closeForm} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white">Cancel</button>
               <button
+                type="button"
                 onClick={() => saveMutation.mutate()}
                 disabled={saveMutation.isPending}
                 className="flex items-center gap-2 px-5 py-2 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50"
@@ -274,10 +275,10 @@ export default function AdminExternalJobsPage() {
                       <ExternalLink className="w-4 h-4" /> Open
                     </a>
                   )}
-                  <button onClick={() => openEdit(job)} className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-black dark:hover:text-white">
+                  <button type="button" onClick={() => openEdit(job)} className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-black dark:hover:text-white">
                     <Pencil className="w-4 h-4" /> Edit
                   </button>
-                  <button onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
+                  <button type="button" onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
                     className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-red-600">
                     <Trash2 className="w-4 h-4" /> Delete
                   </button>
@@ -339,10 +340,10 @@ export default function AdminExternalJobsPage() {
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         )}
-                        <button onClick={() => openEdit(job)} className="p-1.5 text-gray-400 hover:text-black dark:hover:text-white">
+                        <button type="button" onClick={() => openEdit(job)} className="p-1.5 text-gray-400 hover:text-black dark:hover:text-white">
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <button onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
+                        <button type="button" onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
                           className="p-1.5 text-gray-400 hover:text-red-600">
                           <Trash2 className="w-4 h-4" />
                         </button>

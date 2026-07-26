@@ -39,7 +39,7 @@ export default function RoadmapCertificatePage() {
     <div className="min-h-screen bg-white dark:bg-stone-900 flex items-center justify-center px-4">
       <div className="text-center">
         <p className="text-stone-600 dark:text-stone-400 mb-4">Certificate not found or link is invalid</p>
-        <button onClick={() => window.location.reload()} className="text-lime-400 hover:underline">
+        <button type="button" onClick={() => window.location.reload()} className="text-lime-400 hover:underline">
           Retry
         </button>
       </div>

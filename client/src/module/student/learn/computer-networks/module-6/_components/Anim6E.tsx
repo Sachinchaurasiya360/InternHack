@@ -88,12 +88,12 @@ export default function Anim6E() {
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
-        <button disabled={running} onClick={start}
+        <button type="button" disabled={running} onClick={start}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-lime-600 hover:bg-lime-500 disabled:opacity-40 text-white rounded-lg text-xs font-semibold transition-colors"
         >
           <Play size={10} /> Simulate 30 s
         </button>
-        <button onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
           <RotateCcw size={10} /> Reset
         </button>
         <span className="text-[10px] text-stone-500 ml-2">

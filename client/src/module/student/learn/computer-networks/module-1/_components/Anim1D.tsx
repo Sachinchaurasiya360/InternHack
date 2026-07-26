@@ -277,7 +277,7 @@ export default function Anim1D() {
         {/* model toggle */}
         <div className="flex rounded-lg bg-stone-100 p-0.5 gap-0.5">
           {(["cs", "p2p"] as Model[]).map(m => (
-            <button key={m} onClick={() => setModel(m)}
+            <button type="button" key={m} onClick={() => setModel(m)}
               className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                 model === m ? "bg-white text-lime-700 shadow-sm" : "text-stone-500 hover:text-stone-700"
               }`}
