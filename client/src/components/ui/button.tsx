@@ -367,7 +367,7 @@ function Button({
   underline,
   asChild = false,
   placeholder = false,
-  type = "button",
+  type = 'button',
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
