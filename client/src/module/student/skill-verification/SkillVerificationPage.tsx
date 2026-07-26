@@ -5,6 +5,7 @@ import {
   ShieldCheck,
   Clock,
   HelpCircle,
+  ArrowUpRight,
   CheckCircle2,
   ChevronDown,
   ChevronRight,

@@ -7,6 +7,7 @@ import {
   Building2,
   ArrowUpRight,
   MessageCircle,
+  Plus,
   Users,
   ArrowUp,
   Clock,
