@@ -326,7 +326,7 @@ const SignalCard = ({ signal }: SignalCardProps) => {
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-300">
             {signal.logoUrl ? (
-              <img src={signal.logoUrl} alt="" className="w-full h-full object-cover rounded-md" />
+              <img src={signal.logoUrl} alt={signal.companyName} className="w-full h-full object-cover rounded-md" />
             ) : (
               initial
             )}

@@ -138,7 +138,7 @@ export default function PublicProfilePage() {
         {/* Cover / Banner */}
         <div className="h-36 relative">
           {profile.coverImage ? (
-            <img src={profile.coverImage} alt="" className="w-full h-full object-cover" />
+            <img src={profile.coverImage} alt="Cover image" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-linear-to-br from-indigo-500 via-violet-500 to-purple-500">
               <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)", backgroundSize: "20px 20px" }} />

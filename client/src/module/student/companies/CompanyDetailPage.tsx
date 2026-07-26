@@ -382,7 +382,7 @@ export default function CompanyDetailPage() {
                       <img
                         key={i}
                         src={photo.startsWith("http") ? photo : `${SERVER_URL}${photo}`}
-                        alt=""
+                        alt={`${company.name} photo ${i + 1}`}
                         className="w-full h-40 object-cover rounded-md border border-stone-200 dark:border-white/10"
                       />
                     ))}

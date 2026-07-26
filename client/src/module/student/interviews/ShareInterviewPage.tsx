@@ -287,7 +287,7 @@ export default function ShareInterviewPage() {
                       >
                         <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-stone-700 dark:text-stone-300">
                           {c.logo ? (
-                            <img src={c.logo} alt="" className="w-full h-full object-cover rounded-md" />
+                            <img src={c.logo} alt={c.name} className="w-full h-full object-cover rounded-md" />
                           ) : (
                             c.name.charAt(0).toUpperCase()
                           )}
