@@ -11,7 +11,7 @@ export default function PublicOpenSourcePage() {
   const isStudent = isAuthenticated && user?.role === "STUDENT";
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-stone-950">
       <SEO
         title="Open Source Discovery"
         description="Discover beginner-friendly open-source repositories, explore GSoC organizations, track programs like LFX, Outreachy, and Hacktoberfest, and make your first contribution - all for free."

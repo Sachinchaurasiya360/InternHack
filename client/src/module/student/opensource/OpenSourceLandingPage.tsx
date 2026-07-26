@@ -76,7 +76,7 @@ const programs = [
     name: "MLH Fellowship",
     short: "MLH",
     description: "12-week internship alternative where fellows contribute to open-source projects under experienced mentors.",
-    color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20",
+    color: "text-lime-600 bg-lime-50 dark:bg-lime-900/20",
     items: ["12-week program", "Internship alternative", "Pod-based learning", "Multiple tracks"],
   },
   {

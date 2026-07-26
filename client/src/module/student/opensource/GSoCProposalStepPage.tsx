@@ -67,7 +67,7 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
       variant="ghost"
       size="sm"
       onClick={copy}
-      className="text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+      className="text-stone-600 dark:text-stone-400 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700"
     >
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? "Copied!" : label}
@@ -112,8 +112,8 @@ export default function GSoCProposalStepPage() {
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-gray-100 dark:bg-gray-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-gray-100 dark:bg-gray-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-stone-100 dark:bg-stone-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-stone-100 dark:bg-stone-900/20 rounded-full blur-3xl opacity-40" />
       </div>
 
       {/* Header */}
@@ -124,15 +124,15 @@ export default function GSoCProposalStepPage() {
         className="mt-6 mb-8"
       >
         {/* Title card */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6">
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{step.step}</span>
+              <div className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-stone-600 dark:text-stone-400">{step.step}</span>
               </div>
-              <h1 className="text-xl font-bold text-gray-950 dark:text-white">{step.title}</h1>
+              <h1 className="text-xl font-bold text-stone-950 dark:text-white">{step.title}</h1>
               {step.estimatedMinutes && (
-                <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500">~{step.estimatedMinutes} min</span>
               )}
             </div>
             <Button
@@ -148,26 +148,26 @@ export default function GSoCProposalStepPage() {
               {isDone ? "Completed" : "Mark Complete"}
             </Button>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.description}</p>
+          <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{step.description}</p>
 
           {/* Lesson counter + nav */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-100 dark:border-stone-800">
             {prev ? (
               <Link
                 to={`/student/opensource/gsoc-proposal/${prev.id}`}
-                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors no-underline"
+                className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors no-underline"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </Link>
             ) : <span />}
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
+            <span className="text-xs font-medium text-stone-400 dark:text-stone-500">
               {step.step} of {STEPS.length}
             </span>
             {next ? (
               <Link
                 to={`/student/opensource/gsoc-proposal/${next.id}`}
-                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors no-underline"
+                className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors no-underline"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
@@ -188,13 +188,13 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="bg-gray-50 dark:bg-gray-800/50 border-l-4 border-gray-300 dark:border-gray-600 rounded-r-2xl p-6"
+            className="bg-stone-50 dark:bg-stone-800/50 border-l-4 border-stone-300 dark:border-stone-600 rounded-r-2xl p-6"
           >
             <div className="flex items-center gap-2 mb-3">
-              <MessageCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">From Your Mentor</span>
+              <MessageCircle className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+              <span className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">From Your Mentor</span>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </p>
           </motion.div>
@@ -206,19 +206,19 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">What You Need to Know</h2>
+              <BookOpen className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+              <h2 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider">What You Need to Know</h2>
             </div>
             <div className="space-y-4">
               {step.details.map((detail, i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{detail}</p>
+                  <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{detail}</p>
                 </div>
               ))}
             </div>
@@ -231,17 +231,17 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Mistakes to Avoid</h2>
+              <AlertTriangle className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+              <h2 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider">Mistakes to Avoid</h2>
             </div>
             <div className="space-y-3">
               {step.mistakes.map((mistake, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                  <AlertTriangle className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{mistake}</p>
+                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700">
+                  <AlertTriangle className="w-4 h-4 text-stone-500 dark:text-stone-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{mistake}</p>
                 </div>
               ))}
             </div>
@@ -254,11 +254,11 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Link2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Resources</h2>
+              <Link2 className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+              <h2 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider">Resources</h2>
             </div>
             <div className="space-y-2">
               {step.resources.map((r, i) => (
@@ -267,13 +267,13 @@ export default function GSoCProposalStepPage() {
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline group transition-all"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 no-underline group transition-all"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">{r.title}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 capitalize mt-0.5">{r.type}</p>
+                    <p className="text-sm font-medium text-stone-900 dark:text-white group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors">{r.title}</p>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 capitalize mt-0.5">{r.type}</p>
                   </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 shrink-0" />
+                  <ExternalLink className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 group-hover:text-stone-500 shrink-0" />
                 </a>
               ))}
             </div>
@@ -286,17 +286,17 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Pro Tips</h2>
+              <Lightbulb className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+              <h2 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider">Pro Tips</h2>
             </div>
             <div className="space-y-3">
               {step.tips.map((tip, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                  <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{tip}</p>
+                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700">
+                  <Lightbulb className="w-4 h-4 text-stone-500 dark:text-stone-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{tip}</p>
                 </div>
               ))}
             </div>
@@ -309,12 +309,12 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-6"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Proposal Template</h2>
+                <FileText className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                <h2 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider">Proposal Template</h2>
               </div>
               <div className="flex gap-2">
                 <CopyButton text={PROPOSAL_TEMPLATE} label="Copy Template" />
@@ -322,7 +322,7 @@ export default function GSoCProposalStepPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowTemplate(!showTemplate)}
-                  className="text-gray-600 dark:text-gray-400"
+                  className="text-stone-600 dark:text-stone-400"
                 >
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showTemplate ? "rotate-180" : ""}`} />
                   {showTemplate ? "Hide" : "Preview"}
@@ -330,19 +330,19 @@ export default function GSoCProposalStepPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 mb-3">
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            <div className="p-4 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 mb-3">
+              <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
                 <strong>How to use:</strong> Copy this template, paste it into Google Docs or your org's submission format, and fill in every section. Share the draft with your mentor before submitting.
               </p>
             </div>
 
             {showTemplate && (
-              <div className="relative bg-gray-950 rounded-2xl overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800">
-                  <span className="text-xs text-gray-400 font-mono">gsoc-proposal-template.md</span>
+              <div className="relative bg-stone-950 rounded-2xl overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-800">
+                  <span className="text-xs text-stone-400 font-mono">gsoc-proposal-template.md</span>
                   <CopyButton text={PROPOSAL_TEMPLATE} />
                 </div>
-                <pre className="p-5 text-xs text-gray-300 font-mono leading-relaxed overflow-x-auto whitespace-pre-wrap">
+                <pre className="p-5 text-xs text-stone-300 font-mono leading-relaxed overflow-x-auto whitespace-pre-wrap">
                   {PROPOSAL_TEMPLATE}
                 </pre>
               </div>
@@ -360,7 +360,7 @@ export default function GSoCProposalStepPage() {
           {prev ? (
             <Link
               to={`/student/opensource/gsoc-proposal/${prev.id}`}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors no-underline"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors no-underline"
             >
               <ChevronLeft className="w-4 h-4" />
               {prev.title}
@@ -369,7 +369,7 @@ export default function GSoCProposalStepPage() {
           {next ? (
             <Link
               to={`/student/opensource/gsoc-proposal/${next.id}`}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gray-950 dark:bg-white text-sm font-medium text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-stone-950 dark:bg-white text-sm font-medium text-white dark:text-stone-950 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline"
             >
               {next.title}
               <ChevronRight className="w-4 h-4" />
@@ -377,7 +377,7 @@ export default function GSoCProposalStepPage() {
           ) : (
             <Link
               to="/student/opensource/gsoc-proposal"
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gray-950 dark:bg-white text-sm font-medium text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-stone-950 dark:bg-white text-sm font-medium text-white dark:text-stone-950 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline"
             >
               Back to Overview
               <ChevronRight className="w-4 h-4" />

@@ -16,7 +16,7 @@ export default function CommTemplatesPage() {
       seoKeywords="open source communication, PR description template, bug report template, issue comment, code review response"
       ogImage="/og/og-communication.png"
       icon={MessageSquare}
-      iconColor="text-violet-500"
+      iconColor="text-lime-500"
     />
   );
 }
