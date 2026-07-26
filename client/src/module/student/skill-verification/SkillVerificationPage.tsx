@@ -45,6 +45,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { SkillTest, SkillTestAttempt, VerifiedSkill, TestDifficulty } from "../../../lib/types";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import { EmptyState } from "../../../components/ui/EmptyState";
 
 
 /* ------------------------------------------------------------------ */
@@ -369,18 +370,12 @@ export default function SkillVerificationPage() {
             </div>
 
             {userSkills.length === 0 ? (
-              <div className="py-16 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-                <ShieldCheck className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-                <p className="text-sm text-stone-600 dark:text-stone-400">
-                  No skills on your profile yet.
-                </p>
-                <Link
-                  to="/student/profile"
-                  className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
-                >
-                  add skills <ArrowUpRight className="w-3 h-3" />
-                </Link>
-              </div>
+              <EmptyState
+                icon={<ShieldCheck className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+                title="No skills on your profile yet"
+                description="Add skills to your profile to start verifying them here."
+                action={{ label: "Add skills to profile", to: "/student/profile" }}
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userSkills.map((skill, i) => {
@@ -572,12 +567,11 @@ export default function SkillVerificationPage() {
 
             {/* Grid */}
             {filteredTests.length === 0 ? (
-              <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-                <p className="text-sm text-stone-600 dark:text-stone-400">No tests match your filters.</p>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
-                  try different search criteria
-                </p>
-              </div>
+              <EmptyState
+                icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+                title="No tests match your filters"
+                description="Try different search criteria or clear your filters."
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredTests.map((test, i) => {

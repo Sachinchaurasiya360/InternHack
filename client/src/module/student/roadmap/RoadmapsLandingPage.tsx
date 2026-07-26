@@ -33,6 +33,7 @@ import { GridBackground } from "../../../components/ui/GridBackground";
 import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 import { Button } from "../../../components/ui/button";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import toast from "../../../components/ui/toast";
 
 const CATEGORY_OPTIONS = ["Frontend", "Backend", "Fullstack", "AI", "Mobile", "DevOps", "Blockchain"];
@@ -553,12 +554,25 @@ export default function RoadmapsLandingPage() {
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-              <p className="text-sm text-stone-600 dark:text-stone-400">No roadmaps match your search.</p>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
-                try a different keyword
-              </p>
-            </div>
+            <EmptyState
+              icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+              title="No roadmaps match your search"
+              description="Try a different keyword or clear your current filters."
+              action={{
+                label: "Clear search",
+                onClick: () => {
+                  setSearchInput("");
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    next.delete("search");
+                    next.delete("level");
+                    next.delete("tag");
+                    next.delete("category");
+                    return next;
+                  });
+                },
+              }}
+            />
           ) : (
             <>
               {inProgressEnrollments.length > 0 && (

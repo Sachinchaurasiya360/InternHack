@@ -3,11 +3,12 @@ import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, MessageCircle, ShieldCheck, Star, Users, Check } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bot, CalendarClock, ExternalLink, Loader2, Lock, MessageCircle, ShieldCheck, Star, Users, Check } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type { AxiosError } from "axios";
 import { Button } from "../../../components/ui/button";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import { Textarea } from "../../../components/ui/textarea";
 import { useAuthStore } from "../../../lib/auth.store";
 import { whatsAppLink } from "../../../lib/whatsapp";
@@ -432,9 +433,12 @@ function HistorySection({ userId }: { userId: number }) {
 
   if (!pairings || pairings.length === 0) {
     return (
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-8 text-center">
-        <p className="text-sm text-stone-500">No mock interview history found.</p>
-      </div>
+      <EmptyState
+        icon={<Bot className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+        title="No mock interview history yet"
+        description="Complete your first peer mock interview to see results here."
+        action={{ label: "Find a practice partner", to: "/student/mock-interview" }}
+      />
     );
   }
 
