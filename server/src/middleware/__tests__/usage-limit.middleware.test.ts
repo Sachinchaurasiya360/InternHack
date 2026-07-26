@@ -26,8 +26,12 @@ describe('Usage Limit Middleware', () => {
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
   
-  // Use a dummy action type matching our mocked config
   const testAction = 'MOCK_INTERVIEW' as any;
+
+  // Mock transaction inner methods
+  let mockFindUnique: any;
+  let mockCount: any;
+  let mockCreate: any;
 
   beforeEach(() => {
     mockRequest = {
@@ -38,6 +42,19 @@ describe('Usage Limit Middleware', () => {
       json: vi.fn(),
     };
     nextFunction = vi.fn();
+
+    mockFindUnique = vi.fn();
+    mockCount = vi.fn();
+    mockCreate = vi.fn();
+
+    // Dynamically execute the transaction callback using our fake `tx` client
+    vi.mocked(prisma.$transaction).mockImplementation(async (callback: any) => {
+      const tx = {
+        user: { findUnique: mockFindUnique },
+        usageLog: { count: mockCount, create: mockCreate },
+      };
+      return callback(tx);
+    });
   });
 
   afterEach(() => {
@@ -58,17 +75,18 @@ describe('Usage Limit Middleware', () => {
   it('1. allows the request to pass if the user is strictly under their quota limit', async () => {
     vi.mocked(getPlanTier).mockReturnValue('FREE');
     
-    // Simulate Prisma transaction returning a successful, under-limit payload
-    vi.mocked(prisma.$transaction).mockResolvedValue({
-      ok: true,
-      used: 1,
-      limit: 2,
-      tier: 'FREE'
-    });
+    // Simulate database returning active user and 1 usage count (limit 2)
+    mockFindUnique.mockResolvedValue({ subscriptionPlan: 'FREE', subscriptionStatus: 'ACTIVE' });
+    mockCount.mockResolvedValue(1);
 
     const middleware = usageLimit(testAction);
     await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
+    // Assert that the transaction executed the core DB checks
+    expect(mockFindUnique).toHaveBeenCalled();
+    expect(mockCount).toHaveBeenCalled();
+    expect(mockCreate).toHaveBeenCalledWith({ data: { userId: 'user-123', action: testAction } });
+    
     expect(nextFunction).toHaveBeenCalled();
     expect((mockRequest as any).usageInfo).toEqual({
       used: 1,
@@ -81,18 +99,13 @@ describe('Usage Limit Middleware', () => {
   it('2. blocks the request and returns the correct status code if the user is at or over their limit', async () => {
     vi.mocked(getPlanTier).mockReturnValue('FREE');
     
-    // Simulate Prisma transaction returning a limit_reached payload
-    vi.mocked(prisma.$transaction).mockResolvedValue({
-      ok: false,
-      reason: 'limit_reached',
-      used: 2,
-      limit: 2,
-      tier: 'FREE'
-    });
+    mockFindUnique.mockResolvedValue({ subscriptionPlan: 'FREE', subscriptionStatus: 'ACTIVE' });
+    mockCount.mockResolvedValue(2); // At limit
 
     const middleware = usageLimit(testAction);
     await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
+    expect(mockCreate).not.toHaveBeenCalled(); // Should not write a usage log if blocked
     expect(mockResponse.status).toHaveBeenCalledWith(429);
     expect(mockResponse.json).toHaveBeenCalledWith({
       message: 'Daily limit reached. Upgrade to Premium for higher limits.',
@@ -101,20 +114,16 @@ describe('Usage Limit Middleware', () => {
     expect(nextFunction).not.toHaveBeenCalled();
   });
 
-  it('3. bypasses standard usage limits entirely for premium/tier accounts', async () => {
+  it('3. allows PREMIUM users to utilize their higher quota ceilings', async () => {
     vi.mocked(getPlanTier).mockReturnValue('PREMIUM');
     
-    // Simulate Premium user well within their higher limit bounds
-    vi.mocked(prisma.$transaction).mockResolvedValue({
-      ok: true,
-      used: 5,
-      limit: 10,
-      tier: 'PREMIUM'
-    });
+    mockFindUnique.mockResolvedValue({ subscriptionPlan: 'PREMIUM', subscriptionStatus: 'ACTIVE' });
+    mockCount.mockResolvedValue(5); // 5 used, well under the Premium limit of 10
 
     const middleware = usageLimit(testAction);
     await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
+    expect(mockCreate).toHaveBeenCalled();
     expect(nextFunction).toHaveBeenCalled();
     expect((mockRequest as any).usageInfo).toEqual({
       used: 5,
@@ -125,8 +134,8 @@ describe('Usage Limit Middleware', () => {
   });
 
   it('4. handles serializable-transaction/race behaviors correctly under concurrent load', async () => {
-    // Simulate a Prisma P2034 serialization race condition error
-    vi.mocked(prisma.$transaction).mockRejectedValue({ code: 'P2034' });
+    // Force the transaction block itself to throw a Prisma serialization error
+    vi.mocked(prisma.$transaction).mockRejectedValueOnce({ code: 'P2034' });
 
     const middleware = usageLimit(testAction);
     await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -137,5 +146,15 @@ describe('Usage Limit Middleware', () => {
       usage: { action: testAction },
     });
     expect(nextFunction).not.toHaveBeenCalled();
+  });
+
+  it('5. returns 401 if the user record is missing in the database', async () => {
+    mockFindUnique.mockResolvedValue(null);
+
+    const middleware = usageLimit(testAction);
+    await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(401);
+    expect(mockResponse.json).toHaveBeenCalledWith({ message: 'User not found' });
   });
 });
