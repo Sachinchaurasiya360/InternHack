@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
@@ -92,221 +92,241 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
     if (!result) return;
     setExportOpen(false);
 
-    const { jsPDF } = await import("jspdf");
-    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 18;
-    const contentW = pageW - margin * 2;
-    const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-    const filename = `ats-report-${new Date().toISOString().slice(0, 10)}.pdf`;
-    let y = margin;
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 18;
+      const contentW = pageW - margin * 2;
+      const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const filename = `ats-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+      let y = margin;
 
-    const checkBreak = (needed = 12) => {
-      if (y + needed > pageH - margin) { doc.addPage(); y = margin; }
-    };
+      const checkBreak = (needed = 12) => {
+        if (y + needed > pageH - margin) { doc.addPage(); y = margin; }
+      };
 
-    const drawDivider = () => {
-      checkBreak(6);
-      doc.setDrawColor(220, 220, 216);
-      doc.setLineWidth(0.3);
-      doc.line(margin, y, pageW - margin, y);
-      y += 6;
-    };
+      const drawDivider = () => {
+        checkBreak(6);
+        doc.setDrawColor(220, 220, 216);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y, pageW - margin, y);
+        y += 6;
+      };
 
-    const tier = getScoreTier(result.overallScore);
+      const tier = getScoreTier(result.overallScore);
 
-    // ── Header ──────────────────────────────────────────────────────────────
-    doc.setFillColor(236, 252, 203); // lime-100
-    doc.roundedRect(margin, y, contentW, 28, 2, 2, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(15, 23, 42);
-    doc.text("ATS Analysis Report", margin + 6, y + 10);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(100, 116, 139);
-    doc.text(`Generated ${dateStr}`, margin + 6, y + 18);
-    const tierLabel = tier.label.toUpperCase();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.text(tierLabel, pageW - margin - 6 - doc.getTextWidth(tierLabel), y + 10);
-    y += 36;
-
-    // ── Meta ────────────────────────────────────────────────────────────────
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(15, 23, 42);
-    doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, margin, y);
-    y += 6;
-    if (result.jobTitle) {
-      doc.text(`Target role: ${result.jobTitle}`, margin, y);
-      y += 6;
-    }
-    y += 4;
-
-    // ── Overall score ───────────────────────────────────────────────────────
-    drawDivider();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    doc.setTextColor(15, 23, 42);
-    doc.text("Overall ATS Score", margin, y);
-    doc.setFontSize(22);
-    doc.setTextColor(132, 204, 22); // lime-500
-    doc.text(`${result.overallScore}`, pageW - margin - 20, y + 1);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(100, 116, 139);
-    doc.text("/100", pageW - margin - 20 + doc.getTextWidth(`${result.overallScore}`) + 1, y + 1);
-    y += 14;
-
-    // ── Category scores ─────────────────────────────────────────────────────
-    drawDivider();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text("Category Scores", margin, y);
-    y += 8;
-
-    const catEntries = Object.entries(result.categoryScores);
-    const colW = contentW / 3;
-    catEntries.forEach(([key, score], idx) => {
-      const col = idx % 3;
-      const row = Math.floor(idx / 3);
-      if (col === 0 && idx > 0) y += 14;
-      const cx = margin + col * colW;
-      const catTier = getScoreTier(score);
-      doc.setFillColor(248, 250, 252);
-      doc.roundedRect(cx, y - 4, colW - 3, 13, 1, 1, "F");
+      // ── Header ──────────────────────────────────────────────────────────────
+      doc.setFillColor(236, 252, 203); // lime-100
+      doc.roundedRect(margin, y, contentW, 28, 2, 2, "F");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      // Use score color based on tier
-      const isGood = catTier.label === "Excellent" || catTier.label === "Strong";
-      const isWeak = catTier.label === "Poor" || catTier.label === "Unusable";
-      doc.setTextColor(isGood ? 21 : isWeak ? 220 : 161, isGood ? 128 : isWeak ? 38 : 161, isGood ? 61 : isWeak ? 38 : 22);
-      doc.text(`${score}`, cx + 4, y + 5);
+      doc.setFontSize(20);
+      doc.setTextColor(15, 23, 42);
+      doc.text("ATS Analysis Report", margin + 6, y + 10);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
+      doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
-      doc.text(CATEGORY_LABELS[key] ?? key, cx + 4 + doc.getTextWidth(`${score}`) + 2, y + 5);
-      void row;
-    });
-    y += 16;
+      doc.text(`Generated ${dateStr}`, margin + 6, y + 18);
+      const tierLabel = tier.label.toUpperCase();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(tierLabel, pageW - margin - 6 - doc.getTextWidth(tierLabel), y + 10);
+      y += 36;
 
-    // ── Keyword analysis ────────────────────────────────────────────────────
-    drawDivider();
-    checkBreak(10);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text("Keyword Analysis", margin, y);
-    y += 8;
+      // ── Meta ────────────────────────────────────────────────────────────────
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42);
+      doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, margin, y);
+      y += 6;
+      if (result.jobTitle) {
+        doc.text(`Target role: ${result.jobTitle}`, margin, y);
+        y += 6;
+      }
+      y += 4;
 
-    const kwSections: { label: string; words: string[]; color: [number,number,number] }[] = [
-      { label: "Present", words: result.keywordAnalysis.found, color: [21, 128, 61] },
-      { label: "Partial", words: result.keywordAnalysis.partial ?? [], color: [161, 98, 7] },
-      { label: "Missing", words: result.keywordAnalysis.missing, color: [185, 28, 28] },
-    ];
+      // ── Overall score ───────────────────────────────────────────────────────
+      drawDivider();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Overall ATS Score", margin, y);
+      doc.setFontSize(22);
+      doc.setTextColor(132, 204, 22); // lime-500
+      doc.text(`${result.overallScore}`, pageW - margin - 20, y + 1);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      doc.text("/100", pageW - margin - 20 + doc.getTextWidth(`${result.overallScore}`) + 1, y + 1);
+      y += 14;
 
-    for (const section of kwSections) {
+      // ── Category scores ─────────────────────────────────────────────────────
+      drawDivider();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Category Scores", margin, y);
+      y += 8;
+
+      const catEntries = Object.entries(result.categoryScores);
+      const colW = contentW / 3;
+      catEntries.forEach(([key, score], idx) => {
+        const col = idx % 3;
+        const row = Math.floor(idx / 3);
+        if (col === 0 && idx > 0) y += 14;
+        const cx = margin + col * colW;
+        const catTier = getScoreTier(score);
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(cx, y - 4, colW - 3, 13, 1, 1, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        // Use score color based on tier
+        const isGood = catTier.label === "Excellent" || catTier.label === "Strong";
+        const isWeak = catTier.label === "Poor" || catTier.label === "Unusable";
+        doc.setTextColor(isGood ? 21 : isWeak ? 220 : 161, isGood ? 128 : isWeak ? 38 : 161, isGood ? 61 : isWeak ? 38 : 22);
+        doc.text(`${score}`, cx + 4, y + 5);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(100, 116, 139);
+        doc.text(CATEGORY_LABELS[key] ?? key, cx + 4 + doc.getTextWidth(`${score}`) + 2, y + 5);
+        void row;
+      });
+      y += 16;
+
+      // ── Keyword analysis ────────────────────────────────────────────────────
+      drawDivider();
       checkBreak(10);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.setTextColor(...section.color);
-      doc.text(`${section.label} (${section.words.length})`, margin, y);
-      y += 5;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(51, 65, 85);
-      if (section.words.length === 0) {
-        doc.text("None", margin + 4, y);
-        y += 6;
-      } else {
-        const line = section.words.join("  ·  ");
-        const wrapped = doc.splitTextToSize(line, contentW - 4);
-        checkBreak(wrapped.length * 5 + 4);
-        doc.text(wrapped, margin + 4, y);
-        y += wrapped.length * 5 + 4;
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Keyword Analysis", margin, y);
+      y += 8;
+
+      const kwSections: { label: string; words: string[]; color: [number,number,number] }[] = [
+        { label: "Present", words: result.keywordAnalysis.found, color: [21, 128, 61] },
+        { label: "Partial", words: result.keywordAnalysis.partial ?? [], color: [161, 98, 7] },
+        { label: "Missing", words: result.keywordAnalysis.missing, color: [185, 28, 28] },
+      ];
+
+      for (const section of kwSections) {
+        checkBreak(10);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(...section.color);
+        doc.text(`${section.label} (${section.words.length})`, margin, y);
+        y += 5;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(51, 65, 85);
+        if (section.words.length === 0) {
+          doc.text("None", margin + 4, y);
+          y += 6;
+        } else {
+          const line = section.words.join("  ·  ");
+          const wrapped = doc.splitTextToSize(line, contentW - 4);
+          checkBreak(wrapped.length * 5 + 4);
+          doc.text(wrapped, margin + 4, y);
+          y += wrapped.length * 5 + 4;
+        }
       }
+
+      // ── Suggestions ─────────────────────────────────────────────────────────
+      drawDivider();
+      checkBreak(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Improvement Suggestions", margin, y);
+      y += 8;
+
+      result.suggestions.forEach((suggestion, i) => {
+        const text = typeof suggestion === "string"
+          ? suggestion
+          : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
+        const lines = doc.splitTextToSize(`${i + 1}. ${text}`, contentW - 4);
+        checkBreak(lines.length * 5.5 + 4);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(30, 41, 59);
+        doc.text(lines, margin + 2, y);
+        y += lines.length * 5.5 + 4;
+      });
+
+      // ── Footer ──────────────────────────────────────────────────────────────
+      const totalPages = (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
+      for (let p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`InternHack ATS Report · Page ${p} of ${totalPages}`, margin, pageH - 8);
+        doc.text(dateStr, pageW - margin, pageH - 8, { align: "right" });
+      }
+
+      doc.save(filename);
+    } catch (err) {
+      console.error("[ATS Export] Failed to generate PDF report:", err);
+      toast.error("Failed to generate PDF report. Please try again.");
     }
-
-    // ── Suggestions ─────────────────────────────────────────────────────────
-    drawDivider();
-    checkBreak(10);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text("Improvement Suggestions", margin, y);
-    y += 8;
-
-    result.suggestions.forEach((suggestion, i) => {
-      const text = typeof suggestion === "string"
-        ? suggestion
-        : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
-      const lines = doc.splitTextToSize(`${i + 1}. ${text}`, contentW - 4);
-      checkBreak(lines.length * 5.5 + 4);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 41, 59);
-      doc.text(lines, margin + 2, y);
-      y += lines.length * 5.5 + 4;
-    });
-
-    // ── Footer ──────────────────────────────────────────────────────────────
-    const totalPages = (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-      doc.setTextColor(148, 163, 184);
-      doc.text(`InternHack ATS Report · Page ${p} of ${totalPages}`, margin, pageH - 8);
-      doc.text(dateStr, pageW - margin, pageH - 8, { align: "right" });
-    }
-
-    doc.save(filename);
   }, [result]);
 
   const handleDownloadCsv = useCallback(() => {
     if (!result) return;
     setExportOpen(false);
 
-    const rows: string[][] = [];
-    const q = (s: string) => `"${s.replace(/"/g, '""')}"`;
+    try {
+      const rows: string[][] = [];
+      const sanitizeCsvValue = (val: string) => {
+        if (/^[=+\-@\t\r]/.test(val)) {
+          return `'${val}`;
+        }
+        return val;
+      };
+      const q = (s: string) => `"${sanitizeCsvValue(s).replace(/"/g, '""')}"`;
 
-    // Header
-    rows.push(["Section", "Field", "Value"]);
+      // Header
+      rows.push(["Section", "Field", "Value"]);
 
-    // Meta
-    rows.push(["Meta", "Resume", getResumeName(result.resumeUrl)]);
-    rows.push(["Meta", "Overall Score", `${result.overallScore}/100`]);
-    rows.push(["Meta", "Tier", getScoreTier(result.overallScore).label]);
-    if (result.jobTitle) rows.push(["Meta", "Target Role", result.jobTitle]);
-    rows.push(["Meta", "Generated", new Date().toISOString()]);
+      // Meta
+      rows.push(["Meta", "Resume", getResumeName(result.resumeUrl)]);
+      rows.push(["Meta", "Overall Score", `${result.overallScore}/100`]);
+      rows.push(["Meta", "Tier", getScoreTier(result.overallScore).label]);
+      if (result.jobTitle) rows.push(["Meta", "Target Role", result.jobTitle]);
+      rows.push(["Meta", "Generated", new Date().toISOString()]);
 
-    // Category scores
-    Object.entries(result.categoryScores).forEach(([key, score]) => {
-      rows.push(["Category Score", CATEGORY_LABELS[key] ?? key, `${score}/100`]);
-    });
+      // Category scores
+      Object.entries(result.categoryScores).forEach(([key, score]) => {
+        rows.push(["Category Score", CATEGORY_LABELS[key] ?? key, `${score}/100`]);
+      });
 
-    // Keywords
-    result.keywordAnalysis.found.forEach((kw) => rows.push(["Keyword", "Present", kw]));
-    (result.keywordAnalysis.partial ?? []).forEach((kw) => rows.push(["Keyword", "Partial", kw]));
-    result.keywordAnalysis.missing.forEach((kw) => rows.push(["Keyword", "Missing", kw]));
+      // Keywords
+      result.keywordAnalysis.found.forEach((kw) => rows.push(["Keyword", "Present", kw]));
+      (result.keywordAnalysis.partial ?? []).forEach((kw) => rows.push(["Keyword", "Partial", kw]));
+      result.keywordAnalysis.missing.forEach((kw) => rows.push(["Keyword", "Missing", kw]));
 
-    // Suggestions
-    result.suggestions.forEach((s, i) => {
-      const text = typeof s === "string" ? s : (s as { suggestion?: string }).suggestion ?? String(s);
-      rows.push(["Suggestion", `#${i + 1}`, text]);
-    });
+      // Suggestions
+      result.suggestions.forEach((s, i) => {
+        const text = typeof s === "string" ? s : (s as { suggestion?: string }).suggestion ?? String(s);
+        rows.push(["Suggestion", `#${i + 1}`, text]);
+      });
 
-    const csv = rows.map((r) => r.map(q).join(",")).join("\r\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ats-report-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+      const csvContent = rows.map((r) => r.map(q).join(",")).join("\r\n");
+      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ats-report-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    } catch (err) {
+      console.error("[ATS Export] Failed to export CSV:", err);
+      toast.error("Failed to export CSV. Please try again.");
+    }
   }, [result]);
 
   const [guestLimitReached, setGuestLimitReached] = useState(false);
@@ -1184,7 +1204,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
                             role="menuitem"
                             id="ats-export-csv"
                             onClick={handleDownloadCsv}
-                            className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors border-0 bg-transparent cursor-pointer text-left border-t border-stone-100 dark:border-white/5"
+                            className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors bg-transparent cursor-pointer text-left border-t border-stone-100 dark:border-white/5"
                           >
                             <Sheet className="w-3.5 h-3.5 shrink-0" />
                             CSV Data
