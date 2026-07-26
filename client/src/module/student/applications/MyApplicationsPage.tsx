@@ -6,7 +6,6 @@ import {
   Briefcase,
   MapPin,
   Building2,
-  ArrowUpRight,
   Clock,
   Search,
   ExternalLink,

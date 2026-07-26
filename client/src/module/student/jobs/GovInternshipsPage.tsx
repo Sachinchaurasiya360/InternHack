@@ -12,7 +12,6 @@ import {
   GraduationCap,
   Banknote,
   ArrowLeft,
-  ArrowUpRight,
 } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";

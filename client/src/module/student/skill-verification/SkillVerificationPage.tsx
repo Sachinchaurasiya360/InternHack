@@ -1,12 +1,10 @@
 import { memo, useState } from "react";
-import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
   Clock,
   HelpCircle,
-  ArrowUpRight,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
