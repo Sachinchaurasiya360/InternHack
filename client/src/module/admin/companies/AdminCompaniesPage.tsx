@@ -75,7 +75,7 @@ export default function AdminCompaniesPage() {
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center shrink-0">
                   {company.logo ? (
-                    <img src={`${SERVER_URL}${company.logo}`} alt={company.name} className="w-12 h-12 rounded-lg object-cover" />
+                    <img src={`${SERVER_URL}${company.logo}`} alt="" className="w-12 h-12 rounded-lg object-cover" />
                   ) : (
                     <Building2 className="w-5 h-5 text-gray-500" />
                   )}

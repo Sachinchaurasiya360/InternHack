@@ -137,7 +137,7 @@ export default function SignalDetailPage() {
           <div className="flex items-start gap-4 flex-wrap">
             <div className="w-16 h-16 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-xl font-bold text-stone-700 dark:text-stone-300 overflow-hidden">
               {signal.logoUrl ? (
-                <img src={signal.logoUrl} alt={signal.companyName} className="w-full h-full object-cover" />
+                <img src={signal.logoUrl} alt="" className="w-full h-full object-cover" />
               ) : (
                 initial
               )}

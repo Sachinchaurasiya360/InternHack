@@ -197,7 +197,7 @@ export default function InterviewsDirectoryPage() {
               >
                 <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-300 overflow-hidden">
                   {c.logo ? (
-                    <img src={c.logo} alt={c.name} className="w-full h-full object-cover" />
+                    <img src={c.logo} alt="" className="w-full h-full object-cover" />
                   ) : (
                     c.name.charAt(0).toUpperCase()
                   )}
@@ -240,7 +240,7 @@ export default function InterviewsDirectoryPage() {
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-300 overflow-hidden">
                   {e.company?.logo ? (
-                    <img src={e.company.logo} alt={e.company?.name ?? e.companyName ?? "Company logo"} className="w-full h-full object-cover" />
+                    <img src={e.company.logo} alt="" className="w-full h-full object-cover" />
                   ) : (
                     (e.company?.name ?? e.companyName ?? "?").charAt(0).toUpperCase()
                   )}

@@ -188,7 +188,7 @@ export default function InterviewExperienceDetailPage() {
               {experience.company?.logo ? (
                 <img
                   src={experience.company.logo}
-                  alt={experience.company?.name ?? "Company logo"}
+                  alt=""
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -359,7 +359,7 @@ export default function InterviewExperienceDetailPage() {
                   {!experience.isAnonymous && experience.user?.profilePic ? (
                     <img
                       src={experience.user.profilePic}
-                      alt={experience.user?.name ?? "Author avatar"}
+                      alt=""
                       className="w-full h-full object-cover"
                     />
                   ) : (

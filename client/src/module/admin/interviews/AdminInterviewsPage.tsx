@@ -494,7 +494,7 @@ function LinkCompanyModal({
                 className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer border-0 disabled:opacity-50"
               >
                 <div className="w-8 h-8 rounded bg-gray-700 flex items-center justify-center shrink-0 text-xs font-bold text-gray-300 overflow-hidden">
-                  {c.logo ? <img src={c.logo} alt={c.name} className="w-full h-full object-cover" /> : c.name.charAt(0).toUpperCase()}
+                  {c.logo ? <img src={c.logo} alt="" className="w-full h-full object-cover" /> : c.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
                   <div className="text-white font-medium truncate">{c.name}</div>
