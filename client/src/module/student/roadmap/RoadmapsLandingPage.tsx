@@ -559,18 +559,8 @@ export default function RoadmapsLandingPage() {
               title="No roadmaps match your search"
               description="Try a different keyword or clear your current filters."
               action={{
-                label: "Clear search",
-                onClick: () => {
-                  setSearchInput("");
-                  setSearchParams((prev) => {
-                    const next = new URLSearchParams(prev);
-                    next.delete("search");
-                    next.delete("level");
-                    next.delete("tag");
-                    next.delete("category");
-                    return next;
-                  });
-                },
+                label: "Clear filters",
+                onClick: clearFilters,
               }}
             />
           ) : (

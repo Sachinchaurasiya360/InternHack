@@ -265,7 +265,14 @@ export default function GovInternshipsPage() {
             icon={<Landmark className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
             title="No internships found"
             description="Try adjusting your search or category filter."
-            action={{ label: "Browse all jobs", to: "/student/jobs" }}
+            action={{
+              label: "Clear filters",
+              onClick: () => {
+                setSearchInput("");
+                setCategory("");
+                setPage(1);
+              },
+            }}
           />
         ) : (
           <>

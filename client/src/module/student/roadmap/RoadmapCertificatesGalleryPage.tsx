@@ -1,6 +1,7 @@
 import { useEffect, useState, memo } from "react";
 import { Link } from "react-router";
 import type { ReactNode } from "react";
+import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -225,12 +226,9 @@ export default function RoadmapCertificatesGalleryPage() {
               Complete a roadmap to unlock certificates.
             </p>
 
-            <Link
-              to="/student/roadmaps"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-sm font-semibold no-underline transition-colors"
-            >
-              Browse roadmaps
-            </Link>
+            <Button asChild variant="primary" size="md">
+              <Link to="/student/roadmaps">Browse roadmaps</Link>
+            </Button>
           </div>
         )}
 

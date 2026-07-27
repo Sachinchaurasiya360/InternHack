@@ -603,8 +603,8 @@ export default function MyApplicationsPage() {
           <EmptyState
             icon={<Briefcase className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
             title="No applications yet"
-            description="Start exploring jobs and submit your first application to see it tracked here."
-            action={{ label: "Browse jobs", to: "/student/jobs" }}
+            description="Apply from InternHack jobs or connect the browser extension to start tracking your pipeline here."
+            action={{ label: "Browse jobs", to: "/external-jobs" }}
           />
         </motion.div>
       ) : filtered.length === 0 ? (
