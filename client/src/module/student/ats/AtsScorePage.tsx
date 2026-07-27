@@ -84,8 +84,15 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
         setExportOpen(false);
       }
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExportOpen(false);
+    };
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [exportOpen]);
 
   const handleDownloadPdf = useCallback(async () => {
@@ -122,11 +129,11 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       doc.roundedRect(margin, y, contentW, 28, 2, 2, "F");
       doc.setFont("helvetica", "bold");
       doc.setFontSize(20);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(28, 25, 23); // stone-900
       doc.text("ATS Analysis Report", margin + 6, y + 10);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
+      doc.setTextColor(120, 113, 108); // stone-500
       doc.text(`Generated ${dateStr}`, margin + 6, y + 18);
       const tierLabel = tier.label.toUpperCase();
       doc.setFont("helvetica", "bold");
@@ -137,7 +144,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       // ── Meta ────────────────────────────────────────────────────────────────
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(28, 25, 23); // stone-900
       doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, margin, y);
       y += 6;
       if (result.jobTitle) {
@@ -150,14 +157,14 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       drawDivider();
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(28, 25, 23); // stone-900
       doc.text("Overall ATS Score", margin, y);
       doc.setFontSize(22);
       doc.setTextColor(132, 204, 22); // lime-500
       doc.text(`${result.overallScore}`, pageW - margin - 20, y + 1);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
+      doc.setTextColor(120, 113, 108); // stone-500
       doc.text("/100", pageW - margin - 20 + doc.getTextWidth(`${result.overallScore}`) + 1, y + 1);
       y += 14;
 
@@ -165,32 +172,36 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       drawDivider();
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(28, 25, 23); // stone-900
       doc.text("Category Scores", margin, y);
       y += 8;
+
+      const TIER_RGB: Record<string, [number, number, number]> = {
+        good: [21, 128, 61],
+        weak: [220, 38, 38],
+        mid:  [161, 161, 22],
+      };
 
       const catEntries = Object.entries(result.categoryScores);
       const colW = contentW / 3;
       catEntries.forEach(([key, score], idx) => {
         const col = idx % 3;
-        const row = Math.floor(idx / 3);
         if (col === 0 && idx > 0) y += 14;
         const cx = margin + col * colW;
         const catTier = getScoreTier(score);
-        doc.setFillColor(248, 250, 252);
+        doc.setFillColor(250, 250, 249); // stone-50
         doc.roundedRect(cx, y - 4, colW - 3, 13, 1, 1, "F");
         doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
-        // Use score color based on tier
         const isGood = catTier.label === "Excellent" || catTier.label === "Strong";
         const isWeak = catTier.label === "Poor" || catTier.label === "Unusable";
-        doc.setTextColor(isGood ? 21 : isWeak ? 220 : 161, isGood ? 128 : isWeak ? 38 : 161, isGood ? 61 : isWeak ? 38 : 22);
+        const [r, g, b] = TIER_RGB[isGood ? "good" : isWeak ? "weak" : "mid"]!;
+        doc.setTextColor(r, g, b);
         doc.text(`${score}`, cx + 4, y + 5);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
-        doc.setTextColor(100, 116, 139);
+        doc.setTextColor(120, 113, 108); // stone-500
         doc.text(CATEGORY_LABELS[key] ?? key, cx + 4 + doc.getTextWidth(`${score}`) + 2, y + 5);
-        void row;
       });
       y += 16;
 
@@ -199,7 +210,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       checkBreak(10);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(28, 25, 23); // stone-900
       doc.text("Keyword Analysis", margin, y);
       y += 8;
 
@@ -218,7 +229,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
         y += 5;
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
-        doc.setTextColor(51, 65, 85);
+        doc.setTextColor(68, 64, 60); // stone-700
         if (section.words.length === 0) {
           doc.text("None", margin + 4, y);
           y += 6;
@@ -236,7 +247,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       checkBreak(10);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(28, 25, 23); // stone-900
       doc.text("Improvement Suggestions", margin, y);
       y += 8;
 
@@ -248,7 +259,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
         checkBreak(lines.length * 5.5 + 4);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9.5);
-        doc.setTextColor(30, 41, 59);
+        doc.setTextColor(41, 37, 36); // stone-800
         doc.text(lines, margin + 2, y);
         y += lines.length * 5.5 + 4;
       });
@@ -259,7 +270,7 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
         doc.setPage(p);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(7.5);
-        doc.setTextColor(148, 163, 184);
+        doc.setTextColor(168, 162, 158); // stone-400
         doc.text(`InternHack ATS Report · Page ${p} of ${totalPages}`, margin, pageH - 8);
         doc.text(dateStr, pageW - margin, pageH - 8, { align: "right" });
       }
