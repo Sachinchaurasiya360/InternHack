@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
@@ -22,6 +22,9 @@ import {
   ArrowRight,
   Mail,
   Download,
+  ChevronDown,
+  FileDown,
+  Sheet,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
@@ -71,105 +74,271 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
 
-  const handleDownloadPdf = async () => {
-    if (!result) return;
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportDropdownRef = useRef<HTMLDivElement>(null);
 
-    const { jsPDF } = await import("jspdf");
-
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-
-    const dateStr = new Date().toISOString().slice(0, 10);
-    const filename = `ats-report-${dateStr}.pdf`;
-
-    let y = 20;
-
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const checkPageBreak = () => {
-      if (y > pageHeight - 20) {
-        doc.addPage();
-        y = 20;
+  useEffect(() => {
+    if (!exportOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (exportDropdownRef.current && !exportDropdownRef.current.contains(e.target as Node)) {
+        setExportOpen(false);
       }
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExportOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [exportOpen]);
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("ATS Analysis Report", 20, y);
+  const handleDownloadPdf = useCallback(async () => {
+    if (!result) return;
+    setExportOpen(false);
 
-    y += 12;
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 18;
+      const contentW = pageW - margin * 2;
+      const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const filename = `ats-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+      let y = margin;
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+      const checkBreak = (needed = 12) => {
+        if (y + needed > pageH - margin) { doc.addPage(); y = margin; }
+      };
 
-    doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, 20, y);
-    y += 8;
+      const drawDivider = () => {
+        checkBreak(6);
+        doc.setDrawColor(220, 220, 216);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y, pageW - margin, y);
+        y += 6;
+      };
 
-    doc.text(`Generated: ${dateStr}`, 20, y);
-    y += 12;
+      const tier = getScoreTier(result.overallScore);
 
-    doc.setFont("helvetica", "bold");
-    doc.text(`Overall ATS Score: ${result.overallScore}/100`, 20, y);
+      // ── Header ──────────────────────────────────────────────────────────────
+      doc.setFillColor(236, 252, 203); // lime-100
+      doc.roundedRect(margin, y, contentW, 28, 2, 2, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(28, 25, 23); // stone-900
+      doc.text("ATS Analysis Report", margin + 6, y + 10);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(120, 113, 108); // stone-500
+      doc.text(`Generated ${dateStr}`, margin + 6, y + 18);
+      const tierLabel = tier.label.toUpperCase();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(tierLabel, pageW - margin - 6 - doc.getTextWidth(tierLabel), y + 10);
+      y += 36;
 
-    y += 12;
+      // ── Meta ────────────────────────────────────────────────────────────────
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(28, 25, 23); // stone-900
+      doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, margin, y);
+      y += 6;
+      if (result.jobTitle) {
+        doc.text(`Target role: ${result.jobTitle}`, margin, y);
+        y += 6;
+      }
+      y += 4;
 
-    doc.text("Category Scores", 20, y);
-    y += 8;
+      // ── Overall score ───────────────────────────────────────────────────────
+      drawDivider();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.setTextColor(28, 25, 23); // stone-900
+      doc.text("Overall ATS Score", margin, y);
+      doc.setFontSize(22);
+      doc.setTextColor(132, 204, 22); // lime-500
+      doc.text(`${result.overallScore}`, pageW - margin - 20, y + 1);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(120, 113, 108); // stone-500
+      doc.text("/100", pageW - margin - 20 + doc.getTextWidth(`${result.overallScore}`) + 1, y + 1);
+      y += 14;
 
-    doc.setFont("helvetica", "normal");
+      // ── Category scores ─────────────────────────────────────────────────────
+      drawDivider();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(28, 25, 23); // stone-900
+      doc.text("Category Scores", margin, y);
+      y += 8;
 
-    Object.entries(result.categoryScores).forEach(([key, value]) => {
-      doc.text(`${key}: ${value}`, 25, y);
-      y += 7;
-    });
+      const TIER_RGB: Record<string, [number, number, number]> = {
+        good: [21, 128, 61],
+        weak: [220, 38, 38],
+        mid:  [161, 161, 22],
+      };
 
-    y += 5;
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Missing Keywords", 20, y);
-    y += 8;
-
-    doc.setFont("helvetica", "normal");
-
-    if (result.keywordAnalysis.missing.length === 0) {
-      doc.text("None", 25, y);
-      y += 7;
-    } else {
-      result.keywordAnalysis.missing.forEach((keyword) => {
-        checkPageBreak();
-
-        doc.text(`• ${keyword}`, 25, y);
-        y += 7;
+      const catEntries = Object.entries(result.categoryScores);
+      const colW = contentW / 3;
+      catEntries.forEach(([key, score], idx) => {
+        const col = idx % 3;
+        if (col === 0 && idx > 0) y += 14;
+        const cx = margin + col * colW;
+        const catTier = getScoreTier(score);
+        doc.setFillColor(250, 250, 249); // stone-50
+        doc.roundedRect(cx, y - 4, colW - 3, 13, 1, 1, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        const isGood = catTier.label === "Excellent" || catTier.label === "Strong";
+        const isWeak = catTier.label === "Poor" || catTier.label === "Unusable";
+        const [r, g, b] = TIER_RGB[isGood ? "good" : isWeak ? "weak" : "mid"]!;
+        doc.setTextColor(r, g, b);
+        doc.text(`${score}`, cx + 4, y + 5);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(120, 113, 108); // stone-500
+        doc.text(CATEGORY_LABELS[key] ?? key, cx + 4 + doc.getTextWidth(`${score}`) + 2, y + 5);
       });
-    }
+      y += 16;
 
-    y += 5;
+      // ── Keyword analysis ────────────────────────────────────────────────────
+      drawDivider();
+      checkBreak(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(28, 25, 23); // stone-900
+      doc.text("Keyword Analysis", margin, y);
+      y += 8;
 
-    doc.setFont("helvetica", "bold");
-    doc.text("Suggestions", 20, y);
-    y += 8;
+      const kwSections: { label: string; words: string[]; color: [number,number,number] }[] = [
+        { label: "Present", words: result.keywordAnalysis.found, color: [21, 128, 61] },
+        { label: "Partial", words: result.keywordAnalysis.partial ?? [], color: [161, 98, 7] },
+        { label: "Missing", words: result.keywordAnalysis.missing, color: [185, 28, 28] },
+      ];
 
-    doc.setFont("helvetica", "normal");
-
-    result.suggestions.forEach((suggestion) => {
-      const text = typeof suggestion === "string" ? suggestion : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
-      const lines = doc.splitTextToSize(`• ${text}`, 160);
-      const blockHeight = lines.length * 6 + 2;
-
-      if (y + blockHeight > pageHeight - 20) {
-        doc.addPage();
-        y = 20;
+      for (const section of kwSections) {
+        checkBreak(10);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(...section.color);
+        doc.text(`${section.label} (${section.words.length})`, margin, y);
+        y += 5;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(68, 64, 60); // stone-700
+        if (section.words.length === 0) {
+          doc.text("None", margin + 4, y);
+          y += 6;
+        } else {
+          const line = section.words.join("  ·  ");
+          const wrapped = doc.splitTextToSize(line, contentW - 4);
+          checkBreak(wrapped.length * 5 + 4);
+          doc.text(wrapped, margin + 4, y);
+          y += wrapped.length * 5 + 4;
+        }
       }
 
-      doc.text(lines, 25, y);
-      y += blockHeight;
-    });
+      // ── Suggestions ─────────────────────────────────────────────────────────
+      drawDivider();
+      checkBreak(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(28, 25, 23); // stone-900
+      doc.text("Improvement Suggestions", margin, y);
+      y += 8;
 
-    doc.save(filename);
-  };
+      result.suggestions.forEach((suggestion, i) => {
+        const text = typeof suggestion === "string"
+          ? suggestion
+          : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
+        const lines = doc.splitTextToSize(`${i + 1}. ${text}`, contentW - 4);
+        checkBreak(lines.length * 5.5 + 4);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(41, 37, 36); // stone-800
+        doc.text(lines, margin + 2, y);
+        y += lines.length * 5.5 + 4;
+      });
+
+      // ── Footer ──────────────────────────────────────────────────────────────
+      const totalPages = (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
+      for (let p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(168, 162, 158); // stone-400
+        doc.text(`InternHack ATS Report · Page ${p} of ${totalPages}`, margin, pageH - 8);
+        doc.text(dateStr, pageW - margin, pageH - 8, { align: "right" });
+      }
+
+      doc.save(filename);
+    } catch (err) {
+      console.error("[ATS Export] Failed to generate PDF report:", err);
+      toast.error("Failed to generate PDF report. Please try again.");
+    }
+  }, [result]);
+
+  const handleDownloadCsv = useCallback(() => {
+    if (!result) return;
+    setExportOpen(false);
+
+    try {
+      const rows: string[][] = [];
+      const sanitizeCsvValue = (val: string) => {
+        if (/^[=+\-@\t\r]/.test(val)) {
+          return `'${val}`;
+        }
+        return val;
+      };
+      const q = (s: string) => `"${sanitizeCsvValue(s).replace(/"/g, '""')}"`;
+
+      // Header
+      rows.push(["Section", "Field", "Value"]);
+
+      // Meta
+      rows.push(["Meta", "Resume", getResumeName(result.resumeUrl)]);
+      rows.push(["Meta", "Overall Score", `${result.overallScore}/100`]);
+      rows.push(["Meta", "Tier", getScoreTier(result.overallScore).label]);
+      if (result.jobTitle) rows.push(["Meta", "Target Role", result.jobTitle]);
+      rows.push(["Meta", "Generated", new Date().toISOString()]);
+
+      // Category scores
+      Object.entries(result.categoryScores).forEach(([key, score]) => {
+        rows.push(["Category Score", CATEGORY_LABELS[key] ?? key, `${score}/100`]);
+      });
+
+      // Keywords
+      result.keywordAnalysis.found.forEach((kw) => rows.push(["Keyword", "Present", kw]));
+      (result.keywordAnalysis.partial ?? []).forEach((kw) => rows.push(["Keyword", "Partial", kw]));
+      result.keywordAnalysis.missing.forEach((kw) => rows.push(["Keyword", "Missing", kw]));
+
+      // Suggestions
+      result.suggestions.forEach((s, i) => {
+        const text = typeof s === "string" ? s : (s as { suggestion?: string }).suggestion ?? String(s);
+        rows.push(["Suggestion", `#${i + 1}`, text]);
+      });
+
+      const csvContent = rows.map((r) => r.map(q).join(",")).join("\r\n");
+      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ats-report-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    } catch (err) {
+      console.error("[ATS Export] Failed to export CSV:", err);
+      toast.error("Failed to export CSV. Please try again.");
+    }
+  }, [result]);
 
   const [guestLimitReached, setGuestLimitReached] = useState(false);
 
@@ -1009,16 +1178,51 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
                         );
                       })}
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleDownloadPdf}
-                      disabled={loading}
-                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed print:hidden"
-                      title="Download or print this ATS report"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Download Report</span>
-                    </button>
+                    {/* Export dropdown */}
+                    <div ref={exportDropdownRef} className="relative shrink-0 mr-1 print:hidden">
+                      <button
+                        type="button"
+                        id="ats-export-btn"
+                        onClick={() => setExportOpen((o) => !o)}
+                        disabled={loading}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Export ATS report"
+                        aria-haspopup="true"
+                        aria-expanded={exportOpen}
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Export</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${exportOpen ? "rotate-180" : ""}`} />
+                      </button>
+
+                      {exportOpen && (
+                        <div
+                          role="menu"
+                          className="absolute right-0 top-full mt-1 z-50 w-44 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md shadow-lg overflow-hidden"
+                        >
+                          <button
+                            type="button"
+                            role="menuitem"
+                            id="ats-export-pdf"
+                            onClick={() => void handleDownloadPdf()}
+                            className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors border-0 bg-transparent cursor-pointer text-left"
+                          >
+                            <FileDown className="w-3.5 h-3.5 shrink-0" />
+                            PDF Report
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            id="ats-export-csv"
+                            onClick={handleDownloadCsv}
+                            className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors bg-transparent cursor-pointer text-left border-t border-stone-100 dark:border-white/5"
+                          >
+                            <Sheet className="w-3.5 h-3.5 shrink-0" />
+                            CSV Data
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="p-5">
