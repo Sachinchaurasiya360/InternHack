@@ -343,7 +343,13 @@ export class OpensourceController {
   async getActivityHeatmap(req: Request, res: Response, next: NextFunction) {
     try {
       const queryStudentId = req.query.studentId as string | undefined;
-      const parsedId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
+      const parsedId = queryStudentId
+        ? (() => {
+            const n = Number(queryStudentId);
+            if (!Number.isInteger(n) || n <= 0) return NaN;
+            return n;
+          })()
+        : req.user!.id;
 
       if (queryStudentId && isNaN(parsedId)) {
         res.status(400).json({ success: false, error: "Invalid studentId parameter" });
