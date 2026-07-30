@@ -154,7 +154,7 @@ Draft bullets to refine: ${JSON.stringify(input.fallbackBullets)}`;
   private parseBulletLines(text: string): string[] {
     return text
       .split("\n")
-      .map((line) => line.trim().replace(/^[-*\d.)\s]+/, "").trim())
+      .map((line) => line.trim().replace(/^[-*]\s+|\d+[.)]\s*/, "").trim())
       .filter(Boolean)
       .slice(0, MAX_BULLETS);
   }
