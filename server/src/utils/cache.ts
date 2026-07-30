@@ -26,7 +26,12 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
   // Move to end to mark as recently used
   store.delete(key);
   store.set(key, entry);
-  return JSON.parse(entry.val) as T;
+  try {
+    return JSON.parse(entry.val) as T;
+  } catch {
+    store.delete(key);
+    return null;
+  }
 }
 
 function evictLRU(): void {
