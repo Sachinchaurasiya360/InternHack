@@ -66,8 +66,8 @@ export function parseSalary(raw: string | null): { min: number | null; max: numb
   const monthly = text.match(/(\d+)\s*[-–to]+\s*(\d+)\s*k?\s*(?:\/\s*month|per\s*month|pm)/i);
   if (monthly) {
     return {
-      min: parseInt(monthly[1]) * 1000 * 12,
-      max: parseInt(monthly[2]) * 1000 * 12,
+      min: parseInt(monthly[1], 10) * 1000 * 12,
+      max: parseInt(monthly[2], 10) * 1000 * 12,
     };
   }
 
@@ -76,8 +76,8 @@ export function parseSalary(raw: string | null): { min: number | null; max: numb
   if (usd) {
     const rate = 83;
     return {
-      min: parseInt(usd[1]) * 1000 * rate,
-      max: parseInt(usd[2]) * 1000 * rate,
+      min: parseInt(usd[1], 10) * 1000 * rate,
+      max: parseInt(usd[2], 10) * 1000 * rate,
     };
   }
 
