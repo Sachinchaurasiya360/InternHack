@@ -73,7 +73,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId))
         return res.status(400).json({ message: "Invalid problem ID" });
       const result = await this.dsaService.toggleProblem(userId, problemId);
@@ -90,7 +90,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId))
         return res.status(400).json({ message: "Invalid problem ID" });
       const { notes } = req.body;
@@ -112,7 +112,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId))
         return res.status(400).json({ message: "Invalid problem ID" });
       const result = await this.dsaService.toggleBookmark(userId, problemId);
@@ -180,7 +180,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId)) {
         res.status(400).json({ message: "Invalid problem ID" });
         return;
@@ -218,7 +218,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId)) {
         res.status(400).json({ message: "Invalid problem ID" });
         return;
@@ -379,7 +379,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId)) {
         res.status(400).json({ message: "Invalid problem ID" });
         return;
@@ -398,7 +398,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId)) {
         res.status(400).json({ message: "Invalid problem ID" });
         return;
@@ -429,7 +429,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId)) {
         res.status(400).json({ message: "Invalid problem ID" });
         return;
@@ -575,7 +575,7 @@ export class DsaController {
         return;
       }
 
-      const submissionId = parseInt(req.params.submissionId as string);
+      const submissionId = parseInt(req.params.submissionId as string, 10);
       if (isNaN(submissionId)) {
         res.status(400).json({ message: "Invalid submission ID" });
         return;
@@ -607,7 +607,7 @@ export class DsaController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const problemId = parseInt(req.params.problemId as string);
+      const problemId = parseInt(req.params.problemId as string, 10);
       if (isNaN(problemId)) {
         res.status(400).json({ message: "Invalid problem ID" });
         return;
