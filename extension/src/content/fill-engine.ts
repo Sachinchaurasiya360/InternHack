@@ -6,8 +6,11 @@ function isFillableProfileKey(kind: FieldMapping["kind"]): kind is FillableProfi
   return kind !== "customQuestion" && kind !== "unknown";
 }
 
-function valueFor(profile: NormalizedProfile, mapping: FieldMapping): string {
+function valueFor(profile: NormalizedProfile, mapping: FieldMapping, autofillSettings?: Record<string, unknown>): string {
   if (!isFillableProfileKey(mapping.kind)) return "";
+  if (autofillSettings && autofillSettings[mapping.kind] === false) {
+    return "";
+  }
   return profile[mapping.kind] || profile.customFields[mapping.label] || "";
 }
 
@@ -27,12 +30,12 @@ function highlight(element: HTMLElement) {
   }, 1400);
 }
 
-export function fillFields(profile: NormalizedProfile, fields: FieldMapping[]) {
+export function fillFields(profile: NormalizedProfile, fields: FieldMapping[], autofillSettings?: Record<string, unknown>) {
   let filledCount = 0;
   const failed: FieldMapping[] = [];
 
   for (const field of fields) {
-    const value = valueFor(profile, field);
+    const value = valueFor(profile, field, autofillSettings);
     if (!value || field.confidence < 0.55) continue;
     if (field.element.value.trim()) continue;
 

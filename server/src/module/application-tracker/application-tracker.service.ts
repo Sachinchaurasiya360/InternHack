@@ -33,36 +33,43 @@ export class ApplicationTrackerService {
       orderBy: { updatedAt: "desc" },
     });
 
-    const legacy = await prisma.externalJobApplication.findMany({
-      where: {
-        studentId: userId,
-        ...(search ? {
+    const shouldFetchLegacy =
+      !filters.savedOnly &&
+      (!filters.status || filters.status === "APPLIED") &&
+      (!filters.sourceType || filters.sourceType === "INTERNHACK_ADMIN");
+
+    const legacy = shouldFetchLegacy
+      ? await prisma.externalJobApplication.findMany({
+        where: {
+          studentId: userId,
+          ...(search ? {
+            adminJob: {
+              OR: [
+                { role: { contains: search, mode: "insensitive" } },
+                { company: { contains: search, mode: "insensitive" } },
+                { location: { contains: search, mode: "insensitive" } },
+              ],
+            },
+          } : {}),
+        },
+        include: {
           adminJob: {
-            OR: [
-              { role: { contains: search, mode: "insensitive" } },
-              { company: { contains: search, mode: "insensitive" } },
-              { location: { contains: search, mode: "insensitive" } },
-            ],
-          },
-        } : {}),
-      },
-      include: {
-        adminJob: {
-          select: {
-            id: true,
-            slug: true,
-            company: true,
-            role: true,
-            location: true,
-            salary: true,
-            tags: true,
-            applyLink: true,
-            description: true,
+            select: {
+              id: true,
+              slug: true,
+              company: true,
+              role: true,
+              location: true,
+              salary: true,
+              tags: true,
+              applyLink: true,
+              description: true,
+            },
           },
         },
-      },
-      orderBy: { updatedAt: "desc" },
-    });
+        orderBy: { updatedAt: "desc" },
+      })
+      : [];
 
     const legacyMapped = legacy
       .filter(() => !filters.status || filters.status === statusForLegacyExternal())
@@ -105,8 +112,15 @@ export class ApplicationTrackerService {
 
   async create(userId: number, data: Record<string, any>) {
     const applicationUrl = normalizeText(data.applicationUrl);
-    const existing = applicationUrl
-      ? await prisma.trackedJobApplication.findFirst({ where: { userId, applicationUrl } })
+    const role = normalizeText(data.role);
+    const existing = (applicationUrl && role)
+      ? await prisma.trackedJobApplication.findFirst({
+        where: {
+          userId,
+          applicationUrl: { equals: applicationUrl, mode: "insensitive" },
+          role: { equals: role, mode: "insensitive" }
+        },
+      })
       : null;
 
     const payload = {
@@ -116,10 +130,10 @@ export class ApplicationTrackerService {
       adminJobId: data.adminJobId ?? null,
       scrapedJobId: data.scrapedJobId ?? null,
       company: data.company,
-      role: data.role,
+      role: role,
       location: data.location ?? null,
       jobUrl: data.jobUrl ?? null,
-      applicationUrl: data.applicationUrl ?? null,
+      applicationUrl: applicationUrl || null,
       jobDescription: data.jobDescription ?? null,
       status: data.status,
       appliedAt: parseDate(data.appliedAt),
@@ -157,10 +171,8 @@ export class ApplicationTrackerService {
       "adminJobId",
       "scrapedJobId",
       "company",
-      "role",
       "location",
       "jobUrl",
-      "applicationUrl",
       "jobDescription",
       "status",
       "resumeUrl",
@@ -172,6 +184,9 @@ export class ApplicationTrackerService {
     ]) {
       if (data[key] !== undefined) (payload as Record<string, unknown>)[key] = data[key];
     }
+    
+    if (data.role !== undefined) payload.role = normalizeText(data.role);
+    if (data.applicationUrl !== undefined) payload.applicationUrl = normalizeText(data.applicationUrl) || null;
     for (const key of ["appliedAt", "deadline", "nextFollowUpAt"]) {
       if (data[key] !== undefined) (payload as Record<string, unknown>)[key] = parseDate(data[key]);
     }
@@ -187,18 +202,20 @@ export class ApplicationTrackerService {
   }
 
   async addEvent(userId: number, id: number, event: { type: string; label: string; metadata?: Record<string, unknown> }) {
-    const existing = await prisma.trackedJobApplication.findFirst({ where: { id, userId } });
-    if (!existing) return null;
-    const events = Array.isArray(existing.events) ? existing.events as Prisma.InputJsonValue[] : [];
-    const nextEvent = { ...event, createdAt: new Date().toISOString() } as Prisma.InputJsonObject;
-    return prisma.trackedJobApplication.update({
-      where: { id },
-      data: {
-        events: [
-          ...events,
-          nextEvent,
-        ],
-      },
+    return prisma.$transaction(async (tx) => {
+      const locked = await tx.$queryRaw<any[]>`SELECT * FROM "trackedJobApplication" WHERE id = ${id} FOR UPDATE`;
+      const existing = locked[0];
+      if (!existing || existing.userId !== userId) return null;
+      
+      const events = Array.isArray(existing.events) ? existing.events as Prisma.InputJsonValue[] : [];
+      const nextEvent = { ...event, createdAt: new Date().toISOString() } as Prisma.InputJsonObject;
+      
+      return tx.trackedJobApplication.update({
+        where: { id },
+        data: {
+          events: [...events, nextEvent],
+        },
+      });
     });
   }
 
