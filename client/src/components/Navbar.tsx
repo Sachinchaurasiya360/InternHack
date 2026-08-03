@@ -220,6 +220,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                   </PopoverBody>
                   <PopoverFooter>
                     <button
+                      aria-label="Sign out"
                       onClick={handleLogout}
                       className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 dark:text-stone-300 dark:hover:text-stone-50 dark:bg-white/5 dark:hover:bg-white/10 rounded-md transition-colors cursor-pointer border border-stone-200 dark:border-white/10"
                     >
@@ -310,6 +311,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                   </PopoverBody>
                   <PopoverFooter>
                     <button
+                      aria-label="Sign out"
                       onClick={handleLogout}
                       className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-stone-700 bg-stone-100 hover:bg-stone-200 dark:text-stone-300 dark:bg-white/5 dark:hover:bg-white/10 rounded-md transition-colors cursor-pointer border border-stone-200 dark:border-white/10"
                     >

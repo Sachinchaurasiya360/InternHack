@@ -421,12 +421,14 @@ export default function AdminAptitudePage() {
             </div>
             <div className="flex gap-2 justify-end">
               <button
+                aria-describedby="Cancel question edit"
                 onClick={() => setEditingQ(null)}
                 className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 text-sm"
               >
                 Cancel
               </button>
               <button
+                aria-describedby="Save question"
                 onClick={handleSaveQuestion}
                 disabled={saving || !editingQ.question || !editingQ.optionA}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 text-sm flex items-center gap-2"
@@ -593,11 +595,13 @@ export default function AdminAptitudePage() {
                 setEditingCat(null);
                 setCreatingCat(false);
               }}
+              aria-describedby="Cancel category edit"
               className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2"
             >
               <X className="w-4 h-4" /> Cancel
             </button>
             <button
+              aria-describedby="Save category"
               onClick={handleSaveCategory}
               disabled={saving || !editingCat.name}
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 text-sm flex items-center gap-2"
@@ -713,6 +717,7 @@ export default function AdminAptitudePage() {
             </div>
             <div className="flex gap-2 justify-end">
               <button
+                aria-describedby="Cancel topic edit"
                 onClick={() => {
                   setEditingTopic(null);
                   setCreatingTopic(false);
@@ -722,6 +727,7 @@ export default function AdminAptitudePage() {
                 Cancel
               </button>
               <button
+                aria-describedby="Save topic"
                 onClick={handleSaveTopic}
                 disabled={saving || !editingTopic.name}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 text-sm flex items-center gap-2"
@@ -917,11 +923,13 @@ export default function AdminAptitudePage() {
                               toast.error("Failed to load");
                             }
                           }}
+                          aria-label={`Edit category ${cat.name}`}
                           className="p-2 rounded-lg bg-indigo-900/30 text-indigo-400 hover:bg-indigo-900/50 transition-colors"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
+                          aria-label={`Delete category ${cat.name}`}
                           onClick={() => handleDeleteCategory(cat.id, cat.name)}
                           className="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors"
                         >

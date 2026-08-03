@@ -286,6 +286,7 @@ export function useStudentSidebar() {
         {/* Footer: logout */}
         <div className={`border-t border-stone-200 dark:border-white/10 ${collapsed ? "px-2 py-3" : "px-3 py-3"}`}>
           <button
+            aria-label="Logout"
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}
             className={`w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors border-0 bg-transparent cursor-pointer ${

@@ -293,16 +293,16 @@ export default function AdminSkillTestsPage() {
                   <td className="px-4 py-3 text-sm text-gray-300">{test._count?.questions ?? 0}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{test._count?.attempts ?? 0}</td>
                   <td className="px-4 py-3">
-                    <button type="button" onClick={() => handleToggle(test.id, !test.isActive)} className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${test.isActive ? "bg-green-900/50 text-green-400 hover:bg-green-900/70" : "bg-gray-800 text-gray-500 hover:bg-gray-700"}`}>
+                    <button aria-label={test.isActive ? `Deactivate ${test.title}` : `Activate ${test.title}`} onClick={() => handleToggle(test.id, !test.isActive)} className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${test.isActive ? "bg-green-900/50 text-green-400 hover:bg-green-900/70" : "bg-gray-800 text-gray-500 hover:bg-gray-700"}`}>
                       {test.isActive ? "Active" : "Inactive"}
                     </button>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => handleEdit(test.id)} className="p-2 rounded-lg bg-indigo-900/30 text-indigo-400 hover:bg-indigo-900/50 transition-colors">
+                      <button onClick={() => handleEdit(test.id)} aria-label={`Edit ${test.title}`} className="p-2 rounded-lg bg-indigo-900/30 text-indigo-400 hover:bg-indigo-900/50 transition-colors">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button type="button" onClick={() => handleDelete(test.id, test.title)} className="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors">
+                      <button onClick={() => handleDelete(test.id, test.title)} aria-label={`Delete ${test.title}`} className="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

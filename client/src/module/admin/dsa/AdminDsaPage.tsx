@@ -516,12 +516,14 @@ export default function AdminDsaPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <button
+                        aria-label={`Edit ${topic.name}`}
                         onClick={() => handleEdit(topic.id)}
                         className="p-2 rounded-lg bg-indigo-900/30 text-indigo-400 hover:bg-indigo-900/50 transition-colors"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
+                        aria-label={`Delete ${topic.name}`}
                         onClick={() => handleDelete(topic.id, topic.name)}
                         className="p-2 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors"
                       >

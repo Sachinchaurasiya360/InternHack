@@ -936,6 +936,7 @@ export default function ResumeGeneratorPage() {
 
                 <button
                   type="button"
+                  aria-label="Copy LaTeX code to clipboard"
                   onClick={handleCopyLatex}
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                 >

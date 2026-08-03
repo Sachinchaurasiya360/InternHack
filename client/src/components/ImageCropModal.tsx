@@ -64,6 +64,7 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Crop Image</h3>
           <button
             onClick={onClose}
+            aria-label="Cancel crop"
             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -101,12 +102,14 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
 
           <div className="flex items-center gap-2 justify-end">
             <button
+              aria-label="Cancel crop"
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
             >
               Cancel
             </button>
             <button
+              aria-label="Apply crop"
               onClick={handleConfirm}
               disabled={saving || !croppedArea}
               className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50"

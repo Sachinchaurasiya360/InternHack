@@ -146,6 +146,7 @@ export default function RoadmapCertificatePage() {
 
             <button
               onClick={handleCopy}
+              aria-label="Copy share link to clipboard"
               className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-md border border-stone-200 dark:border-white/10 hover:bg-white/5 transition-all"
             >
               {copied ? (

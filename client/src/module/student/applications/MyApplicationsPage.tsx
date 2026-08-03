@@ -485,6 +485,7 @@ export default function MyApplicationsPage() {
                 type="button"
                 variant="outline"
                 size="sm"
+                aria-label="Download extension"
                 className="gap-1.5"
                 onClick={handleDownload}
                 disabled={isDownloading}

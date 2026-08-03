@@ -648,7 +648,7 @@ export default function SkillTestPage() {
                   <p className="font-semibold text-stone-900 dark:text-stone-100">Shareable verification link</p>
                   <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">Anyone can verify your skill using this public URL.</p>
                 </div>
-                <Button variant="secondary" size="sm" onClick={handleCopyShareLink} className="rounded-md">
+                <Button variant="secondary" size="sm" onClick={handleCopyShareLink} aria-label="Copy share link to clipboard" className="rounded-md">
                   <Copy className="w-4 h-4 mr-2" /> Copy Link
                 </Button>
               </div>

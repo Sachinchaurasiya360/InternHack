@@ -370,6 +370,7 @@ export default function AptitudeCompaniesPage() {
                       {!isRevealed ? (
                         <button
                           onClick={() => handleSubmit(q.id)}
+                          aria-label="Check answer"
                           disabled={!selectedAnswer || submitMutation.isPending}
                           className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >

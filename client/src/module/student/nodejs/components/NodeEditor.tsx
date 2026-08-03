@@ -26,6 +26,7 @@ export default function NodeEditor({ value, height = "180px" }: NodeEditorProps)
         <Button
           variant="secondary"
           size="sm"
+          aria-label="Copy code to clipboard"
           onClick={handleCopy}
           className="rounded-xl"
         >

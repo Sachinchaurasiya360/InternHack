@@ -159,6 +159,7 @@ export function CompletionCelebration({
 
               <div className="flex items-center justify-center gap-2 mb-4">
                 <button
+                  aria-label="Share on LinkedIn"
                   onClick={() => handleShare("linkedin")}
                   className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors border-0 cursor-pointer"
                 >
@@ -166,6 +167,7 @@ export function CompletionCelebration({
                   LinkedIn
                 </button>
                 <button
+                  aria-label="Share on Twitter"
                   onClick={() => handleShare("twitter")}
                   className="flex items-center gap-1.5 px-3 py-2 bg-neutral-800 text-white text-xs font-semibold rounded-lg hover:bg-neutral-900 transition-colors border-0 cursor-pointer"
                 >
@@ -173,6 +175,7 @@ export function CompletionCelebration({
                   X
                 </button>
                 <button
+                  aria-label="Share on WhatsApp"
                   onClick={() => handleShare("whatsapp")}
                   className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors border-0 cursor-pointer"
                 >
@@ -182,6 +185,7 @@ export function CompletionCelebration({
               </div>
 
               <button
+                aria-label="Download Certificate"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-sm font-semibold rounded-lg hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors border-0 cursor-pointer"
               >
                 <Download className="w-4 h-4" />
