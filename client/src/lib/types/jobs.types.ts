@@ -1,5 +1,122 @@
-import type { UserRole } from "./user.types";
+import type { UserRole, User } from "./user.types";
 
+export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
+export type RoundStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
+export type FieldType = "TEXT" | "TEXTAREA" | "DROPDOWN" | "MULTI_SELECT" | "FILE_UPLOAD" | "BOOLEAN" | "NUMERIC" | "DATE" | "EMAIL" | "URL";
+
+export interface CustomFieldDefinition {
+  id: string;
+  label: string;
+  fieldType: FieldType;
+  required: boolean;
+  placeholder?: string;
+  options?: string[];
+  validation?: {
+    min?: number;
+    max?: number;
+    maxLength?: number;
+    maxFileSize?: number;
+    allowedTypes?: string[];
+  };
+}
+
+export interface EvaluationCriterion {
+  id: string;
+  criterion: string;
+  maxScore: number;
+  weight?: number;
+}
+
+export interface AssessmentQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+  points: number;
+}
+
+export interface Round {
+  id: number;
+  jobId: number;
+  name: string;
+  description?: string;
+  orderIndex: number;
+  instructions?: string;
+  customFields: CustomFieldDefinition[];
+  evaluationCriteria: EvaluationCriterion[];
+  assessmentQuestions?: AssessmentQuestion[];
+  timeLimitSecs?: number | null;
+  autoGrade?: boolean;
+  activateAt?: string | null;
+  _count?: { roundSubmissions: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Job {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  salary: string;
+  company: string;
+  status: JobStatus;
+  customFields: CustomFieldDefinition[];
+  deadline?: string;
+  tags: string[];
+  recruiterId: number;
+  recruiter?: { id: number; name: string; company?: string; designation?: string };
+  rounds?: Round[];
+  _count?: { applications: number; rounds: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RoundSubmission {
+  id: number;
+  applicationId: number;
+  roundId: number;
+  status: RoundStatus;
+  fieldAnswers: Record<string, unknown>;
+  attachments: string[];
+  evaluationScores?: Record<string, { score: number; comment?: string }>;
+  recruiterNotes?: string;
+  submittedAt?: string;
+  evaluatedAt?: string;
+  round?: Round;
+  application?: Application;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Application {
+  id: number;
+  jobId: number;
+  studentId: number;
+  status: ApplicationStatus;
+  currentRoundId?: number;
+  customFieldAnswers: Record<string, unknown>;
+  resumeUrl?: string;
+  coverLetter?: string;
+  job?: Job;
+  student?: User;
+  roundSubmissions?: RoundSubmission[];
+  _count?: { roundSubmissions: number };
+  createdAt: string;
+  updatedAt: string;
+}
+export type OpportunityType = "JOB" | "EXTERNAL_JOB";
+
+export interface CalendarOpportunity {
+  id: string;
+  type: OpportunityType;
+  title: string;
+  subtitle: string | null;
+  deadline: string;
+  status: string | null;
+  url: string | null;
+}
 export interface AdminDashboardData {
   totalStudents: number;
   totalJobs: number;

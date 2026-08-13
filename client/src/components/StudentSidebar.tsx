@@ -9,6 +9,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   UserCircle,
+  Award,
   Globe,
   Crown,
   ShieldCheck,
@@ -20,6 +21,7 @@ import {
   Lock,
   BrainCircuit,
   Radar,
+  CalendarDays,
 } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
@@ -37,22 +39,32 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-  label: "work",
-  items: [
-    { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
-    { to: "/student/signals", icon: Radar, label: "Funding Signals" },
-    { to: "/student/applications", icon: FileText, label: "My Applications" },
-    { to: "/student/companies", icon: Building2, label: "Explore Companies" },
-  ],
-},
+    label: "work",
+    items: [
+      { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
+      { to: "/student/signals", icon: Radar, label: "Funding Signals" },
+      { to: "/student/applications", icon: FileText, label: "My Applications" },
+      { to: "/student/calendar", icon: CalendarDays, label: "Calendar" },
+      { to: "/student/companies", icon: Building2, label: "Explore Companies" },
+    ],
+  },
   {
     label: "prep",
     items: [
       { to: "/student/ai-agent", icon: BrainCircuit, label: "InternHack AI" },
       { to: "/student/ats/score", icon: ScanSearch, label: "Resume" },
       { to: "/learn", icon: GraduationCap, label: "Learning Hub" },
-      { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
-      { to: "/student/mock-interview", icon: Video, label: "Mock Interview" },
+      {
+        to: "/student/skill-verification",
+        icon: ShieldCheck,
+        label: "Skill Tests",
+      },
+      {
+        to: "/student/mock-interview",
+        icon: Video,
+        label: "Mock Interview",
+        premium: true,
+      },
     ],
   },
   {
@@ -73,10 +85,7 @@ const NAV_GROUPS: NavGroup[] = [
 export function useStudentSidebar() {
   const { user, logout } = useAuthStore();
   const isPremium =
-    user?.subscriptionStatus === "ACTIVE" &&
-    user?.subscriptionPlan !== "FREE" &&
-    user?.subscriptionEndDate &&
-    new Date(user.subscriptionEndDate) > new Date();
+    user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";
@@ -100,7 +109,9 @@ export function useStudentSidebar() {
 
   const groups = NAV_GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((item) => !(item.to === "/student/checkout" && isPremium)),
+    items: g.items.filter(
+      (item) => !(item.to === "/student/checkout" && isPremium),
+    ),
   })).filter((g) => g.items.length > 0);
 
   const avatar = (size: "sm" | "md") => {
@@ -117,7 +128,9 @@ export function useStudentSidebar() {
       );
     }
     return (
-      <div className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}>
+      <div
+        className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}
+      >
         <User className={`${icon} text-stone-500`} />
       </div>
     );
@@ -137,7 +150,11 @@ export function useStudentSidebar() {
           </button>
           <Link to="/" className="flex items-center gap-2 no-underline">
             <div className="relative">
-              <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-md object-contain" />
+              <img
+                src="/logo.png"
+                alt="InternHack"
+                className="h-7 w-7 rounded-md object-contain"
+              />
               <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
             </div>
             <span className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50">
@@ -176,7 +193,9 @@ export function useStudentSidebar() {
         </div>
 
         {/* Identity + collapse toggle */}
-        <div className={`flex items-center gap-2 border-b border-stone-200 dark:border-white/10 ${collapsed ? "px-3 py-3" : "px-5 py-3"}`}>
+        <div
+          className={`flex items-center gap-2 border-b border-stone-200 dark:border-white/10 ${collapsed ? "px-3 py-3" : "px-5 py-3"}`}
+        >
           <Link
             to="/student/profile"
             onClick={() => setMobileOpen(false)}
@@ -190,10 +209,10 @@ export function useStudentSidebar() {
                   {user?.name}
                 </h2>
                 {isPremium && (
-                  <span className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-amber-500 dark:text-amber-400">
-                    <Crown className="w-2.5 h-2.5 shrink-0" fill="currentColor" />
-                    Premium
-                  </span>
+                  <span
+                    className="shrink-0 h-1.5 w-1.5 bg-lime-400"
+                    title="Premium"
+                  />
                 )}
               </div>
             )}
@@ -222,7 +241,9 @@ export function useStudentSidebar() {
         )}
 
         {/* Nav groups */}
-        <nav className={`flex-1 overflow-y-auto ${collapsed ? "px-2 py-3" : "px-3 py-3"} space-y-4`}>
+        <nav
+          className={`flex-1 overflow-y-auto ${collapsed ? "px-2 py-3" : "px-3 py-3"} space-y-4`}
+        >
           {groups.map((group) => (
             <div key={group.label}>
               {!collapsed && (
@@ -233,7 +254,9 @@ export function useStudentSidebar() {
                   </span>
                 </div>
               )}
-              {collapsed && <div className="h-px bg-stone-200 dark:bg-white/10 mx-2 mb-2" />}
+              {collapsed && (
+                <div className="h-px bg-stone-200 dark:bg-white/10 mx-2 mb-2" />
+              )}
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const isLocked = item.premium && !isPremium;
@@ -241,7 +264,13 @@ export function useStudentSidebar() {
                     <li key={item.to}>
                       <NavLink
                         to={isLocked ? "/student/checkout" : item.to}
-                        title={collapsed ? (isLocked ? `${item.label} (Pro)` : item.label) : undefined}
+                        title={
+                          collapsed
+                            ? isLocked
+                              ? `${item.label} (Pro)`
+                              : item.label
+                            : undefined
+                        }
                         onClick={() => setMobileOpen(false)}
                         className={({ isActive }) =>
                           `relative flex items-center gap-3 rounded-md text-sm transition-colors no-underline ${
@@ -284,7 +313,9 @@ export function useStudentSidebar() {
         </nav>
 
         {/* Footer: logout */}
-        <div className={`border-t border-stone-200 dark:border-white/10 ${collapsed ? "px-2 py-3" : "px-3 py-3"}`}>
+        <div
+          className={`border-t border-stone-200 dark:border-white/10 ${collapsed ? "px-2 py-3" : "px-3 py-3"}`}
+        >
           <button
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}

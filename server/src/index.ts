@@ -14,8 +14,14 @@ import { studentRouter } from "./module/student/student.routes.js";
 import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
 import { expertSessionRouter, expertSessionAdminRouter } from "./module/expert-session/expert-session.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
-import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
-import { signalsRouter, signalsController } from "./module/signals/signals.routes.js";
+import {
+  scraperRouter,
+  scraperController,
+} from "./module/scraper/scraper.routes.js";
+import {
+  signalsRouter,
+  signalsController,
+} from "./module/signals/signals.routes.js";
 import { interviewExperienceRouter } from "./module/interview-experience/interview-experience.routes.js";
 import { atsRouter } from "./module/ats/ats.routes.js";
 import { resumeRouter } from "./module/resume/resume.routes.js";
@@ -36,6 +42,8 @@ import { interviewProgressRouter } from "./module/interview-progress/interview-p
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
+import { calendarRouter } from "./module/calendar/calendar.routes.js";
+import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 // ── Recruiter + HR modules archived to /archived (feature removed) ──
 import { contactRouter } from "./module/contact/contact.routes.js";
@@ -118,11 +126,32 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
+        scriptSrc: [
+          "'self'",
+          "https://accounts.google.com",
+          "https://apis.google.com",
+          "https://www.googletagmanager.com",
+          "https://www.google-analytics.com",
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://accounts.google.com",
+          "https://fonts.googleapis.com",
+        ],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com"],
-        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
+        connectSrc: [
+          "'self'",
+          "https://accounts.google.com",
+          "https://generativelanguage.googleapis.com",
+          "https://www.google-analytics.com",
+          "https://analytics.google.com",
+        ],
+        frameSrc: [
+          "https://accounts.google.com",
+          "https://checkout.dodopayments.com",
+          "blob:",
+        ],
         fontSrc: ["'self'", "https:", "data:"],
       },
     },
@@ -134,7 +163,10 @@ app.use(
 
 // ── CORS - manual headers (cors package breaks with Express 5 + credentials) ──
 const allowedOrigins = new Set(
-  (process.env["ALLOWED_ORIGINS"] ?? "http://localhost:5173,https://www.internhack.xyz")
+  (
+    process.env["ALLOWED_ORIGINS"] ??
+    "http://localhost:5173,https://www.internhack.xyz"
+  )
     .split(",")
     .map((s) => s.trim()),
 );
@@ -156,8 +188,14 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Expose-Headers", "x-request-id");
 
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization,X-API-Key");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type,Authorization,X-API-Key",
+    );
     res.setHeader("Access-Control-Max-Age", "86400");
     res.status(204).end();
     return;
@@ -172,7 +210,10 @@ app.use(compression());
 app.use("/api/health", healthRouter);
 
 // Raw body for webhooks (must be BEFORE express.json())
-app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
+app.use(
+  "/api/email-inbound/webhook",
+  express.raw({ type: "application/json" }),
+);
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
 // Larger body parser for DSA CSV import (must be BEFORE the global parser)
@@ -180,7 +221,13 @@ app.use("/api/dsa/import/csv", express.json({ limit: "6mb" }));
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/uploads", express.static(path.join(__dirname, "../uploads"), { dotfiles: "deny", index: false }));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads"), {
+    dotfiles: "deny",
+    index: false,
+  }),
+);
 
 // ── Request ID tracing ──
 app.use((req, res, next) => {
@@ -203,7 +250,9 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
   skip: (req) => {
     const path = req.originalUrl.split("?")[0];
-    return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
+    return (
+      path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook"
+    );
   },
   message: { message: "Too many requests, please try again later" },
 });
@@ -251,6 +300,8 @@ app.use("/api/interview-progress", interviewProgressRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/internships", internshipRouter);
+app.use("/api/calendar", calendarRouter);
+app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 app.use("/api/grants", grantsRouter);
 
@@ -279,15 +330,26 @@ app.use("/api/contact", contactRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
-app.post("/api/external-jobs/ingest", (req, res) => publicAdminController.ingestExternalJob(req, res));
-app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
-app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
+app.post("/api/external-jobs/ingest", (req, res) =>
+  publicAdminController.ingestExternalJob(req, res),
+);
+app.get("/api/external-jobs/:slug", (req, res) =>
+  publicAdminController.getPublicExternalJobBySlug(req, res),
+);
+app.get("/api/external-jobs", (req, res) =>
+  publicAdminController.getPublicExternalJobs(req, res),
+);
 
 // ── Sitemap (served at root, not /api) ──
 app.use(sitemapRouter);
 
 // ── Static files (public folder) ──
-app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));
+app.use(
+  express.static(path.join(__dirname, "../public"), {
+    dotfiles: "deny",
+    index: false,
+  }),
+);
 
 // ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;
@@ -341,7 +403,9 @@ const server = app.listen(PORT, async () => {
   shutdownManager.attachServer(server);
 
   // Load AI service provider configs into memory
-  await initServiceProviders().catch((err) => logger.error("Failed to init AI providers:", err));
+  await initServiceProviders().catch((err) =>
+    console.error("[AI] Failed to init providers:", err),
+  );
 
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
@@ -396,7 +460,8 @@ const server = app.listen(PORT, async () => {
   // Start weekly roadmap progress digests from one owner only in production.
   const runWeeklyDigestCron =
     process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] === "true" ||
-    (process.env["NODE_ENV"] !== "production" && process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
+    (process.env["NODE_ENV"] !== "production" &&
+      process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
   if (runWeeklyDigestCron) {
     startWeeklyRoadmapDigestCron();
     shutdownManager.register({

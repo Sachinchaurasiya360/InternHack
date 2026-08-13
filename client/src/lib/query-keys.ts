@@ -147,6 +147,14 @@ export const queryKeys = {
     status: (id: string | number) => ["external-job-status", id] as const,
   },
 
+  // Badges
+  badges: {
+    all: () => ["badges", "all"] as const,
+    my: () => ["badges", "my"] as const,
+    student: (id: number) => ["badges", "student", id] as const,
+    admin: (params?: Record<string, string | number>) =>
+      ["badges", "admin", params] as const,
+  },
 
   // Saved Candidates
   savedCandidates: {
@@ -212,16 +220,20 @@ export const queryKeys = {
     companies: () => ["dsa", "companies"] as const,
     company: (name: string, page?: number) =>
       ["dsa", "company", name, page] as const,
-    companyTrackStats: (name: string) =>
-      ["dsa", "company", name, "track-stats"] as const,
+    patterns: () => ["dsa", "patterns"] as const,
+    pattern: (name: string, page?: number) =>
+      ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
     submissions: (problemId: number) =>
       ["dsa", "submissions", problemId] as const,
-    testCases: (problemId: number) =>
-      ["dsa", "testcases", problemId] as const,
+    importStatus: () => ["dsa", "import-status"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
+  },
+  // Opportunity Calendar
+  calendar: {
+    opportunities: () => ["calendar", "opportunities"] as const,
   },
   // Roadmaps
   roadmaps: {
@@ -232,34 +244,7 @@ export const queryKeys = {
     enrollments: () => ["roadmaps", "enrollments"] as const,
     enrollmentDetail: (id: number) =>
       ["roadmaps", "enrollment-detail", id] as const,
-    enrollmentAnalytics: (id: number) =>
-      ["roadmaps", "enrollment-analytics", id] as const,
     topic: (slug: string, topicSlug: string) =>
       ["roadmaps", "topic", slug, topicSlug] as const,
-    community: () => ["roadmaps", "community"] as const,
-    studyBuddy: (roadmapId: number) =>
-      ["roadmaps", "study-buddy", roadmapId] as const,
-  },
-  // Notes
-  notes: {
-    list: (filters?: Record<string, string | undefined>) => ["notes", "list", filters] as const,
-    detail: (contentType: string, contentId: string | number) => ["notes", "detail", contentType, contentId] as const,
-  },
-
-  // Peer Mock Interview
-  peerMockInterview: {
-    preferences: () => ["peer-mock-interview", "preferences"] as const,
-    upcoming: () => ["peer-mock-interview", "upcoming"] as const,
-    matches: () => ["peer-mock-interview", "matches"] as const,
-    history: (userId?: number) => ["peer-mock-interview", "history", userId] as const,
-  },
-
-  // Expert Mock Interview Sessions
-  expertSession: {
-    availableSlots: () => ["expert-session", "available-slots"] as const,
-    status: (id: number) => ["expert-session", "status", id] as const,
-    mySessions: () => ["expert-session", "my-sessions"] as const,
-    adminAvailabilityBlocks: () => ["admin", "expert-session", "availability-blocks"] as const,
-    adminBookings: () => ["admin", "expert-session", "bookings"] as const,
   },
 };
