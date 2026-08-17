@@ -272,7 +272,7 @@ export default function CheckoutPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-12 mt-6"
       >
-        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3">
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3 sr-only">
           / pricing
         </p>
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-950 dark:text-white mb-3">
