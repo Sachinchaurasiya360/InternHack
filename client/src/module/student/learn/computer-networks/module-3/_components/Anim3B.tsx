@@ -100,7 +100,7 @@ export default function Anim3B() {
     : table
 
   return (
-    <div className="bg-[#0F172A] min-h-[420px] p-5 flex flex-col gap-4">
+    <div className="bg-[#1C1917] min-h-[420px] p-5 flex flex-col gap-4">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -113,7 +113,7 @@ export default function Anim3B() {
         </button>
         <button
           onClick={reset}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -139,16 +139,16 @@ export default function Anim3B() {
           <svg viewBox="0 0 360 220" className="w-full h-full" style={{ minHeight: 200 }}>
 
             {/* switch box */}
-            <rect x={SW.x-30} y={SW.y-18} width={60} height={36} rx={6} fill="#1E293B" stroke="#475569" strokeWidth="1.5" />
-            <text x={SW.x} y={SW.y-3}  textAnchor="middle" fill="#94A3B8" fontSize="8" fontWeight="bold">Switch</text>
-            <text x={SW.x} y={SW.y+10} textAnchor="middle" fill="#475569" fontSize="7">4-port</text>
+            <rect x={SW.x-30} y={SW.y-18} width={60} height={36} rx={6} fill="#292524" stroke="#57534E" strokeWidth="1.5" />
+            <text x={SW.x} y={SW.y-3}  textAnchor="middle" fill="#A8A29E" fontSize="8" fontWeight="bold">Switch</text>
+            <text x={SW.x} y={SW.y+10} textAnchor="middle" fill="#57534E" fontSize="7">4-port</text>
 
             {/* port connections */}
             {PORTS.map(p => (
               <line key={p.id}
                 x1={p.x + 30} y1={p.y + 18}
                 x2={SW.x + (p.x < 170 ? -30 : 30)} y2={SW.y}
-                stroke="#334155" strokeWidth="1.5"
+                stroke="#44403C" strokeWidth="1.5"
               />
             ))}
 
@@ -206,15 +206,15 @@ export default function Anim3B() {
                 <g key={p.id}>
                   <rect
                     x={p.x} y={p.y} width={60} height={36} rx={6}
-                    fill={isSrc ? "#3B0764" : isDest ? "#064E3B" : "#1E293B"}
-                    stroke={isSrc ? "#7C3AED" : isDest ? "#10B981" : isBlk ? "#334155" : isFlooded ? "#92400E" : "#334155"}
+                    fill={isSrc ? "#3B0764" : isDest ? "#064E3B" : "#292524"}
+                    stroke={isSrc ? "#7C3AED" : isDest ? "#10B981" : isBlk ? "#44403C" : isFlooded ? "#92400E" : "#44403C"}
                     strokeWidth={isSrc || isDest ? 2 : 1.5}
                     opacity={isBlk ? 0.5 : 1}
                   />
-                  <text x={p.x + 30} y={p.y + 14} textAnchor="middle" fill={isBlk ? "#475569" : "#E2E8F0"} fontSize="8" fontWeight="bold">{p.host}</text>
-                  <text x={p.x + 30} y={p.y + 26} textAnchor="middle" fill="#475569" fontSize="6">{p.mac.slice(0, 11)}…</text>
+                  <text x={p.x + 30} y={p.y + 14} textAnchor="middle" fill={isBlk ? "#57534E" : "#E7E5E4"} fontSize="8" fontWeight="bold">{p.host}</text>
+                  <text x={p.x + 30} y={p.y + 26} textAnchor="middle" fill="#57534E" fontSize="6">{p.mac.slice(0, 11)}…</text>
                   {isBlk && (
-                    <text x={p.x + 30} y={p.y - 4} textAnchor="middle" fill="#475569" fontSize="7">blocked</text>
+                    <text x={p.x + 30} y={p.y - 4} textAnchor="middle" fill="#57534E" fontSize="7">blocked</text>
                   )}
                 </g>
               )
@@ -241,7 +241,7 @@ export default function Anim3B() {
 
           {/* step description */}
           {step >= 0 && (
-            <div className="bg-[#1E293B] rounded-xl p-3 border border-[#334155]">
+            <div className="bg-[#292524] rounded-xl p-3 border border-[#44403C]">
               <p className="text-[9px] font-bold text-lime-400 uppercase tracking-wider mb-1">
                 Step {step + 1}  {SCENARIOS[step].label}
               </p>
@@ -250,13 +250,13 @@ export default function Anim3B() {
           )}
 
           {/* MAC table */}
-          <div className="bg-[#1E293B] rounded-xl p-3 border border-[#334155] flex-1">
+          <div className="bg-[#292524] rounded-xl p-3 border border-[#44403C] flex-1">
             <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mb-2">MAC Address Table</p>
             {displayTable.length === 0 ? (
               <p className="text-[9px] text-stone-600 italic">empty</p>
             ) : (
               <div className="space-y-1.5">
-                <div className="grid grid-cols-3 text-[8px] text-stone-500 font-bold pb-1 border-b border-[#334155]">
+                <div className="grid grid-cols-3 text-[8px] text-stone-500 font-bold pb-1 border-b border-[#44403C]">
                   <span>MAC</span><span>Port</span><span>TTL</span>
                 </div>
                 <AnimatePresence>

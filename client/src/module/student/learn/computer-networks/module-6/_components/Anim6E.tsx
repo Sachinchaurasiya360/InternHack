@@ -84,7 +84,7 @@ export default function Anim6E() {
   const wsVisible   = wsMessages.slice(-8)
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-4 min-h-[440px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-4 min-h-[440px]">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -93,14 +93,14 @@ export default function Anim6E() {
         >
           <Play size={10} /> Simulate 30 s
         </button>
-        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors">
           <RotateCcw size={10} /> Reset
         </button>
         <span className="text-[10px] text-stone-500 ml-2">
           {running ? `t = ${elapsed} s / ${SIM_SECONDS} s` : done ? "Simulation complete" : "Ready"}
         </span>
         {(running || done) && (
-          <div className="ml-auto flex items-center gap-2 px-3 py-1 bg-[#1E293B] rounded-lg">
+          <div className="ml-auto flex items-center gap-2 px-3 py-1 bg-[#292524] rounded-lg">
             <span className="text-[9px] text-stone-400">Live counter:</span>
             <motion.span
               key={counter}
@@ -123,7 +123,7 @@ export default function Anim6E() {
             <span className="text-xs font-bold text-blue-300 font-display">HTTP Polling</span>
             <span className="text-[9px] text-stone-500">every {POLL_INTERVAL}s</span>
           </div>
-          <div className="flex-1 bg-[#0A0F1A] rounded-xl border border-[#1E293B] p-2 flex flex-col gap-0.5 overflow-hidden min-h-[160px]">
+          <div className="flex-1 bg-[#0C0A09] rounded-xl border border-[#292524] p-2 flex flex-col gap-0.5 overflow-hidden min-h-[160px]">
             <AnimatePresence initial={false}>
               {pollVisible.map(m => (
                 <motion.div
@@ -134,14 +134,14 @@ export default function Anim6E() {
                   className="flex items-center gap-1.5 py-0.5 px-1.5 rounded"
                   style={{
                     backgroundColor:
-                      m.type === "poll-req"   ? "#1E3A5F22" :
-                      m.type === "poll-empty" ? "#1E293B"    :
+                      m.type === "poll-req"   ? "#44403C22" :
+                      m.type === "poll-empty" ? "#292524"    :
                       "#1C3A2522",
                   }}
                 >
                   <span className="text-[7px] font-mono"
                     style={{
-                      color: m.type === "poll-req" ? "#60A5FA" : m.type === "poll-empty" ? "#475569" : "#34D399"
+                      color: m.type === "poll-req" ? "#60A5FA" : m.type === "poll-empty" ? "#57534E" : "#34D399"
                     }}>
                     {m.type === "poll-req"   ? "→ GET /updates" :
                      m.type === "poll-empty" ? "← 204 (nothing new)" :
@@ -164,7 +164,7 @@ export default function Anim6E() {
             <span className="text-xs font-bold text-lime-300 font-display">WebSocket</span>
             <span className="text-[9px] text-stone-500">push only</span>
           </div>
-          <div className="flex-1 bg-[#0A0F1A] rounded-xl border border-[#1E293B] p-2 flex flex-col gap-0.5 overflow-hidden min-h-[160px]">
+          <div className="flex-1 bg-[#0C0A09] rounded-xl border border-[#292524] p-2 flex flex-col gap-0.5 overflow-hidden min-h-[160px]">
             <AnimatePresence initial={false}>
               {wsVisible.map(m => (
                 <motion.div
@@ -198,7 +198,7 @@ export default function Anim6E() {
         <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col gap-2 pt-3 border-t border-[#334155]"
+          className="flex flex-col gap-2 pt-3 border-t border-[#44403C]"
         >
           <div className="flex justify-between text-[9px] text-stone-400">
             <span>WebSocket used <span className="text-emerald-300 font-bold font-mono">{Math.round((1 - wsBytes / pollBytes) * 100)}% less data</span> than HTTP polling</span>

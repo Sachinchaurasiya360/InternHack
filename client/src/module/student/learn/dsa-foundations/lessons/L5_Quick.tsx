@@ -42,7 +42,7 @@ const STATE_COLORS: Record<CellState, string> = {
   compare: "#06b6d4",
   swap: "#f59e0b",
   sorted: "#a3e635",
-  active: "#818cf8",
+  active: "#a3e635",
   pivot: "#f97316",
   visited: "#d6d3d1",
   done: "#a3e635",

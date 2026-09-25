@@ -9,7 +9,7 @@ const FRAME_FIELDS = [
     name: "Preamble",
     bytes: "7B",
     hex: "AA AA AA AA AA AA AA",
-    color: "#475569",
+    color: "#57534E",
     desc: "Alternating 1s and 0s that synchronise the receiver's clock before the frame arrives.",
   },
   {
@@ -17,7 +17,7 @@ const FRAME_FIELDS = [
     name: "SFD",
     bytes: "1B",
     hex: "AB",
-    color: "#64748B",
+    color: "#78716C",
     desc: "Start Frame Delimiter  the byte 10101011 signals the end of the preamble and the start of the actual frame.",
   },
   {
@@ -104,7 +104,7 @@ export default function Anim3C() {
   const selectedField = FRAME_FIELDS.find(f => f.key === selected)
 
   return (
-    <div className="bg-[#0F172A] min-h-[420px] p-5 flex flex-col gap-4">
+    <div className="bg-[#1C1917] min-h-[420px] p-5 flex flex-col gap-4">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -143,7 +143,7 @@ export default function Anim3C() {
         )}
         <button
           onClick={reset}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -153,7 +153,7 @@ export default function Anim3C() {
       {!exploded && (
         <div className="relative flex items-center gap-3 px-2">
           <div className="flex flex-col items-center gap-1">
-            <div className="w-10 h-10 rounded-xl bg-[#1E293B] border border-[#334155] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#292524] border border-[#44403C] flex items-center justify-center">
               <span className="text-[10px] text-stone-400 font-bold">NIC</span>
             </div>
             <span className="text-[8px] text-stone-500">Sender</span>
@@ -161,7 +161,7 @@ export default function Anim3C() {
 
           <div className="flex-1 relative h-6 flex items-center">
             {/* cable */}
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-[#334155] rounded-full" />
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-[#44403C] rounded-full" />
 
             {/* traveling packet */}
             {traveling && (
@@ -177,7 +177,7 @@ export default function Anim3C() {
             )}
 
             {!traveling && !arrived && (
-              <div className="absolute left-1 top-1/2 -translate-y-1/2 h-5 rounded flex items-center justify-center px-2 bg-[#1E293B] border border-[#334155]">
+              <div className="absolute left-1 top-1/2 -translate-y-1/2 h-5 rounded flex items-center justify-center px-2 bg-[#292524] border border-[#44403C]">
                 <span className="text-[9px] text-stone-500">Ready</span>
               </div>
             )}
@@ -195,7 +195,7 @@ export default function Anim3C() {
           </div>
 
           <div className="flex flex-col items-center gap-1">
-            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-colors ${arrived ? "bg-[#064E3B] border-emerald-700" : "bg-[#1E293B] border-[#334155]"}`}>
+            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-colors ${arrived ? "bg-[#064E3B] border-emerald-700" : "bg-[#292524] border-[#44403C]"}`}>
               <span className="text-[10px] text-stone-400 font-bold">NIC</span>
             </div>
             <span className="text-[8px] text-stone-500">Receiver</span>
@@ -214,7 +214,7 @@ export default function Anim3C() {
             <p className="text-[9px] text-stone-500 uppercase font-bold tracking-wider">Click any field to inspect</p>
 
             {/* field strip */}
-            <div className="flex rounded-xl overflow-hidden border border-[#334155]">
+            <div className="flex rounded-xl overflow-hidden border border-[#44403C]">
               {FRAME_FIELDS.map(f => (
                 <button
                   key={f.key}
@@ -226,7 +226,7 @@ export default function Anim3C() {
                       : f.key === "fcs" && corrupted
                         ? "#7F1D1D"
                         : f.color + "33",
-                    borderRight: "1px solid #0F172A",
+                    borderRight: "1px solid #1C1917",
                     outline: f.key === selected ? `2px solid ${f.color}` : "none",
                   }}
                 >
@@ -243,7 +243,7 @@ export default function Anim3C() {
 
             {/* detail panel */}
             <div className="flex gap-3 flex-1">
-              <div className="flex-1 bg-[#1E293B] rounded-xl p-4 border border-[#334155]">
+              <div className="flex-1 bg-[#292524] rounded-xl p-4 border border-[#44403C]">
                 {selectedField ? (
                   <motion.div
                     key={selectedField.key}
@@ -259,7 +259,7 @@ export default function Anim3C() {
                       <span className="font-display font-bold text-sm text-white">{selectedField.name}</span>
                       <span className="ml-auto text-[10px] text-stone-500 font-mono">{selectedField.bytes}</span>
                     </div>
-                    <div className="font-mono text-[10px] text-amber-300 bg-[#0F172A] px-3 py-2 rounded-lg break-all">
+                    <div className="font-mono text-[10px] text-amber-300 bg-[#1C1917] px-3 py-2 rounded-lg break-all">
                       {selectedField.key === "fcs" && corrupted ? "B4 D1 FF 00 (CORRUPTED)" : selectedField.hex}
                     </div>
                     <p className="text-xs text-stone-400 leading-relaxed flex-1">{selectedField.desc}</p>

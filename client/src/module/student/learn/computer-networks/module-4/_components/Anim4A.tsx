@@ -63,7 +63,7 @@ export default function Anim4A() {
   }
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-5 min-h-[420px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-5 min-h-[420px]">
 
       {/* presets */}
       <div className="flex flex-wrap gap-1.5">
@@ -71,7 +71,7 @@ export default function Anim4A() {
           <button
             key={i}
             onClick={() => applyPreset(i)}
-            className="px-2.5 py-1 rounded-lg bg-[#1E293B] hover:bg-[#334155] text-[9px] font-mono text-stone-400 border border-[#334155] transition-colors"
+            className="px-2.5 py-1 rounded-lg bg-[#292524] hover:bg-[#44403C] text-[9px] font-mono text-stone-400 border border-[#44403C] transition-colors"
           >
             {p.label}
           </button>
@@ -96,7 +96,7 @@ export default function Anim4A() {
                     animate={{
                       backgroundColor: b
                         ? isNetBit ? "#7C3AED" : "#2563EB"
-                        : "#1E293B",
+                        : "#292524",
                       borderColor: isNetBit ? "#5B21B6" : "#1D4ED8",
                     }}
                     transition={{ duration: 0.15 }}
@@ -154,7 +154,7 @@ export default function Anim4A() {
           { label: "Last Host",       value: ipStr(lastHost),  color: "#10B981" },
           { label: "Usable Hosts",    value: hostCount.toLocaleString(), color: "#2563EB" },
         ].map(({ label, value, color }) => (
-          <div key={label} className="bg-[#1E293B] rounded-xl p-2.5 border border-[#334155]">
+          <div key={label} className="bg-[#292524] rounded-xl p-2.5 border border-[#44403C]">
             <p className="text-[8px] text-stone-500 font-bold uppercase tracking-wider mb-1">{label}</p>
             <AnimatePresence mode="wait">
               <motion.p

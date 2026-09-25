@@ -88,19 +88,19 @@ function ActivityTimeline({ frame }: { frame: ASFrame }) {
   const sx = (t: number) => PAD + (t / maxT) * (W - 2 * PAD);
   return (
     <svg viewBox={`0 0 ${W} ${rowH * frame.activities.length + 50}`} className="w-full h-auto rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
-      <line x1={PAD} y1={20} x2={W - PAD} y2={20} stroke="#94a3b8" strokeWidth={1.5} />
+      <line x1={PAD} y1={20} x2={W - PAD} y2={20} stroke="#a8a29e" strokeWidth={1.5} />
       {Array.from({ length: Math.floor(maxT / 2) + 1 }).map((_, i) => {
         const t = i * 2;
         return (
           <g key={t}>
-            <line x1={sx(t)} y1={18} x2={sx(t)} y2={22} stroke="#94a3b8" />
-            <text x={sx(t)} y={14} fontSize="9" textAnchor="middle" fill="#64748b" fontFamily={THEME.heading}>{t}</text>
+            <line x1={sx(t)} y1={18} x2={sx(t)} y2={22} stroke="#a8a29e" />
+            <text x={sx(t)} y={14} fontSize="9" textAnchor="middle" fill="#78716c" fontFamily={THEME.heading}>{t}</text>
           </g>
         );
       })}
       {frame.activities.map((a, i) => {
         const st = frame.state[i];
-        const color = st === "picked" ? "#10b981" : st === "skipped" ? "#ef4444" : st === "checking" ? "#f59e0b" : "#cbd5e1";
+        const color = st === "picked" ? "#10b981" : st === "skipped" ? "#ef4444" : st === "checking" ? "#f59e0b" : "#d6d3d1";
         return (
           <g key={a.id}>
             <rect x={sx(a.start)} y={30 + i * rowH} width={Math.max(2, sx(a.end) - sx(a.start))} height={rowH - 8}

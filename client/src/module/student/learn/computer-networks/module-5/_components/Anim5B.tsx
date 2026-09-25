@@ -51,14 +51,14 @@ export default function Anim5B() {
   })
 
   const SLOT_COLORS: Record<string, string> = {
-    "acked":       "#64748B",
+    "acked":       "#78716C",
     "sent-unacked":"#7C3AED",
     "can-send":    "#2563EB",
-    "cannot-send": "#1E293B",
+    "cannot-send": "#292524",
   }
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-5 min-h-[380px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-5 min-h-[380px]">
 
       {/* window size slider */}
       <div className="flex items-center gap-3">
@@ -91,13 +91,13 @@ export default function Anim5B() {
         {/* zone labels */}
         <div className="flex gap-4 flex-wrap">
           {[
-            { color: "#64748B", label: "Sent & ACK'd" },
+            { color: "#78716C", label: "Sent & ACK'd" },
             { color: "#7C3AED", label: "Sent, unACK'd" },
             { color: "#2563EB", label: "Window (can send)" },
-            { color: "#1E293B", label: "Beyond window" },
+            { color: "#292524", label: "Beyond window" },
           ].map(({ color, label }) => (
             <div key={label} className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-sm border border-[#334155]" style={{ backgroundColor: color }} />
+              <div className="w-3 h-3 rounded-sm border border-[#44403C]" style={{ backgroundColor: color }} />
               <span className="text-[9px] text-stone-400">{label}</span>
             </div>
           ))}
@@ -129,7 +129,7 @@ export default function Anim5B() {
         </button>
         <button
           onClick={reset}
-          className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -182,7 +182,7 @@ export default function Anim5B() {
       </AnimatePresence>
 
       {/* stats */}
-      <div className="flex gap-4 text-[10px] text-stone-500 border-t border-[#334155] pt-3">
+      <div className="flex gap-4 text-[10px] text-stone-500 border-t border-[#44403C] pt-3">
         <span>ACK'd: <span className="text-stone-300 font-mono">{acked}</span></span>
         <span>In-flight: <span className="text-lime-300 font-mono">{sent}</span></span>
         <span>Window: <span className="text-blue-300 font-mono">{bufferFull ? 0 : windowSize}</span></span>

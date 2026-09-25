@@ -215,7 +215,7 @@ function RKVisualization({ frame, text, pattern }: { frame: Frame; text: string;
       <div className="flex gap-4 flex-wrap justify-center">
         <HashBox label="Window hash" value={frame.windowHash} highlight={frame.highlightKey === "winHash"} color={THEME.accent} />
         <HashBox label="Pattern hash" value={frame.patternHash} highlight={frame.highlightKey === "patHash"} color="#8b5cf6" />
-        <HashBox label="Equal?" value={frame.windowHash === frame.patternHash ? "YES" : "no"} color={frame.windowHash === frame.patternHash ? THEME.success : "#64748b"} />
+        <HashBox label="Equal?" value={frame.windowHash === frame.patternHash ? "YES" : "no"} color={frame.windowHash === frame.patternHash ? THEME.success : "#78716c"} />
       </div>
       <div className="flex gap-2.5 text-xs">
         <span

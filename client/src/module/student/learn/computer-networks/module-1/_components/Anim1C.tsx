@@ -14,14 +14,14 @@ function Laptop({ label, ip, active }: { label: string; ip: string; active: bool
         animate={active ? { scale: [1, 1.06, 1] } : {}}
         transition={{ duration: 0.3 }}
         className={`w-16 h-16 rounded-xl flex items-center justify-center border-2 transition-colors ${
-          active ? "border-lime-400 bg-lime-950" : "border-[#1E293B] bg-[#0F172A]"
+          active ? "border-lime-400 bg-lime-950" : "border-[#292524] bg-[#1C1917]"
         }`}
       >
         <svg viewBox="0 0 48 40" width={38} height={32}>
-          <rect x={4} y={2} width={40} height={26} rx={3} fill="#E2E8F0" stroke="#94A3B8" strokeWidth={1.5} />
+          <rect x={4} y={2} width={40} height={26} rx={3} fill="#E7E5E4" stroke="#A8A29E" strokeWidth={1.5} />
           <rect x={7} y={5} width={34} height={20} rx={1} fill="#84CC16" opacity={active ? 0.7 : 0.15} />
-          <rect x={1} y={29} width={46} height={3} rx={1.5} fill="#94A3B8" />
-          <rect x={18} y={28} width={12} height={2} rx={1} fill="#CBD5E1" />
+          <rect x={1} y={29} width={46} height={3} rx={1.5} fill="#A8A29E" />
+          <rect x={18} y={28} width={12} height={2} rx={1} fill="#D6D3D1" />
         </svg>
       </motion.div>
       <span className="text-xs font-semibold text-stone-300">{label}</span>
@@ -34,25 +34,25 @@ function Router({ active }: { active: boolean }) {
   return (
     <div className="flex flex-col items-center gap-1.5">
       <motion.div
-        animate={active ? { scale: [1, 1.1, 1], borderColor: ["#334155", "#84CC16", "#334155"] } : {}}
+        animate={active ? { scale: [1, 1.1, 1], borderColor: ["#44403C", "#84CC16", "#44403C"] } : {}}
         transition={{ duration: 0.4 }}
-        className="w-14 h-14 rounded-xl flex items-center justify-center border-2 border-[#1E293B] bg-[#0F172A]"
-        style={{ borderColor: active ? "#84CC16" : "#1E293B" }}
+        className="w-14 h-14 rounded-xl flex items-center justify-center border-2 border-[#292524] bg-[#1C1917]"
+        style={{ borderColor: active ? "#84CC16" : "#292524" }}
       >
         <svg viewBox="0 0 40 36" width={34} height={30}>
           {/* router body */}
-          <rect x={2} y={10} width={36} height={16} rx={3} fill="#1E293B" stroke="#475569" strokeWidth={1.2} />
+          <rect x={2} y={10} width={36} height={16} rx={3} fill="#292524" stroke="#57534E" strokeWidth={1.2} />
           {/* status LEDs */}
-          <circle cx={9}  cy={18} r={2.5} fill={active ? "#10B981" : "#334155"} />
-          <circle cx={16} cy={18} r={2.5} fill={active ? "#84CC16" : "#334155"} />
-          <circle cx={23} cy={18} r={2.5} fill={active ? "#F59E0B" : "#334155"} />
+          <circle cx={9}  cy={18} r={2.5} fill={active ? "#10B981" : "#44403C"} />
+          <circle cx={16} cy={18} r={2.5} fill={active ? "#84CC16" : "#44403C"} />
+          <circle cx={23} cy={18} r={2.5} fill={active ? "#F59E0B" : "#44403C"} />
           {/* antenna */}
-          <line x1={32} y1={10} x2={32} y2={2} stroke="#475569" strokeWidth={1.5} strokeLinecap="round" />
-          <circle cx={32} cy={2} r={1.5} fill="#475569" />
+          <line x1={32} y1={10} x2={32} y2={2} stroke="#57534E" strokeWidth={1.5} strokeLinecap="round" />
+          <circle cx={32} cy={2} r={1.5} fill="#57534E" />
           {/* ports */}
-          <rect x={6}  y={26} width={6} height={3} rx={1} fill="#334155" />
-          <rect x={17} y={26} width={6} height={3} rx={1} fill="#334155" />
-          <rect x={28} y={26} width={6} height={3} rx={1} fill="#334155" />
+          <rect x={6}  y={26} width={6} height={3} rx={1} fill="#44403C" />
+          <rect x={17} y={26} width={6} height={3} rx={1} fill="#44403C" />
+          <rect x={28} y={26} width={6} height={3} rx={1} fill="#44403C" />
         </svg>
       </motion.div>
       <span className="text-xs font-semibold text-stone-400">Router</span>
@@ -103,7 +103,7 @@ export default function Anim1C() {
   const traveling = phase === "to-router" || phase === "at-router" || phase === "to-dest"
 
   return (
-    <div className="bg-[#0F172A] p-6 min-h-[360px] flex flex-col gap-6">
+    <div className="bg-[#1C1917] p-6 min-h-[360px] flex flex-col gap-6">
 
       {/* ── devices row ── */}
       <div className="flex items-start justify-between gap-2">
@@ -119,7 +119,7 @@ export default function Anim1C() {
               onKeyDown={e => e.key === "Enter" && send()}
               disabled={traveling}
               placeholder="Type a message…"
-              className="w-28 text-xs px-2.5 py-1.5 rounded-lg bg-[#1E293B] border border-[#334155] text-white placeholder:text-stone-500 focus:outline-none focus:border-lime-500 disabled:opacity-50"
+              className="w-28 text-xs px-2.5 py-1.5 rounded-lg bg-[#292524] border border-[#44403C] text-white placeholder:text-stone-500 focus:outline-none focus:border-lime-500 disabled:opacity-50"
             />
             <button
               onClick={send}
@@ -133,9 +133,9 @@ export default function Anim1C() {
 
         {/* wire A → Router */}
         <div className="flex-1 relative flex items-center mt-8">
-          <div className="w-full h-px bg-[#334155]" />
-          <div className="absolute left-0 w-1.5 h-1.5 rounded-full bg-[#334155]" />
-          <div className="absolute right-0 w-1.5 h-1.5 rounded-full bg-[#334155]" />
+          <div className="w-full h-px bg-[#44403C]" />
+          <div className="absolute left-0 w-1.5 h-1.5 rounded-full bg-[#44403C]" />
+          <div className="absolute right-0 w-1.5 h-1.5 rounded-full bg-[#44403C]" />
 
           <AnimatePresence>
             {phase === "to-router" && packet && (
@@ -169,9 +169,9 @@ export default function Anim1C() {
 
         {/* wire Router → Laptop B */}
         <div className="flex-1 relative flex items-center mt-8">
-          <div className="w-full h-px bg-[#334155]" />
-          <div className="absolute left-0 w-1.5 h-1.5 rounded-full bg-[#334155]" />
-          <div className="absolute right-0 w-1.5 h-1.5 rounded-full bg-[#334155]" />
+          <div className="w-full h-px bg-[#44403C]" />
+          <div className="absolute left-0 w-1.5 h-1.5 rounded-full bg-[#44403C]" />
+          <div className="absolute right-0 w-1.5 h-1.5 rounded-full bg-[#44403C]" />
 
           <AnimatePresence>
             {phase === "to-dest" && packet && (
@@ -263,7 +263,7 @@ function PacketDot({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 bg-[#1E293B] border border-[#334155] rounded-xl p-3 text-[10px] shadow-xl"
+              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 bg-[#292524] border border-[#44403C] rounded-xl p-3 text-[10px] shadow-xl"
               onClick={e => e.stopPropagation()}
             >
               <p className="text-stone-400 font-bold uppercase tracking-wide mb-1.5">Packet Inspector</p>
@@ -272,7 +272,7 @@ function PacketDot({
                 <Row label="Destination" value="192.168.1.20" valueClass="text-lime-300" />
                 <Row label="Protocol"    value="TCP"          valueClass="text-emerald-400" />
                 <Row label="TTL"         value={String(ttl)}  valueClass={ttl < 64 ? "text-amber-400" : "text-stone-300"} />
-                <div className="mt-1.5 pt-1.5 border-t border-[#334155]">
+                <div className="mt-1.5 pt-1.5 border-t border-[#44403C]">
                   <span className="text-stone-400">Payload</span>
                   <p className="text-white mt-0.5 break-words">"{payload}"</p>
                 </div>

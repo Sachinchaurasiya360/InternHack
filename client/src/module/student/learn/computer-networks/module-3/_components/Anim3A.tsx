@@ -58,7 +58,7 @@ export default function Anim3A() {
   const isDone        = phase === "done"
 
   return (
-    <div className="bg-[#0F172A] min-h-[400px] p-5 flex flex-col gap-4">
+    <div className="bg-[#1C1917] min-h-[400px] p-5 flex flex-col gap-4">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -79,7 +79,7 @@ export default function Anim3A() {
         )}
         <button
           onClick={reset}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs transition-colors border border-[#334155]"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs transition-colors border border-[#44403C]"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -107,13 +107,13 @@ export default function Anim3A() {
                 key={h.id}
                 x1={h.x + 20} y1={h.y + 16}
                 x2={SWITCH.x} y2={SWITCH.y}
-                stroke="#334155" strokeWidth="1.5"
+                stroke="#44403C" strokeWidth="1.5"
               />
             ))}
 
             {/* switch */}
-            <rect x={SWITCH.x - 22} y={SWITCH.y - 12} width={44} height={24} rx={4} fill="#1E293B" stroke="#475569" strokeWidth="1.5" />
-            <text x={SWITCH.x} y={SWITCH.y + 5} textAnchor="middle" fill="#94A3B8" fontSize="8" fontWeight="bold">SW</text>
+            <rect x={SWITCH.x - 22} y={SWITCH.y - 12} width={44} height={24} rx={4} fill="#292524" stroke="#57534E" strokeWidth="1.5" />
+            <text x={SWITCH.x} y={SWITCH.y + 5} textAnchor="middle" fill="#A8A29E" fontSize="8" fontWeight="bold">SW</text>
 
             {/* broadcast rays from switch to non-A hosts */}
             {showBroadcast && ["B","C","D"].map(id => {
@@ -162,7 +162,7 @@ export default function Anim3A() {
                 <motion.text
                   key={id}
                   x={h.x + 20} y={h.y - 6}
-                  textAnchor="middle" fill="#64748B" fontSize="7"
+                  textAnchor="middle" fill="#78716C" fontSize="7"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 >
                   not me
@@ -215,12 +215,12 @@ export default function Anim3A() {
                 <g key={h.id}>
                   <rect
                     x={h.x} y={h.y} width={40} height={32} rx={6}
-                    fill={isActive ? "#1E1B4B" : isSender ? "#3B0764" : "#1E293B"}
-                    stroke={isActive ? "#7C3AED" : isSender && showBroadcast ? "#F59E0B" : "#334155"}
+                    fill={isActive ? "#1A2E05" : isSender ? "#3B0764" : "#292524"}
+                    stroke={isActive ? "#7C3AED" : isSender && showBroadcast ? "#F59E0B" : "#44403C"}
                     strokeWidth="1.5"
                   />
-                  <text x={h.x + 20} y={h.y + 13} textAnchor="middle" fill={isNotMe ? "#475569" : "#E2E8F0"} fontSize="8" fontWeight="bold">{h.label}</text>
-                  <text x={h.x + 20} y={h.y + 24} textAnchor="middle" fill="#64748B" fontSize="6.5">{h.ip}</text>
+                  <text x={h.x + 20} y={h.y + 13} textAnchor="middle" fill={isNotMe ? "#57534E" : "#E7E5E4"} fontSize="8" fontWeight="bold">{h.label}</text>
+                  <text x={h.x + 20} y={h.y + 24} textAnchor="middle" fill="#78716C" fontSize="6.5">{h.ip}</text>
                 </g>
               )
             })}
@@ -229,7 +229,7 @@ export default function Anim3A() {
 
         {/* info / arp cache panel */}
         <div className="w-48 shrink-0 flex flex-col gap-3">
-          <div className="bg-[#1E293B] rounded-xl p-3 border border-[#334155]">
+          <div className="bg-[#292524] rounded-xl p-3 border border-[#44403C]">
             <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mb-2">ARP Cache  Host A</p>
             <AnimatePresence>
               {arpCache ? (
@@ -258,7 +258,7 @@ export default function Anim3A() {
             </AnimatePresence>
           </div>
 
-          <div className="bg-[#1E293B] rounded-xl p-3 border border-[#334155] flex-1">
+          <div className="bg-[#292524] rounded-xl p-3 border border-[#44403C] flex-1">
             <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mb-2">Legend</p>
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5">

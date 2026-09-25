@@ -15,7 +15,7 @@ const PHASE_LABELS: Record<Phase, string> = {
 }
 
 const PHASE_COLORS: Record<Phase, string> = {
-  idle:     "#475569",
+  idle:     "#57534E",
   discover: "#F59E0B",
   offer:    "#7C3AED",
   request:  "#F59E0B",
@@ -84,7 +84,7 @@ export default function Anim6C() {
   const assigned = phase === "done"
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-5 min-h-[420px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-5 min-h-[420px]">
 
       {/* controls */}
       <div className="flex items-center gap-2">
@@ -96,7 +96,7 @@ export default function Anim6C() {
         >
           <Play size={10} /> Start DORA
         </button>
-        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors">
           <RotateCcw size={10} /> Reset
         </button>
       </div>
@@ -114,13 +114,13 @@ export default function Anim6C() {
                 className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border transition-all"
                 style={{
                   backgroundColor: (done || active) ? PHASE_COLORS[p] + "33" : "transparent",
-                  borderColor: (done || active) ? PHASE_COLORS[p] : "#334155",
-                  color: (done || active) ? PHASE_COLORS[p] : "#475569",
+                  borderColor: (done || active) ? PHASE_COLORS[p] : "#44403C",
+                  color: (done || active) ? PHASE_COLORS[p] : "#57534E",
                 }}
               >
                 {i + 1}
               </div>
-              {i < 3 && <div className="w-6 h-px" style={{ backgroundColor: done ? "#334155" : "#1E293B" }} />}
+              {i < 3 && <div className="w-6 h-px" style={{ backgroundColor: done ? "#44403C" : "#292524" }} />}
             </div>
           )
         })}
@@ -132,30 +132,30 @@ export default function Anim6C() {
         <svg viewBox="0 0 500 200" className="w-full" style={{ minHeight: 160 }}>
 
           {/* LAN bus */}
-          <line x1={50} y1={120} x2={450} y2={120} stroke="#1E293B" strokeWidth="3" />
+          <line x1={50} y1={120} x2={450} y2={120} stroke="#292524" strokeWidth="3" />
 
           {/* DHCP Server */}
-          <rect x={380} y={80} width={60} height={40} rx={6} fill="#1E293B" stroke="#7C3AED" strokeWidth="1.5" />
+          <rect x={380} y={80} width={60} height={40} rx={6} fill="#292524" stroke="#7C3AED" strokeWidth="1.5" />
           <text x={410} y={96} textAnchor="middle" fill="#7C3AED" fontSize="7" fontWeight="bold">DHCP</text>
           <text x={410} y={107} textAnchor="middle" fill="#7C3AED" fontSize="7">Server</text>
-          <text x={410} y={118} textAnchor="middle" fill="#475569" fontSize="6">.1</text>
+          <text x={410} y={118} textAnchor="middle" fill="#57534E" fontSize="6">.1</text>
           <line x1={410} y1={120} x2={410} y2={120} stroke="#7C3AED" strokeWidth="2" />
 
           {/* Assigned host 1 */}
-          <rect x={160} y={80} width={56} height={40} rx={6} fill="#1E293B" stroke="#10B981" strokeWidth="1.5" />
+          <rect x={160} y={80} width={56} height={40} rx={6} fill="#292524" stroke="#10B981" strokeWidth="1.5" />
           <text x={188} y={96} textAnchor="middle" fill="#10B981" fontSize="7" fontWeight="bold">Host A</text>
-          <text x={188} y={107} textAnchor="middle" fill="#475569" fontSize="6">.10</text>
-          <line x1={188} y1={120} x2={188} y2={120} stroke="#334155" strokeWidth="1.5" />
+          <text x={188} y={107} textAnchor="middle" fill="#57534E" fontSize="6">.10</text>
+          <line x1={188} y1={120} x2={188} y2={120} stroke="#44403C" strokeWidth="1.5" />
 
           {/* Assigned host 2 */}
-          <rect x={260} y={80} width={56} height={40} rx={6} fill="#1E293B" stroke="#10B981" strokeWidth="1.5" />
+          <rect x={260} y={80} width={56} height={40} rx={6} fill="#292524" stroke="#10B981" strokeWidth="1.5" />
           <text x={288} y={96} textAnchor="middle" fill="#10B981" fontSize="7" fontWeight="bold">Host B</text>
-          <text x={288} y={107} textAnchor="middle" fill="#475569" fontSize="6">.20</text>
+          <text x={288} y={107} textAnchor="middle" fill="#57534E" fontSize="6">.20</text>
 
           {/* New device */}
           <motion.rect
             x={60} y={80} width={60} height={40} rx={6}
-            fill="#1E293B"
+            fill="#292524"
             stroke={assigned ? "#10B981" : color}
             strokeWidth={assigned ? 2 : 1.5}
             strokeDasharray={assigned ? "0" : "4 2"}
@@ -163,10 +163,10 @@ export default function Anim6C() {
             transition={{ duration: 0.3 }}
           />
           <text x={90} y={94} textAnchor="middle" fill={color} fontSize="7" fontWeight="bold">New</text>
-          <text x={90} y={105} textAnchor="middle" fill={assigned ? "#10B981" : "#475569"} fontSize="6">
+          <text x={90} y={105} textAnchor="middle" fill={assigned ? "#10B981" : "#57534E"} fontSize="6">
             {assigned ? ".50" : "No IP"}
           </text>
-          <text x={90} y={116} textAnchor="middle" fill={assigned ? "#10B981" : "#334155"} fontSize="5">
+          <text x={90} y={116} textAnchor="middle" fill={assigned ? "#10B981" : "#44403C"} fontSize="5">
             {assigned ? "192.168.1.50" : "0.0.0.0"}
           </text>
 
@@ -228,7 +228,7 @@ export default function Anim6C() {
           </AnimatePresence>
 
           {/* labels below LAN */}
-          <text x={410} y={135} textAnchor="middle" fill="#475569" fontSize="6">:68 server</text>
+          <text x={410} y={135} textAnchor="middle" fill="#57534E" fontSize="6">:68 server</text>
         </svg>
       </div>
 
@@ -253,7 +253,7 @@ export default function Anim6C() {
             <span>Lease clock (24 h)</span>
             <span className="font-mono text-emerald-300">T1: renew at 12h · T2: expire at ~21h</span>
           </div>
-          <div className="w-full h-3 bg-[#1E293B] rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-[#292524] rounded-full overflow-hidden">
             <motion.div
               className="h-full rounded-full"
               style={{

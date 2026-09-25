@@ -48,7 +48,7 @@ const BAR_COLORS: Record<CellState, { fill: string; text: string }> = {
   compare:  { fill: "#eab308",      text: "#ffffff" },
   swap:     { fill: "#ec4899",      text: "#ffffff" },
   done:     { fill: "#10b981",      text: "#ffffff" },
-  visited:  { fill: "#94a3b8",      text: "#ffffff" },
+  visited:  { fill: "#a8a29e",      text: "#ffffff" },
   match:    { fill: "#22c55e",      text: "#ffffff" },
   mismatch: { fill: "#ef4444",      text: "#ffffff" },
   window:   { fill: "#8b5cf6",      text: "#ffffff" },

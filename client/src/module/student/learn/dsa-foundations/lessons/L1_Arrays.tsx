@@ -49,7 +49,7 @@ const CELL_COLORS: Record<CellState, { bg: string; border: string; text: string 
   compare:  { bg: "#fef9c3",        border: "#eab308",      text: "#713f12" },
   swap:     { bg: "#fce7f3",        border: "#ec4899",      text: "#831843" },
   done:     { bg: "#d1fae5",        border: "#10b981",      text: "#064e3b" },
-  visited:  { bg: "#f1f5f9",        border: "#94a3b8",      text: "#475569" },
+  visited:  { bg: "#f5f5f4",        border: "#a8a29e",      text: "#57534E" },
   match:    { bg: "#dcfce7",        border: "#22c55e",      text: "#14532d" },
   mismatch: { bg: "#fee2e2",        border: "#ef4444",      text: "#7f1d1d" },
   window:   { bg: "#ede9fe",        border: "#8b5cf6",      text: "#3b0764" },

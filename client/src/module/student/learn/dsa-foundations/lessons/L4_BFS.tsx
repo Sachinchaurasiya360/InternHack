@@ -164,7 +164,7 @@ const NODE_STATE_COLOR: Record<NodeState, string> = {
   default: THEME.textMuted,
   frontier: "#06b6d4",
   active: "#3b82f6",
-  done: "#64748b",
+  done: "#78716c",
 };
 
 function GraphSVG({
@@ -312,7 +312,7 @@ function VisualizeTab() {
         {frame && <GraphSVG ids={ids} edges={edges} pos={pos} frame={frame} />}
         {frame && <QueueViz items={frame.queue} />}
         <div className="flex gap-2 flex-wrap text-xs text-stone-500">
-          {[["#3b82f6", "active"], ["#06b6d4", "frontier (in queue)"], ["#64748b", "visited (done)"], ["#fbbf24", "BFS tree edge"]].map(([c, l]) => (
+          {[["#3b82f6", "active"], ["#06b6d4", "frontier (in queue)"], ["#78716c", "visited (done)"], ["#fbbf24", "BFS tree edge"]].map(([c, l]) => (
             <span key={l} className="inline-flex items-center gap-1">
               <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: c }} />
               {l}

@@ -41,7 +41,7 @@ const PATTERNS: { id: Pattern; label: string; color: string; hint: string }[] = 
   { id: "greedy",         label: "Greedy",            color: "#fbbf24", hint: "local optimal choice proven to reach global optimum" },
   { id: "stack-queue",    label: "Stack / Queue",     color: "#ef4444", hint: "LIFO brackets / monotonic next-greater / BFS frontier" },
   { id: "hashing",        label: "Hashing",           color: "#ec4899", hint: "O(1) lookup, counting, de-duplication, 'seen' sets" },
-  { id: "divide-conquer", label: "Divide & Conquer",  color: "#64748b", hint: "split in halves, solve, combine (merge sort, majority element)" },
+  { id: "divide-conquer", label: "Divide & Conquer",  color: "#78716c", hint: "split in halves, solve, combine (merge sort, majority element)" },
 ];
 
 const PALETTE_IDS = new Set<Pattern>(PATTERNS.map((p) => p.id));

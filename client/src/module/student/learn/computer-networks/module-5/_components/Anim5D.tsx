@@ -21,7 +21,7 @@ function PktGrid({ packets, proto }: { packets: Packet[]; proto: "tcp" | "udp" }
       {Array.from({ length: TOTAL }, (_, i) => {
         const p = packets.find(x => x.id === i)
         const color = !p
-          ? "#1E293B"
+          ? "#292524"
           : p.state === "acked"
             ? "#10B981"
             : p.state === "lost"
@@ -34,7 +34,7 @@ function PktGrid({ packets, proto }: { packets: Packet[]; proto: "tcp" | "udp" }
             key={i}
             animate={{ backgroundColor: color }}
             transition={{ duration: 0.2 }}
-            className="w-7 h-7 rounded flex items-center justify-center border border-[#0F172A]"
+            className="w-7 h-7 rounded flex items-center justify-center border border-[#1C1917]"
             title={p?.state ?? "pending"}
           >
             <span className="text-[8px] text-white/60 font-mono">{i + 1}</span>
@@ -125,7 +125,7 @@ export default function Anim5D() {
   const udpDelivered = udpPkts.filter(p => p.state === "sent").length
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-5 min-h-[400px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-5 min-h-[400px]">
 
       {/* controls */}
       <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export default function Anim5D() {
         </button>
         <button
           onClick={reset}
-          className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -219,16 +219,16 @@ export default function Anim5D() {
       </div>
 
       {/* legend */}
-      <div className="flex flex-wrap gap-3 pt-3 border-t border-[#334155]">
+      <div className="flex flex-wrap gap-3 pt-3 border-t border-[#44403C]">
         {[
           { color: "#10B981", label: "Delivered" },
           { color: "#7C3AED", label: "In-flight (TCP)" },
           { color: "#F59E0B", label: "Retransmitting" },
           { color: "#EF4444", label: "Lost (UDP)" },
-          { color: "#1E293B", label: "Pending" },
+          { color: "#292524", label: "Pending" },
         ].map(({ color, label }) => (
           <div key={label} className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-sm border border-[#334155]" style={{ backgroundColor: color }} />
+            <div className="w-3 h-3 rounded-sm border border-[#44403C]" style={{ backgroundColor: color }} />
             <span className="text-[9px] text-stone-400">{label}</span>
           </div>
         ))}

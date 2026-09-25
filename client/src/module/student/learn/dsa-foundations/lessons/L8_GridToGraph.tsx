@@ -170,7 +170,7 @@ function GridViz({
   function cellStyle(r: number, c: number): { bg: string; fg: string; border: string } {
     const kind = grid[r][c];
     const d = frame.dist[r][c];
-    if (kind === "wall") return { bg: "#334155", fg: "#fff", border: "#1e293b" };
+    if (kind === "wall") return { bg: "#44403C", fg: "#fff", border: "#292524" };
     if (kind === "source") return { bg: THEME.success, fg: "#fff", border: THEME.success };
     if (kind === "target") return { bg: THEME.danger, fg: "#fff", border: THEME.danger };
     if (pathSet.has(`${r},${c}`)) return { bg: "#fbbf24", fg: "#78350f", border: "#b45309" };
@@ -215,7 +215,7 @@ function GridViz({
       <div className="flex flex-wrap gap-3 justify-center">
         <LegendSwatch color={THEME.success} label="source" />
         <LegendSwatch color={THEME.danger} label="target" />
-        <LegendSwatch color="#334155" label="wall" />
+        <LegendSwatch color="#44403C" label="wall" />
         <LegendSwatch color="#06b6d4" label="frontier (queue)" />
         <LegendSwatch color="#3b82f6" label="current" />
         <LegendSwatch color="rgba(139,92,246,0.6)" label="visited (darker = closer)" />

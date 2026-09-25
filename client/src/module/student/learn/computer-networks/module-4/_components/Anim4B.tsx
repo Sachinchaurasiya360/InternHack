@@ -72,7 +72,7 @@ export default function Anim4B() {
   }
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-4 min-h-[420px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-4 min-h-[420px]">
 
       {/* controls */}
       <div className="flex flex-wrap gap-3 items-end">
@@ -81,7 +81,7 @@ export default function Anim4B() {
           <input
             value={input}
             onChange={e => handleInput(e.target.value)}
-            className="bg-[#1E293B] border border-[#334155] rounded-lg px-3 py-1.5 text-xs font-mono text-stone-200 outline-none focus:border-lime-500 w-44"
+            className="bg-[#292524] border border-[#44403C] rounded-lg px-3 py-1.5 text-xs font-mono text-stone-200 outline-none focus:border-lime-500 w-44"
           />
           {error && <span className="text-[9px] text-red-400">{error}</span>}
         </div>
@@ -109,7 +109,7 @@ export default function Anim4B() {
       {subnets.length > 0 ? (
         <div className="flex flex-col gap-2">
           <p className="text-[9px] text-stone-500 uppercase font-bold tracking-wider">Click a subnet to inspect</p>
-          <div className="flex h-14 rounded-xl overflow-hidden border border-[#334155] gap-px">
+          <div className="flex h-14 rounded-xl overflow-hidden border border-[#44403C] gap-px">
             {subnets.map((s, i) => (
               <motion.button
                 key={i}
@@ -144,7 +144,7 @@ export default function Anim4B() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="bg-[#1E293B] rounded-xl p-4 border"
+            className="bg-[#292524] rounded-xl p-4 border"
             style={{ borderColor: COLORS[selected % COLORS.length] + "55" }}
           >
             <div className="flex items-center gap-2 mb-3">
@@ -181,7 +181,7 @@ export default function Anim4B() {
 
       {/* summary */}
       {parsed && subnets.length > 0 && (
-        <div className="flex flex-wrap gap-3 text-[10px] text-stone-400 border-t border-[#334155] pt-3">
+        <div className="flex flex-wrap gap-3 text-[10px] text-stone-400 border-t border-[#44403C] pt-3">
           <span>Base: <span className="text-lime-300 font-mono">{input}</span></span>
           <span>Borrowed: <span className="text-amber-300">{borrow} bits</span></span>
           <span>New prefix: <span className="text-lime-300 font-mono">/{newPrefix}</span></span>

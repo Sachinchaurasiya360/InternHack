@@ -375,7 +375,7 @@ function BPTreeViz({ frame }: { frame: BPFrame }) {
     <svg viewBox={`0 0 ${W} ${height}`} style={{ width: "100%", height: "auto", maxHeight: height }}>
       <defs>
         <marker id="bp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8" />
+          <path d="M0,0 L10,5 L0,10 z" fill="#a8a29e" />
         </marker>
         <marker id="bp-leaf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" fill="#8b5cf6" />
@@ -396,7 +396,7 @@ function BPTreeViz({ frame }: { frame: BPFrame }) {
               key={`${id}-${cid}`}
               x1={ax} y1={a.y + a.h}
               x2={b.x + b.w / 2} y2={b.y}
-              stroke="#94a3b8" strokeWidth={1.5}
+              stroke="#a8a29e" strokeWidth={1.5}
               markerEnd="url(#bp-arrow)"
             />
           );

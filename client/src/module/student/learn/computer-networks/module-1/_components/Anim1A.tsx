@@ -68,7 +68,7 @@ export default function Anim1A() {
     <div className="grid md:grid-cols-2 gap-0 min-h-95">
 
       {/* ── SVG visualizer ── */}
-      <div className="relative flex items-center justify-center bg-[#0F172A] p-4 min-h-80">
+      <div className="relative flex items-center justify-center bg-[#1C1917] p-4 min-h-80">
         {/* subtle dot grid */}
         <svg
           className="absolute inset-0 w-full h-full opacity-20"
@@ -76,7 +76,7 @@ export default function Anim1A() {
         >
           <defs>
             <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="1" fill="#475569" />
+              <circle cx="1" cy="1" r="1" fill="#57534E" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#dots)" />
@@ -197,7 +197,7 @@ export default function Anim1A() {
                   style={
                     step === i
                       ? { backgroundColor: lvl.color, color: "#fff", borderColor: lvl.color }
-                      : { backgroundColor: "#fff", color: "#9CA3AF", borderColor: "#E5E7EB" }
+                      : { backgroundColor: "#fff", color: "#A8A29E", borderColor: "#E7E5E4" }
                   }
                 >
                   {lvl.type}

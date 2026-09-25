@@ -25,7 +25,7 @@ export default function Anim6D() {
   const neededPostFields = ["title"]
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-5 min-h-[460px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-5 min-h-[460px]">
 
       {/* sliders */}
       <div className="grid grid-cols-2 gap-4">
@@ -50,7 +50,7 @@ export default function Anim6D() {
           </div>
 
           {/* Request 1 */}
-          <div className="bg-[#1E293B] rounded-xl border border-blue-800/40 p-3 text-[9px] font-mono">
+          <div className="bg-[#292524] rounded-xl border border-blue-800/40 p-3 text-[9px] font-mono">
             <div className="text-blue-400 mb-1">GET /users/42</div>
             <div className="text-stone-500 mb-2">→ returns all {ALL_USER_FIELDS.length} fields:</div>
             <div className="flex flex-wrap gap-1">
@@ -58,9 +58,9 @@ export default function Anim6D() {
                 <span key={f}
                   className="px-1 py-0.5 rounded text-[7px]"
                   style={{
-                    backgroundColor: neededUserFields.includes(f) ? "#1E40AF33" : "#1E293B",
-                    color: neededUserFields.includes(f) ? "#93C5FD" : "#334155",
-                    border: neededUserFields.includes(f) ? "1px solid #1E40AF55" : "1px solid #1E293B",
+                    backgroundColor: neededUserFields.includes(f) ? "#1E40AF33" : "#292524",
+                    color: neededUserFields.includes(f) ? "#93C5FD" : "#44403C",
+                    border: neededUserFields.includes(f) ? "1px solid #1E40AF55" : "1px solid #292524",
                   }}
                 >
                   {f}
@@ -73,7 +73,7 @@ export default function Anim6D() {
           </div>
 
           {/* Request 2 */}
-          <div className="bg-[#1E293B] rounded-xl border border-blue-800/40 p-3 text-[9px] font-mono">
+          <div className="bg-[#292524] rounded-xl border border-blue-800/40 p-3 text-[9px] font-mono">
             <div className="text-blue-400 mb-1">GET /users/42/posts</div>
             <div className="text-stone-500 mb-2">→ returns {numPosts} posts × {ALL_POST_FIELDS.length} fields:</div>
             <div className="flex flex-wrap gap-1">
@@ -81,9 +81,9 @@ export default function Anim6D() {
                 <span key={f}
                   className="px-1 py-0.5 rounded text-[7px]"
                   style={{
-                    backgroundColor: neededPostFields.includes(f) ? "#1E40AF33" : "#1E293B",
-                    color: neededPostFields.includes(f) ? "#93C5FD" : "#334155",
-                    border: neededPostFields.includes(f) ? "1px solid #1E40AF55" : "1px solid #1E293B",
+                    backgroundColor: neededPostFields.includes(f) ? "#1E40AF33" : "#292524",
+                    color: neededPostFields.includes(f) ? "#93C5FD" : "#44403C",
+                    border: neededPostFields.includes(f) ? "1px solid #1E40AF55" : "1px solid #292524",
                   }}
                 >
                   {f}
@@ -112,7 +112,7 @@ export default function Anim6D() {
           </div>
 
           {/* Single query */}
-          <div className="bg-[#1E293B] rounded-xl border border-lime-800/40 p-3 text-[9px] font-mono flex-1">
+          <div className="bg-[#292524] rounded-xl border border-lime-800/40 p-3 text-[9px] font-mono flex-1">
             <div className="text-lime-400 mb-1">POST /graphql</div>
             <pre className="text-stone-300 text-[8px] leading-relaxed whitespace-pre-wrap">{`query {
   user(id: 42) {
@@ -122,7 +122,7 @@ ${neededUserFields.map(f => `    ${f}`).join("\n")}
     }
   }
 }`}</pre>
-            <div className="mt-2 border-t border-[#334155] pt-2 text-stone-500">
+            <div className="mt-2 border-t border-[#44403C] pt-2 text-stone-500">
               Response: exactly <span className="text-lime-300">{numFields + numPosts}</span> fields
             </div>
           </div>
@@ -138,9 +138,9 @@ ${neededUserFields.map(f => `    ${f}`).join("\n")}
       </div>
 
       {/* savings */}
-      <div className="flex items-center gap-3 pt-2 border-t border-[#334155]">
+      <div className="flex items-center gap-3 pt-2 border-t border-[#44403C]">
         <span className="text-[10px] text-stone-500">GraphQL savings:</span>
-        <div className="flex-1 h-3 bg-[#1E293B] rounded-full overflow-hidden">
+        <div className="flex-1 h-3 bg-[#292524] rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-emerald-500 rounded-full"
             animate={{ width: `${Math.max(0, savings)}%` }}

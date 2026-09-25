@@ -147,13 +147,13 @@ export default function Anim1B() {
     <div className="flex flex-col md:flex-row min-h-95">
 
       {/* ── SVG canvas ── */}
-      <div className="flex-1 relative bg-[#0F172A] overflow-hidden min-h-80">
+      <div className="flex-1 relative bg-[#1C1917] overflow-hidden min-h-80">
 
         {/* dot grid */}
         <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="grid-b" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="1" fill="#475569" />
+              <circle cx="1" cy="1" r="1" fill="#57534E" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid-b)" />
@@ -172,7 +172,7 @@ export default function Anim1B() {
               <motion.line
                 key={`${topo}-e${i}`}
                 x1={na.x} y1={na.y} x2={nb.x} y2={nb.y}
-                stroke={broken_ ? "#F43F5E" : "#475569"}
+                stroke={broken_ ? "#F43F5E" : "#57534E"}
                 strokeWidth={broken_ ? 2 : 2}
                 strokeDasharray={broken_ ? "6 4" : "none"}
                 opacity={broken_ ? 0.7 : 0.9}
@@ -189,10 +189,10 @@ export default function Anim1B() {
             const isDisco  = isDisconnected(i)
             const isHub    = topo === "star" && i === 0
 
-            let fill   = isHub ? "#84CC16" : "#E2E8F0"
-            let stroke = isHub ? "#65A30D" : "#94A3B8"
+            let fill   = isHub ? "#84CC16" : "#E7E5E4"
+            let stroke = isHub ? "#65A30D" : "#A8A29E"
             if (isBroken) { fill = "#F43F5E"; stroke = "#E11D48" }
-            if (isDisco)  { fill = "#334155"; stroke = "#475569" }
+            if (isDisco)  { fill = "#44403C"; stroke = "#57534E" }
 
             return (
               <g key={`${topo}-n${i}`}>
@@ -230,8 +230,8 @@ export default function Anim1B() {
                   {/* laptop icon (simple SVG) */}
                   {!isBroken && (
                     <g transform={`translate(${n.x - 7}, ${n.y - 6})`} pointerEvents="none">
-                      <rect x={1} y={1} width={12} height={8} rx={1} fill="none" stroke={isHub ? "#A3E635" : "#64748B"} strokeWidth={1.2} />
-                      <rect x={0} y={9} width={14} height={1.5} rx={0.5} fill={isHub ? "#A3E635" : "#64748B"} />
+                      <rect x={1} y={1} width={12} height={8} rx={1} fill="none" stroke={isHub ? "#A3E635" : "#78716C"} strokeWidth={1.2} />
+                      <rect x={0} y={9} width={14} height={1.5} rx={0.5} fill={isHub ? "#A3E635" : "#78716C"} />
                     </g>
                   )}
 
@@ -240,7 +240,7 @@ export default function Anim1B() {
                     x={n.x}
                     y={n.y + 28}
                     textAnchor="middle"
-                    fill={isDisco ? "#475569" : isBroken ? "#F43F5E" : "#94A3B8"}
+                    fill={isDisco ? "#57534E" : isBroken ? "#F43F5E" : "#A8A29E"}
                     fontSize={9}
                     fontWeight={isHub ? "bold" : "normal"}
                   >
@@ -259,9 +259,9 @@ export default function Anim1B() {
                       <rect
                         x={n.x - 52} y={n.y - 60}
                         width={104} height={44}
-                        rx={6} fill="#1E293B" stroke="#334155" strokeWidth={1}
+                        rx={6} fill="#292524" stroke="#44403C" strokeWidth={1}
                       />
-                      <text x={n.x} y={n.y - 44} textAnchor="middle" fill="#E2E8F0" fontSize={9} fontWeight="bold">
+                      <text x={n.x} y={n.y - 44} textAnchor="middle" fill="#E7E5E4" fontSize={9} fontWeight="bold">
                         {isHub ? "Hub / Switch" : `Node ${i}`}
                       </text>
                       <text x={n.x} y={n.y - 30} textAnchor="middle" fill={isDisco ? "#F43F5E" : isBroken ? "#F43F5E" : "#10B981"} fontSize={8}>

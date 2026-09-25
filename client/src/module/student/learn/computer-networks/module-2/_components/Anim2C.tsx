@@ -41,11 +41,11 @@ export default function Anim2C() {
   const serverLit = phase >= 7
 
   return (
-    <div className="bg-[#0F172A] p-5 min-h-[400px] flex flex-col gap-5">
+    <div className="bg-[#1C1917] p-5 min-h-[400px] flex flex-col gap-5">
 
       {/* ── URL bar + controls ── */}
       <div className="flex items-center gap-2">
-        <div className="flex-1 flex items-center gap-2 bg-[#1E293B] rounded-lg px-3 py-2 border border-[#334155]">
+        <div className="flex-1 flex items-center gap-2 bg-[#292524] rounded-lg px-3 py-2 border border-[#44403C]">
           <Lock size={11} className="text-emerald-400 shrink-0" />
           <span className="text-stone-300 text-xs font-mono">https://internhack.xyz/api/modules</span>
         </div>
@@ -60,7 +60,7 @@ export default function Anim2C() {
         ) : (
           <button
             onClick={reset}
-            className="flex items-center gap-1.5 px-3 py-2 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs transition-colors border border-[#334155] shrink-0"
+            className="flex items-center gap-1.5 px-3 py-2 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs transition-colors border border-[#44403C] shrink-0"
           >
             <RotateCcw size={11} /> Reset
           </button>
@@ -74,8 +74,8 @@ export default function Anim2C() {
         <div className="flex flex-col items-center gap-1.5 w-16 shrink-0 pt-1">
           <motion.div
             animate={{
-              borderColor: running ? "#7C3AED" : "#334155",
-              backgroundColor: running ? "#3B0764" : "#1E293B",
+              borderColor: running ? "#7C3AED" : "#44403C",
+              backgroundColor: running ? "#3B0764" : "#292524",
             }}
             transition={{ duration: 0.3 }}
             className="w-14 h-14 rounded-xl border-2 flex items-center justify-center"
@@ -180,8 +180,8 @@ export default function Anim2C() {
         <div className="flex flex-col items-center gap-1.5 w-16 shrink-0 pt-1">
           <motion.div
             animate={{
-              borderColor: serverLit ? "#10B981" : "#334155",
-              backgroundColor: serverLit ? "#064E3B" : "#1E293B",
+              borderColor: serverLit ? "#10B981" : "#44403C",
+              backgroundColor: serverLit ? "#064E3B" : "#292524",
             }}
             transition={{ duration: 0.3 }}
             className="w-14 h-14 rounded-xl border-2 flex items-center justify-center"

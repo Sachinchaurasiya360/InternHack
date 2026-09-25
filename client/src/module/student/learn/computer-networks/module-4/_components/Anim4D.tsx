@@ -92,7 +92,7 @@ export default function Anim4D() {
   const selectedEntry = natTable.find(e => e.host === selected)
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-4 min-h-[420px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-4 min-h-[420px]">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -110,7 +110,7 @@ export default function Anim4D() {
         ))}
         <button
           onClick={reset}
-          className="flex items-center gap-1 ml-auto px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1 ml-auto px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -127,8 +127,8 @@ export default function Anim4D() {
               key={h.id}
               className="rounded-xl px-2.5 py-2 border text-center transition-all"
               style={{
-                backgroundColor: done.includes(h.id) ? h.color + "22" : "#1E293B",
-                borderColor: done.includes(h.id) ? h.color : "#334155",
+                backgroundColor: done.includes(h.id) ? h.color + "22" : "#292524",
+                borderColor: done.includes(h.id) ? h.color : "#44403C",
               }}
             >
               <p className="text-[9px] font-bold text-white">{h.label}</p>
@@ -142,7 +142,7 @@ export default function Anim4D() {
 
         {/* router / NAT box */}
         <div className="flex flex-col items-center justify-center gap-1.5 w-28 shrink-0">
-          <div className="w-full rounded-xl bg-[#1E293B] border-2 border-[#334155] p-2 text-center">
+          <div className="w-full rounded-xl bg-[#292524] border-2 border-[#44403C] p-2 text-center">
             <p className="text-[9px] font-bold text-stone-300">Router / NAT</p>
             <p className="text-[8px] font-mono text-lime-300">{PUBLIC_IP}</p>
           </div>
@@ -170,7 +170,7 @@ export default function Anim4D() {
         {/* internet side */}
         <div className="flex flex-col justify-center gap-2 flex-1">
           <p className="text-[8px] text-stone-500 font-bold uppercase tracking-wider text-center">Internet</p>
-          <div className="rounded-xl bg-[#1E293B] border border-[#334155] p-3 text-center">
+          <div className="rounded-xl bg-[#292524] border border-[#44403C] p-3 text-center">
             <p className="text-[9px] font-bold text-stone-300">Remote Server</p>
             <p className="text-[8px] font-mono text-amber-300">{SERVER_IP}</p>
             <p className="text-[7px] text-stone-500 mt-0.5">port 80</p>
@@ -179,7 +179,7 @@ export default function Anim4D() {
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl bg-[#1E293B] border border-lime-500/30 p-2.5 text-[8px]"
+              className="rounded-xl bg-[#292524] border border-lime-500/30 p-2.5 text-[8px]"
             >
               <p className="font-bold text-lime-400 mb-1.5">Header rewrite (before/after)</p>
               <div className="flex flex-col gap-1">
@@ -200,15 +200,15 @@ export default function Anim4D() {
       </div>
 
       {/* NAT table */}
-      <div className="bg-[#1E293B] rounded-xl border border-[#334155] overflow-hidden">
-        <div className="px-3 py-2 border-b border-[#334155] bg-[#0F172A]">
+      <div className="bg-[#292524] rounded-xl border border-[#44403C] overflow-hidden">
+        <div className="px-3 py-2 border-b border-[#44403C] bg-[#1C1917]">
           <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider">NAT Translation Table</p>
         </div>
         {natTable.length === 0 ? (
           <p className="text-[9px] text-stone-600 italic px-3 py-2">empty  send a request to populate</p>
         ) : (
           <div className="overflow-auto">
-            <div className="grid grid-cols-4 text-[7px] text-stone-500 font-bold px-3 py-1.5 border-b border-[#0F172A]">
+            <div className="grid grid-cols-4 text-[7px] text-stone-500 font-bold px-3 py-1.5 border-b border-[#1C1917]">
               <span>Private IP:Port</span><span>Public IP:Port</span><span>Destination</span><span>State</span>
             </div>
             <AnimatePresence>
@@ -220,7 +220,7 @@ export default function Anim4D() {
                     onClick={() => setSelected(e.host === selected ? null : e.host)}
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="grid grid-cols-4 text-[8px] px-3 py-1.5 border-b border-[#0F172A] w-full text-left transition-colors"
+                    className="grid grid-cols-4 text-[8px] px-3 py-1.5 border-b border-[#1C1917] w-full text-left transition-colors"
                     style={{ backgroundColor: e.host === selected ? host.color + "22" : "transparent" }}
                   >
                     <span className="font-mono text-rose-300">{e.privateIP}:{e.privatePort}</span>

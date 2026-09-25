@@ -127,7 +127,7 @@ export default function Anim4C() {
   function routerPos(id: string) { return ROUTERS.find(r => r.id === id)! }
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-4 min-h-[440px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-4 min-h-[440px]">
 
       {/* controls */}
       <div className="flex flex-wrap items-center gap-2">
@@ -136,7 +136,7 @@ export default function Anim4C() {
           <select
             value={dest}
             onChange={e => { setDest(e.target.value); reset() }}
-            className="bg-[#1E293B] border border-[#334155] rounded-lg px-2 py-1.5 text-xs font-mono text-stone-200 outline-none focus:border-lime-500"
+            className="bg-[#292524] border border-[#44403C] rounded-lg px-2 py-1.5 text-xs font-mono text-stone-200 outline-none focus:border-lime-500"
           >
             <option value="10.0.3.0/24">10.0.3.0/24 (H2 subnet)</option>
             <option value="10.0.4.0/24">10.0.4.0/24 (H3 subnet)</option>
@@ -151,26 +151,26 @@ export default function Anim4C() {
         </button>
         <button
           onClick={breakLink}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors self-end ${brokenLink ? "bg-red-700 hover:bg-red-600 text-white" : "bg-[#1E293B] hover:bg-[#334155] text-stone-400 border border-[#334155]"}`}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors self-end ${brokenLink ? "bg-red-700 hover:bg-red-600 text-white" : "bg-[#292524] hover:bg-[#44403C] text-stone-400 border border-[#44403C]"}`}
         >
           {brokenLink ? "Restore Link" : "Break R2–R4"}
         </button>
         <button
           onClick={reset}
-          className="px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors self-end"
+          className="px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors self-end"
         >
           <RotateCcw size={10} />
         </button>
         <button
           onClick={() => setShowAdd(s => !s)}
-          className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors self-end"
+          className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors self-end"
         >
           <Plus size={10} /> Static route
         </button>
       </div>
 
       {showAdd && (
-        <div className="flex items-center gap-2 bg-[#1E293B] p-3 rounded-xl border border-[#334155] text-[10px] text-stone-400">
+        <div className="flex items-center gap-2 bg-[#292524] p-3 rounded-xl border border-[#44403C] text-[10px] text-stone-400">
           <span>Injecting a static route would redirect traffic. In a real router: <code className="text-lime-300">ip route add 10.0.3.0/24 via 10.0.1.2</code></span>
           <button type="button" onClick={() => setShowAdd(false)} className="ml-auto text-stone-500 hover:text-stone-300"><X size={12} /></button>
         </div>
@@ -187,10 +187,10 @@ export default function Anim4C() {
               const r = routerPos(s.router)
               return (
                 <g key={s.host}>
-                  <line x1={s.hx + 16} y1={s.hy + 12} x2={r.x + 16} y2={r.y + 12} stroke="#334155" strokeWidth="1" strokeDasharray="4 2" />
-                  <rect x={s.hx} y={s.hy} width={32} height={24} rx={4} fill="#1E293B" stroke="#334155" strokeWidth="1" />
-                  <text x={s.hx + 16} y={s.hy + 10} textAnchor="middle" fill="#64748B" fontSize="6" fontWeight="bold">{s.host}</text>
-                  <text x={s.hx + 16} y={s.hy + 20} textAnchor="middle" fill="#475569" fontSize="5.5">{s.prefix.split("/")[0].split(".").slice(0, 3).join(".")}.x</text>
+                  <line x1={s.hx + 16} y1={s.hy + 12} x2={r.x + 16} y2={r.y + 12} stroke="#44403C" strokeWidth="1" strokeDasharray="4 2" />
+                  <rect x={s.hx} y={s.hy} width={32} height={24} rx={4} fill="#292524" stroke="#44403C" strokeWidth="1" />
+                  <text x={s.hx + 16} y={s.hy + 10} textAnchor="middle" fill="#78716C" fontSize="6" fontWeight="bold">{s.host}</text>
+                  <text x={s.hx + 16} y={s.hy + 20} textAnchor="middle" fill="#57534E" fontSize="5.5">{s.prefix.split("/")[0].split(".").slice(0, 3).join(".")}.x</text>
                 </g>
               )
             })}
@@ -209,7 +209,7 @@ export default function Anim4C() {
                 <g key={`${l.from}-${l.to}`}>
                   <line
                     x1={a.x + 16} y1={a.y + 12} x2={b.x + 16} y2={b.y + 12}
-                    stroke={isBroken ? "#EF4444" : isActive ? "#7C3AED" : "#334155"}
+                    stroke={isBroken ? "#EF4444" : isActive ? "#7C3AED" : "#44403C"}
                     strokeWidth={isActive ? 2.5 : 1.5}
                     strokeDasharray={isBroken ? "4 3" : undefined}
                   />
@@ -248,13 +248,13 @@ export default function Anim4C() {
                   <motion.rect
                     x={r.x} y={r.y} width={32} height={24} rx={6}
                     animate={{
-                      fill:        isActive ? r.color + "33" : inPath ? r.color + "15" : "#1E293B",
-                      stroke:      isActive ? r.color : inPath ? r.color + "88" : "#475569",
+                      fill:        isActive ? r.color + "33" : inPath ? r.color + "15" : "#292524",
+                      stroke:      isActive ? r.color : inPath ? r.color + "88" : "#57534E",
                       strokeWidth: isActive ? 2 : 1.5,
                     }}
                     transition={{ duration: 0.2 }}
                   />
-                  <text x={r.x + 16} y={r.y + 15} textAnchor="middle" fill={inPath ? "#E2E8F0" : "#94A3B8"} fontSize="9" fontWeight="bold">{r.label}</text>
+                  <text x={r.x + 16} y={r.y + 15} textAnchor="middle" fill={inPath ? "#E7E5E4" : "#A8A29E"} fontSize="9" fontWeight="bold">{r.label}</text>
                 </g>
               )
             })}
@@ -278,16 +278,16 @@ export default function Anim4C() {
           <p className="text-[9px] text-stone-500 font-bold uppercase tracking-wider">
             {activeRouter ? `${activeRouter} Routing Table` : "Routing Table"}
           </p>
-          <div className="bg-[#1E293B] rounded-xl border border-[#334155] overflow-hidden flex-1">
+          <div className="bg-[#292524] rounded-xl border border-[#44403C] overflow-hidden flex-1">
             {activeRouter ? (
               <div className="overflow-auto">
-                <div className="grid grid-cols-2 text-[7px] text-stone-500 font-bold px-2 py-1.5 border-b border-[#334155] bg-[#0F172A]">
+                <div className="grid grid-cols-2 text-[7px] text-stone-500 font-bold px-2 py-1.5 border-b border-[#44403C] bg-[#1C1917]">
                   <span>Destination</span><span>Next Hop</span>
                 </div>
                 {ROUTING_TABLES[activeRouter].map((row, i) => (
                   <div
                     key={i}
-                    className="grid grid-cols-2 text-[8px] px-2 py-1.5 border-b border-[#0F172A] transition-colors"
+                    className="grid grid-cols-2 text-[8px] px-2 py-1.5 border-b border-[#1C1917] transition-colors"
                     style={{
                       backgroundColor: i === activeRowIdx ? "#3B0764" : "transparent",
                     }}

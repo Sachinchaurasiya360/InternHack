@@ -39,7 +39,7 @@ const STEPS_DROPPED: Step[] = [
 ]
 
 const STATE_COLORS: Record<State, string> = {
-  CLOSED:       "#475569",
+  CLOSED:       "#57534E",
   LISTEN:       "#2563EB",
   SYN_SENT:     "#F59E0B",
   SYN_RECEIVED: "#8B5CF6",
@@ -82,11 +82,11 @@ export default function Anim5A() {
   }
 
   return (
-    <div className="bg-[#0F172A] min-h-[440px] p-5 flex flex-col gap-4">
+    <div className="bg-[#1C1917] min-h-[440px] p-5 flex flex-col gap-4">
 
       {/* mode tabs + controls */}
       <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex rounded-lg overflow-hidden border border-[#334155]">
+        <div className="flex rounded-lg overflow-hidden border border-[#44403C]">
           {(["normal", "dropped"] as const).map(m => (
             <button
               key={m}
@@ -94,7 +94,7 @@ export default function Anim5A() {
               className="px-3 py-1.5 text-xs font-semibold transition-colors"
               style={{
                 backgroundColor: mode === m ? "#A3E635" : "transparent",
-                color: mode === m ? "#1C1917" : "#64748B",
+                color: mode === m ? "#1C1917" : "#78716C",
               }}
             >
               {m === "normal" ? "Normal" : "Dropped SYN"}
@@ -110,7 +110,7 @@ export default function Anim5A() {
         </button>
         <button
           onClick={reset}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} /> Reset
         </button>
@@ -127,14 +127,14 @@ export default function Anim5A() {
           {/* column headers */}
           <div className="flex justify-between px-8 mb-3">
             <div className="flex flex-col items-center gap-1">
-              <div className="w-12 h-12 rounded-xl bg-[#1E293B] border border-[#334155] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#292524] border border-[#44403C] flex items-center justify-center">
                 <span className="text-[10px] font-bold text-stone-300">CLI</span>
               </div>
               <span className="text-[9px] text-stone-500 font-bold uppercase tracking-wider">Client</span>
               <StatePill state={cur.clientState} />
             </div>
             <div className="flex flex-col items-center gap-1">
-              <div className="w-12 h-12 rounded-xl bg-[#1E293B] border border-[#334155] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#292524] border border-[#44403C] flex items-center justify-center">
                 <span className="text-[10px] font-bold text-stone-300">SRV</span>
               </div>
               <span className="text-[9px] text-stone-500 font-bold uppercase tracking-wider">Server</span>
@@ -216,7 +216,7 @@ export default function Anim5A() {
         </div>
 
         {/* info panel */}
-        <div className="w-48 shrink-0 bg-[#1E293B] rounded-xl border border-[#334155] p-4 flex flex-col gap-3">
+        <div className="w-48 shrink-0 bg-[#292524] rounded-xl border border-[#44403C] p-4 flex flex-col gap-3">
           <AnimatePresence mode="wait">
             <motion.div
               key={stepIdx}
@@ -234,7 +234,7 @@ export default function Anim5A() {
           </AnimatePresence>
 
           {/* step dots */}
-          <div className="flex flex-wrap gap-1 pt-2 border-t border-[#334155]">
+          <div className="flex flex-wrap gap-1 pt-2 border-t border-[#44403C]">
             {steps.map((_, i) => (
               <button
                 key={i}
@@ -244,7 +244,7 @@ export default function Anim5A() {
                   width: i === stepIdx ? 8 : 5,
                   height: i === stepIdx ? 8 : 5,
                   marginTop: i === stepIdx ? 0 : 1.5,
-                  backgroundColor: i === stepIdx ? "#A3E635" : "#334155",
+                  backgroundColor: i === stepIdx ? "#A3E635" : "#44403C",
                 }}
               />
             ))}

@@ -89,15 +89,15 @@ export default function Anim6B() {
   }
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-4 min-h-[420px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-4 min-h-[420px]">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex rounded-lg overflow-hidden border border-[#334155]">
+        <div className="flex rounded-lg overflow-hidden border border-[#44403C]">
           {(["first", "cached"] as const).map(m => (
             <button type="button" key={m} onClick={() => switchMode(m)}
               className="px-3 py-1.5 text-xs font-semibold transition-colors"
-              style={{ backgroundColor: mode === m ? "#7C3AED" : "transparent", color: mode === m ? "#fff" : "#64748B" }}
+              style={{ backgroundColor: mode === m ? "#7C3AED" : "transparent", color: mode === m ? "#fff" : "#78716C" }}
             >
               {m === "first" ? "First Lookup" : "Cache Hit"}
             </button>
@@ -108,7 +108,7 @@ export default function Anim6B() {
         >
           <Play size={10} /> Resolve
         </button>
-        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors">
           <RotateCcw size={10} />
         </button>
         <div className="ml-auto flex items-center gap-2">
@@ -158,7 +158,7 @@ export default function Anim6B() {
                   {a.label}
                 </text>
                 {/* hop number */}
-                <text x={mx - 12} y={my + 10} textAnchor="middle" fill="#475569" fontSize="7">
+                <text x={mx - 12} y={my + 10} textAnchor="middle" fill="#57534E" fontSize="7">
                   {i + 1}
                 </text>
               </g>
@@ -174,17 +174,17 @@ export default function Anim6B() {
               <g key={n.id}>
                 <motion.circle
                   cx={cx} cy={cy} r={18}
-                  fill={isActive ? n.color + "22" : "#1E293B"}
+                  fill={isActive ? n.color + "22" : "#292524"}
                   stroke={n.color}
                   strokeWidth={isActive ? "2" : "1"}
                   strokeOpacity={isActive ? 1 : 0.4}
                   animate={{ r: isActive ? 20 : 18 }}
                   transition={{ duration: 0.2 }}
                 />
-                <text x={cx} y={cy + 3} textAnchor="middle" fill={isActive ? n.color : "#475569"} fontSize="8" fontWeight="bold">
+                <text x={cx} y={cy + 3} textAnchor="middle" fill={isActive ? n.color : "#57534E"} fontSize="8" fontWeight="bold">
                   {n.id === "resolver" ? "Resolver" : n.id === "browser" ? "You" : n.id.toUpperCase()}
                 </text>
-                <text x={cx} y={cy + 28} textAnchor="middle" fill="#475569" fontSize="7">{n.label}</text>
+                <text x={cx} y={cy + 28} textAnchor="middle" fill="#57534E" fontSize="7">{n.label}</text>
                 <text x={cx} y={cy + 37} textAnchor="middle" fill={n.color + "88"} fontSize="6">{n.sublabel}</text>
               </g>
             )

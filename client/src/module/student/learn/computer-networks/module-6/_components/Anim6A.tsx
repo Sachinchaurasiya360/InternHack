@@ -19,7 +19,7 @@ const PHASES: Phase[] = [
   { id: "req",  label: "HTTP GET Request",  detail: "GET /api/modules HTTP/1.1  |  Host: internhack.xyz  |  Accept: application/json  |  Authorization: Bearer …  Encrypted in TLS record.", color: "#2563EB", duration: 8,   icon: <Server size={10} /> },
   { id: "proc", label: "Server Processing", detail: "Server reads DB, builds JSON response. Network I/O + compute. Typical: 5–50 ms for a cached API response.", color: "#8B5CF6", duration: 18,  icon: <Server size={10} /> },
   { id: "res",  label: "HTTP 200 Response", detail: "HTTP/1.1 200 OK  |  Content-Type: application/json  |  Content-Length: 348  |  Body: {\"modules\":[…]}  Decrypted by TLS layer.", color: "#10B981", duration: 12,  icon: <Server size={10} /> },
-  { id: "keep", label: "Keep-Alive / Close",detail: "Connection: keep-alive header lets the TCP connection persist for the next request. Avoids paying TCP + TLS handshake cost again (~105 ms saved).", color: "#64748B", duration: 4,   icon: <Wifi size={10} /> },
+  { id: "keep", label: "Keep-Alive / Close",detail: "Connection: keep-alive header lets the TCP connection persist for the next request. Avoids paying TCP + TLS handshake cost again (~105 ms saved).", color: "#78716C", duration: 4,   icon: <Wifi size={10} /> },
 ]
 
 const TOTAL_VISIBLE_MS = PHASES.reduce((s, p) => s + p.duration, 0) // 147
@@ -70,7 +70,7 @@ export default function Anim6A() {
   const barTotal = TOTAL_VISIBLE_MS
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-5 min-h-[460px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-5 min-h-[460px]">
 
       {/* controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -81,7 +81,7 @@ export default function Anim6A() {
         >
           <Play size={10} /> Trace Request
         </button>
-        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors">
+        <button type="button" onClick={reset} className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors">
           <RotateCcw size={10} /> Reset
         </button>
         <span className="text-[10px] text-stone-500 ml-2">Click any phase to expand details</span>
@@ -90,7 +90,7 @@ export default function Anim6A() {
       {/* browser + server */}
       <div className="flex justify-between items-start px-4">
         <div className="flex flex-col items-center gap-1">
-          <div className="w-14 h-10 rounded-lg bg-[#1E293B] border border-[#334155] flex items-center justify-center">
+          <div className="w-14 h-10 rounded-lg bg-[#292524] border border-[#44403C] flex items-center justify-center">
             <Globe size={16} className="text-blue-400" />
           </div>
           <span className="text-[9px] text-stone-500 font-bold uppercase tracking-wide">Browser</span>
@@ -100,7 +100,7 @@ export default function Anim6A() {
         {/* packet travel lane */}
         <div className="flex-1 mx-4 relative flex items-center h-12">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full h-px bg-[#1E293B] border-t border-dashed border-[#334155]" />
+            <div className="w-full h-px bg-[#292524] border-t border-dashed border-[#44403C]" />
           </div>
           <AnimatePresence>
             {packets.map(pk => (
@@ -120,7 +120,7 @@ export default function Anim6A() {
         </div>
 
         <div className="flex flex-col items-center gap-1">
-          <div className="w-14 h-10 rounded-lg bg-[#1E293B] border border-[#334155] flex items-center justify-center">
+          <div className="w-14 h-10 rounded-lg bg-[#292524] border border-[#44403C] flex items-center justify-center">
             <Server size={16} className="text-lime-400" />
           </div>
           <span className="text-[9px] text-stone-500 font-bold uppercase tracking-wide">Server</span>
@@ -145,14 +145,14 @@ export default function Anim6A() {
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left"
                 style={{
                   backgroundColor: revealed ? ph.color + "11" : "transparent",
-                  borderColor: revealed ? ph.color + "44" : "#1E293B",
+                  borderColor: revealed ? ph.color + "44" : "#292524",
                 }}
               >
                 <span style={{ color: ph.color }}>{ph.icon}</span>
-                <span className="text-[10px] font-semibold flex-1" style={{ color: revealed ? ph.color : "#475569" }}>
+                <span className="text-[10px] font-semibold flex-1" style={{ color: revealed ? ph.color : "#57534E" }}>
                   {ph.label}
                 </span>
-                <span className="text-[9px] font-mono" style={{ color: revealed ? ph.color + "aa" : "#1E293B" }}>
+                <span className="text-[9px] font-mono" style={{ color: revealed ? ph.color + "aa" : "#292524" }}>
                   ~{ph.duration} ms
                 </span>
                 {revealed && (
@@ -187,7 +187,7 @@ export default function Anim6A() {
         <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col gap-1.5 pt-3 border-t border-[#334155]"
+          className="flex flex-col gap-1.5 pt-3 border-t border-[#44403C]"
         >
           <span className="text-[9px] text-stone-500 uppercase tracking-wider font-bold">DevTools Waterfall</span>
           <div className="flex h-5 rounded overflow-hidden">

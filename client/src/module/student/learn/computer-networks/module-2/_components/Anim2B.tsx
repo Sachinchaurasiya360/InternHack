@@ -10,7 +10,7 @@ const LAYERS = [
   { n: 4, name: "Transport",    color: "#F59E0B" },
   { n: 3, name: "Network",      color: "#2563EB" },
   { n: 2, name: "Data Link",    color: "#10B981" },
-  { n: 1, name: "Physical",     color: "#64748B" },
+  { n: 1, name: "Physical",     color: "#78716C" },
 ]
 
 const ITEMS = [
@@ -66,10 +66,10 @@ export default function Anim2B() {
   const selectedItem = ITEMS.find(i => i.id === selected)
 
   return (
-    <div className="relative grid md:grid-cols-[190px_1fr] min-h-95 bg-[#0F172A]">
+    <div className="relative grid md:grid-cols-[190px_1fr] min-h-95 bg-[#1C1917]">
 
       {/* ── items panel ── */}
-      <div className="border-r border-[#1E293B] p-4 flex flex-col gap-2">
+      <div className="border-r border-[#292524] p-4 flex flex-col gap-2">
         <p className="text-[9px] text-stone-500 font-bold uppercase tracking-widest mb-1">
           Items  click to select
         </p>
@@ -92,10 +92,10 @@ export default function Anim2B() {
                 disabled={isPlaced}
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-left transition-all border ${
                   isPlaced
-                    ? "opacity-35 border-[#1E293B] text-stone-500 cursor-default"
+                    ? "opacity-35 border-[#292524] text-stone-500 cursor-default"
                     : isSelected
                     ? "border-lime-500 bg-lime-900/30 text-lime-200 shadow-[0_0_0_2px_#7C3AED33]"
-                    : "border-[#1E293B] text-stone-300 hover:border-[#334155] hover:bg-[#1E293B] cursor-pointer"
+                    : "border-[#292524] text-stone-300 hover:border-[#44403C] hover:bg-[#292524] cursor-pointer"
                 }`}
               >
                 <span>{item.label}</span>
@@ -110,7 +110,7 @@ export default function Anim2B() {
         {allPlaced && (
           <button
             onClick={reset}
-            className="mt-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs text-stone-400 border border-[#334155] hover:bg-[#1E293B] transition-colors"
+            className="mt-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs text-stone-400 border border-[#44403C] hover:bg-[#292524] transition-colors"
           >
             <RotateCcw size={10} /> Reset
           </button>
@@ -136,8 +136,8 @@ export default function Anim2B() {
               whileHover={canDrop ? { scale: 1.01 } : {}}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition-all ${
                 canDrop
-                  ? "border-dashed border-[#334155] hover:border-lime-500 hover:bg-lime-900/15 cursor-pointer"
-                  : "border-[#1E293B] cursor-default"
+                  ? "border-dashed border-[#44403C] hover:border-lime-500 hover:bg-lime-900/15 cursor-pointer"
+                  : "border-[#292524] cursor-default"
               }`}
             >
               {/* layer badge */}
@@ -203,7 +203,7 @@ export default function Anim2B() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-[#0F172A]/85 flex items-center justify-center rounded-b-2xl"
+            className="absolute inset-0 bg-[#1C1917]/85 flex items-center justify-center rounded-b-2xl"
           >
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }}

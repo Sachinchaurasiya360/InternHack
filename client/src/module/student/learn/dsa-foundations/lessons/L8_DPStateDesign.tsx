@@ -276,7 +276,7 @@ function TSPVisualize() {
                                 key={i}
                                 className="py-0.5 px-1.5 text-center rounded transition-all"
                                 style={{
-                                  color: v === null ? "#cbd5e1" : isCell ? "#fff" : THEME.text,
+                                  color: v === null ? "#d6d3d1" : isCell ? "#fff" : THEME.text,
                                   background: isCell ? THEME.accent : "transparent",
                                   fontWeight: isCell ? 800 : 400,
                                 }}
@@ -448,7 +448,7 @@ function SpaceVisualize() {
                               width: 32, height: 32,
                               border: `1px solid ${THEME.border}`,
                               background: isHot ? THEME.accent : fromPrev ? `${THEME.accent}24` : THEME.bg,
-                              color: isHot ? "#fff" : v === null ? "#cbd5e1" : THEME.text,
+                              color: isHot ? "#fff" : v === null ? "#d6d3d1" : THEME.text,
                               fontWeight: isHot ? 800 : 500,
                             }}
                           >

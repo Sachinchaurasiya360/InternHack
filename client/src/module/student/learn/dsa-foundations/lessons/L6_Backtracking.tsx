@@ -209,7 +209,7 @@ function QueensBoard({ frame, n }: { frame: QueensFrame; n: number }) {
             const queen = frame.board[r] === c;
             const isTrying = r === frame.row && c === frame.tryingCol;
             const isConflict = frame.conflict && frame.conflict.r === r && frame.conflict.c === c;
-            let bg = isLight ? "#f1f5f9" : "#cbd5e1";
+            let bg = isLight ? "#f5f5f4" : "#d6d3d1";
             if (isConflict) bg = "#fca5a5";
             if (isTrying && !queen) bg = "#fde68a";
             return (
@@ -330,22 +330,22 @@ function SudokuBoard({ frame, initial }: { frame: SudokuFrame; initial: number[]
     <div className="flex flex-col items-center gap-2">
       <div
         className="border-2 rounded overflow-hidden"
-        style={{ display: "grid", gridTemplateColumns: "repeat(9, 32px)", gridTemplateRows: "repeat(9, 32px)", borderColor: "#0f172a" }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(9, 32px)", gridTemplateRows: "repeat(9, 32px)", borderColor: "#1c1917" }}
       >
         {frame.grid.map((row, r) => row.map((v, c) => {
           const isGiven = initial[r][c] !== 0;
           const isActive = frame.cell?.r === r && frame.cell?.c === c;
           const isConflict = isActive && frame.conflict;
           const shownVal = isActive && frame.tryingVal && !isGiven && v === 0 ? frame.tryingVal : v;
-          const borderRight = (c + 1) % 3 === 0 && c < 8 ? "2px solid #0f172a" : "1px solid #cbd5e1";
-          const borderBottom = (r + 1) % 3 === 0 && r < 8 ? "2px solid #0f172a" : "1px solid #cbd5e1";
+          const borderRight = (c + 1) % 3 === 0 && c < 8 ? "2px solid #1c1917" : "1px solid #d6d3d1";
+          const borderBottom = (r + 1) % 3 === 0 && r < 8 ? "2px solid #1c1917" : "1px solid #d6d3d1";
           return (
             <div key={`${r}-${c}`}
               className="flex items-center justify-center font-bold font-mono transition-colors"
               style={{
                 width: 32, height: 32, fontSize: "0.85rem",
-                color: isGiven ? "#0f172a" : isConflict ? "#991b1b" : "#1d4ed8",
-                background: isConflict ? "#fecaca" : isActive ? "#fde68a" : isGiven ? "#f1f5f9" : "#fff",
+                color: isGiven ? "#1c1917" : isConflict ? "#991b1b" : "#1d4ed8",
+                background: isConflict ? "#fecaca" : isActive ? "#fde68a" : isGiven ? "#f5f5f4" : "#fff",
                 borderRight, borderBottom,
               }}>
               {shownVal > 0 ? shownVal : ""}

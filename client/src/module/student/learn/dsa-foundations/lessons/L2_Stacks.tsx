@@ -201,7 +201,7 @@ function VisualizeTab() {
           {str.split("").map((ch, i) => {
             const isCur = i === (frame?.cursor ?? -1);
             const past = i < (frame?.cursor ?? -1);
-            const c = BR_COLOR[ch] ?? "#64748b";
+            const c = BR_COLOR[ch] ?? "#78716c";
             return (
               <div
                 key={i}

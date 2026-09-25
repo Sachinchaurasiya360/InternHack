@@ -37,7 +37,7 @@ type CellState = "default" | "active" | "compare" | "done" | "window" | "path";
 const STATE_COLOR: Record<CellState, { bg: string; fg: string; border: string }> = {
   default: { bg: THEME.bg, fg: THEME.textMuted, border: THEME.border },
   active:  { bg: THEME.accent, fg: "#fff", border: THEME.accentDark },
-  compare: { bg: "#c7d2fe", fg: "#3730a3", border: "#6366f1" },
+  compare: { bg: "#d9f99d", fg: "#3f6212", border: "#84cc16" },
   done:    { bg: "#dcfce7", fg: "#166534", border: "#16a34a" },
   window:  { bg: "#dbeafe", fg: "#1e40af", border: "#3b82f6" },
   path:    { bg: "#fef9c3", fg: "#713f12", border: "#ca8a04" },

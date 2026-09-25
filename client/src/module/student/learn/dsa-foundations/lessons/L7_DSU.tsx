@@ -255,7 +255,7 @@ function Forest({ frame }: { frame: Frame }) {
                       key={`e-${node.id}`}
                       x1={px(p2.x)} y1={py(p2.y)}
                       x2={px(node.x)} y2={py(node.y)}
-                      stroke="#94a3b8"
+                      stroke="#a8a29e"
                       strokeWidth={1.5}
                     />
                   );

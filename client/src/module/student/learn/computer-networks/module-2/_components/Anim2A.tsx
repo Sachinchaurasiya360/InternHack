@@ -11,7 +11,7 @@ const OSI = [
   { n: 4, name: "Transport",    color: "#F59E0B" },
   { n: 3, name: "Network",      color: "#2563EB" },
   { n: 2, name: "Data Link",    color: "#10B981" },
-  { n: 1, name: "Physical",     color: "#64748B" },
+  { n: 1, name: "Physical",     color: "#78716C" },
 ]
 
 // ── Header strip definitions ──────────────────────────────────────────────────
@@ -52,8 +52,8 @@ const STEPS: {
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 function layerColor(side: "S"|"R"|"T", layer: number) {
-  if (side === "T") return "#64748B"
-  return OSI.find(l => l.n === layer)?.color ?? "#6B7280"
+  if (side === "T") return "#78716C"
+  return OSI.find(l => l.n === layer)?.color ?? "#78716C"
 }
 
 // ── component ─────────────────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ export default function Anim2A() {
     <div className="grid md:grid-cols-[1fr_210px] min-h-95">
 
       {/* ── dark visualization area ── */}
-      <div className="bg-[#0F172A] flex items-center gap-2 px-4 py-5 min-h-80 overflow-x-auto">
+      <div className="bg-[#1C1917] flex items-center gap-2 px-4 py-5 min-h-80 overflow-x-auto">
 
         {/* Sender stack */}
         <OsiStack
@@ -96,7 +96,7 @@ export default function Anim2A() {
           </p>
 
           {/* Header strips */}
-          <div className="flex items-stretch h-9 rounded-lg overflow-hidden border border-[#1E293B]">
+          <div className="flex items-stretch h-9 rounded-lg overflow-hidden border border-[#292524]">
             <AnimatePresence initial={false}>
               {cur.hdrs.map(h => (
                 <motion.div
@@ -206,7 +206,7 @@ export default function Anim2A() {
                 marginTop: i === step ? 0 : 1.5,
                 backgroundColor: i === step
                   ? layerColor(s.side, s.layer)
-                  : "#E5E7EB",
+                  : "#E7E5E4",
               }}
             />
           ))}
@@ -239,20 +239,20 @@ function OsiStack({
             onClick={() => onClickLayer(l.n)}
             animate={{
               backgroundColor: isActive ? l.color + "22" : "transparent",
-              borderColor:     isActive ? l.color        : "#1E293B",
+              borderColor:     isActive ? l.color        : "#292524",
             }}
             transition={{ duration: 0.25 }}
             className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border text-left"
           >
             <span
               className="w-4 h-4 rounded text-white text-[8px] font-bold flex items-center justify-center shrink-0 transition-colors"
-              style={{ backgroundColor: isActive ? l.color : "#334155" }}
+              style={{ backgroundColor: isActive ? l.color : "#44403C" }}
             >
               {l.n}
             </span>
             <span
               className="text-[9px] truncate transition-colors"
-              style={{ color: isActive ? l.color : "#475569" }}
+              style={{ color: isActive ? l.color : "#57534E" }}
             >
               {l.name}
             </span>

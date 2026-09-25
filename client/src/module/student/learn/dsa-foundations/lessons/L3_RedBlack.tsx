@@ -286,7 +286,7 @@ function RBTreeViz({ frame }: { frame: RBFrame }) {
               cx={X}
               cy={Y}
               r={17}
-              fill={node.color === "R" ? "#dc2626" : "#1F2937"}
+              fill={node.color === "R" ? "#dc2626" : "#292524"}
               stroke={isActive ? THEME.accent : "#FFFFFF"}
               strokeWidth={isActive ? 4 : 2.5}
               style={{ transition: "fill 0.3s, stroke 0.2s" }}
@@ -390,7 +390,7 @@ function VisualizeTab() {
           RED
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-sm bg-[#1F2937] inline-block" />
+          <span className="w-3 h-3 rounded-sm bg-[#292524] inline-block" />
           BLACK
         </span>
         <span className="inline-flex items-center gap-1.5">

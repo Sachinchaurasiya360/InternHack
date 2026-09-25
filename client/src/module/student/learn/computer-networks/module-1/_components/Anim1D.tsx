@@ -104,11 +104,11 @@ export default function Anim1D() {
     <div className="grid md:grid-cols-[1fr_220px] min-h-95">
 
       {/* ── SVG canvas ── */}
-      <div className="relative bg-[#0F172A] flex items-center justify-center min-h-80">
+      <div className="relative bg-[#1C1917] flex items-center justify-center min-h-80">
         <svg className="absolute inset-0 w-full h-full opacity-10">
           <defs>
             <pattern id="grid-d" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="1" fill="#475569" />
+              <circle cx="1" cy="1" r="1" fill="#57534E" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid-d)" />
@@ -129,7 +129,7 @@ export default function Anim1D() {
               {CLIENTS.map(c => (
                 <line key={c.id}
                   x1={SRV.x} y1={SRV.y} x2={c.x} y2={c.y}
-                  stroke="#1E293B" strokeWidth={2}
+                  stroke="#292524" strokeWidth={2}
                 />
               ))}
 
@@ -158,10 +158,10 @@ export default function Anim1D() {
               {/* server */}
               <motion.circle
                 cx={SRV.x} cy={SRV.y} r={30}
-                fill="#1E293B"
-                stroke={csPhase === "respond" ? "#84CC16" : "#334155"}
+                fill="#292524"
+                stroke={csPhase === "respond" ? "#84CC16" : "#44403C"}
                 strokeWidth={csPhase === "respond" ? 3 : 2}
-                animate={{ stroke: csPhase === "respond" ? "#84CC16" : "#334155" }}
+                animate={{ stroke: csPhase === "respond" ? "#84CC16" : "#44403C" }}
                 transition={{ duration: 0.2 }}
               />
               {csPhase === "respond" && (
@@ -171,7 +171,7 @@ export default function Anim1D() {
                   transition={{ duration: 0.7 }}
                 />
               )}
-              <text x={SRV.x} y={SRV.y} textAnchor="middle" fill="#E2E8F0"
+              <text x={SRV.x} y={SRV.y} textAnchor="middle" fill="#E7E5E4"
                 fontSize={9} fontWeight="bold" dominantBaseline="middle">
                 SERVER
               </text>
@@ -184,10 +184,10 @@ export default function Anim1D() {
                   <g key={c.id}>
                     <motion.circle
                       cx={c.x} cy={c.y} r={20}
-                      fill={isActive ? "#1E3A5F" : "#1E293B"}
-                      stroke={isActive ? "#3B82F6" : "#334155"}
+                      fill={isActive ? "#44403C" : "#292524"}
+                      stroke={isActive ? "#3B82F6" : "#44403C"}
                       strokeWidth={isActive ? 2.5 : 1.5}
-                      animate={{ stroke: isActive ? "#3B82F6" : "#334155" }}
+                      animate={{ stroke: isActive ? "#3B82F6" : "#44403C" }}
                       transition={{ duration: 0.3 }}
                     />
                     {isReceiving && (
@@ -197,7 +197,7 @@ export default function Anim1D() {
                         transition={{ duration: 0.5 }}
                       />
                     )}
-                    <text x={c.x} y={c.y} textAnchor="middle" fill="#94A3B8"
+                    <text x={c.x} y={c.y} textAnchor="middle" fill="#A8A29E"
                       fontSize={8} dominantBaseline="middle">
                       {c.label}
                     </text>
@@ -223,7 +223,7 @@ export default function Anim1D() {
                 return (
                   <motion.line key={`${a}-${b}`}
                     x1={na.x} y1={na.y} x2={nb.x} y2={nb.y}
-                    animate={{ stroke: active ? "#84CC16" : "#1E293B", opacity: active ? 0.9 : 0.35 }}
+                    animate={{ stroke: active ? "#84CC16" : "#292524", opacity: active ? 0.9 : 0.35 }}
                     transition={{ duration: 0.35 }}
                   />
                 )
@@ -255,12 +255,12 @@ export default function Anim1D() {
                   <g key={p.id}>
                     <motion.circle
                       cx={p.x} cy={p.y} r={22}
-                      fill={active ? "#1E3A5F" : "#1E293B"}
-                      animate={{ stroke: active ? "#84CC16" : "#334155" }}
+                      fill={active ? "#44403C" : "#292524"}
+                      animate={{ stroke: active ? "#84CC16" : "#44403C" }}
                       strokeWidth={active ? 2.5 : 1.5}
                       transition={{ duration: 0.35 }}
                     />
-                    <text x={p.x} y={p.y} textAnchor="middle" fill="#94A3B8"
+                    <text x={p.x} y={p.y} textAnchor="middle" fill="#A8A29E"
                       fontSize={8} dominantBaseline="middle">
                       {p.label}
                     </text>

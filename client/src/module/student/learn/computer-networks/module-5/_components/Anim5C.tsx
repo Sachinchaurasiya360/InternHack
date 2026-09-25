@@ -124,7 +124,7 @@ export default function Anim5C() {
   }
 
   return (
-    <div className="bg-[#0F172A] p-5 flex flex-col gap-4 min-h-[400px]">
+    <div className="bg-[#1C1917] p-5 flex flex-col gap-4 min-h-[400px]">
 
       {/* controls */}
       <div className="flex flex-wrap items-center gap-2">
@@ -136,8 +136,8 @@ export default function Anim5C() {
             className="px-3 py-1 rounded-lg text-[10px] font-bold border transition-all"
             style={{
               backgroundColor: algos.includes(a) ? ALGO_COLORS[a] + "22" : "transparent",
-              borderColor: algos.includes(a) ? ALGO_COLORS[a] : "#334155",
-              color: algos.includes(a) ? ALGO_COLORS[a] : "#64748B",
+              borderColor: algos.includes(a) ? ALGO_COLORS[a] : "#44403C",
+              color: algos.includes(a) ? ALGO_COLORS[a] : "#78716C",
             }}
           >
             TCP {a.charAt(0).toUpperCase() + a.slice(1)}
@@ -153,7 +153,7 @@ export default function Anim5C() {
         </button>
         <button
           onClick={reset}
-          className="flex items-center gap-1 px-3 py-1.5 bg-[#1E293B] hover:bg-[#334155] text-stone-400 rounded-lg text-xs border border-[#334155] transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 bg-[#292524] hover:bg-[#44403C] text-stone-400 rounded-lg text-xs border border-[#44403C] transition-colors"
         >
           <RotateCcw size={10} />
         </button>
@@ -165,22 +165,22 @@ export default function Anim5C() {
           {/* grid */}
           {[0, 8, 16, 24, 32].map(v => (
             <g key={v}>
-              <line x1={padL} y1={py(v)} x2={W - padR} y2={py(v)} stroke="#1E293B" strokeWidth="1" />
-              <text x={padL - 4} y={py(v) + 3} textAnchor="end" fill="#475569" fontSize="7">{v}</text>
+              <line x1={padL} y1={py(v)} x2={W - padR} y2={py(v)} stroke="#292524" strokeWidth="1" />
+              <text x={padL - 4} y={py(v) + 3} textAnchor="end" fill="#57534E" fontSize="7">{v}</text>
             </g>
           ))}
           {[0, 10, 20, 30, 40].map(v => (
             <g key={v}>
-              <line x1={px(v)} y1={padT} x2={px(v)} y2={H - padB} stroke="#1E293B" strokeWidth="1" />
-              <text x={px(v)} y={H - padB + 12} textAnchor="middle" fill="#475569" fontSize="7">{v}</text>
+              <line x1={px(v)} y1={padT} x2={px(v)} y2={H - padB} stroke="#292524" strokeWidth="1" />
+              <text x={px(v)} y={H - padB + 12} textAnchor="middle" fill="#57534E" fontSize="7">{v}</text>
             </g>
           ))}
 
           {/* axes */}
-          <line x1={padL} y1={padT} x2={padL} y2={H - padB} stroke="#334155" strokeWidth="1" />
-          <line x1={padL} y1={H - padB} x2={W - padR} y2={H - padB} stroke="#334155" strokeWidth="1" />
-          <text x={padL - 28} y={H / 2} textAnchor="middle" fill="#475569" fontSize="8" transform={`rotate(-90, ${padL - 28}, ${H / 2})`}>cwnd (MSS)</text>
-          <text x={W / 2} y={H - 2} textAnchor="middle" fill="#475569" fontSize="8">RTT</text>
+          <line x1={padL} y1={padT} x2={padL} y2={H - padB} stroke="#44403C" strokeWidth="1" />
+          <line x1={padL} y1={H - padB} x2={W - padR} y2={H - padB} stroke="#44403C" strokeWidth="1" />
+          <text x={padL - 28} y={H / 2} textAnchor="middle" fill="#57534E" fontSize="8" transform={`rotate(-90, ${padL - 28}, ${H / 2})`}>cwnd (MSS)</text>
+          <text x={W / 2} y={H - 2} textAnchor="middle" fill="#57534E" fontSize="8">RTT</text>
 
           {/* ssthresh reference line */}
           <line x1={padL} y1={py(SSTHRESH0)} x2={W - padR} y2={py(SSTHRESH0)} stroke="#F59E0B" strokeWidth="1" strokeDasharray="4 3" />
@@ -211,7 +211,7 @@ export default function Anim5C() {
                 key={`${a}-${i}`}
                 cx={px(p.rtt)} cy={py(p.cwnd)} r={4}
                 fill={p.event === "loss" ? "#EF4444" : "#F97316"}
-                stroke="#0F172A" strokeWidth="1.5"
+                stroke="#1C1917" strokeWidth="1.5"
               />
             ))
           )}
@@ -219,7 +219,7 @@ export default function Anim5C() {
 
         {/* legend */}
         <div className="w-40 shrink-0 flex flex-col gap-3">
-          <div className="bg-[#1E293B] rounded-xl p-3 border border-[#334155] space-y-2">
+          <div className="bg-[#292524] rounded-xl p-3 border border-[#44403C] space-y-2">
             <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider">Legend</p>
             {(["tahoe","reno","cubic"] as Algorithm[]).map(a => (
               <div key={a} className="flex items-center gap-1.5">
@@ -227,7 +227,7 @@ export default function Anim5C() {
                 <span className="text-[9px] text-stone-400">TCP {a.charAt(0).toUpperCase() + a.slice(1)}</span>
               </div>
             ))}
-            <div className="flex items-center gap-1.5 pt-1 border-t border-[#334155]">
+            <div className="flex items-center gap-1.5 pt-1 border-t border-[#44403C]">
               <Zap size={9} className="text-red-400" />
               <span className="text-[9px] text-stone-400">3-dup-ACK (RTT 12)</span>
             </div>
@@ -237,12 +237,12 @@ export default function Anim5C() {
             </div>
           </div>
 
-          <div className="bg-[#1E293B] rounded-xl p-3 border border-[#334155] text-[9px] text-stone-400 space-y-2">
+          <div className="bg-[#292524] rounded-xl p-3 border border-[#44403C] text-[9px] text-stone-400 space-y-2">
             <p className="font-bold text-stone-300">On 3-dup-ACK:</p>
             <p><span className="text-red-400">Tahoe:</span> cwnd→1, slow start</p>
             <p><span className="text-lime-400">Reno:</span> cwnd→ssthresh, fast recovery</p>
             <p><span className="text-emerald-400">CUBIC:</span> concave growth, less drastic cut</p>
-            <p className="border-t border-[#334155] pt-2 font-bold text-stone-300">On Timeout:</p>
+            <p className="border-t border-[#44403C] pt-2 font-bold text-stone-300">On Timeout:</p>
             <p>All: cwnd→1, ssthresh halved</p>
           </div>
         </div>

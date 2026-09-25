@@ -356,7 +356,7 @@ function RBTreeViz({ frame }: { frame: RBFrame }) {
         const X = 30 + x[id] * xScale, Y = 30 + y[id] * yScale;
         const children = [node.left, node.right].filter(Boolean) as string[];
         return children.map((cid) => (
-          <line key={`${id}-${cid}`} x1={X} y1={Y} x2={30 + x[cid] * xScale} y2={30 + y[cid] * yScale} stroke="#94a3b8" strokeWidth={1.8} />
+          <line key={`${id}-${cid}`} x1={X} y1={Y} x2={30 + x[cid] * xScale} y2={30 + y[cid] * yScale} stroke="#a8a29e" strokeWidth={1.8} />
         ));
       })}
       {ids.map((id) => {
@@ -365,7 +365,7 @@ function RBTreeViz({ frame }: { frame: RBFrame }) {
         const isActive = id === frame.activeId;
         return (
           <g key={id}>
-            <circle cx={X} cy={Y} r={16} fill={node.color === "R" ? "#ef4444" : "#1f2937"} stroke={isActive ? THEME.accent : "#fff"} strokeWidth={isActive ? 4 : 2.5} style={{ transition: "fill 0.3s, stroke 0.2s" }} />
+            <circle cx={X} cy={Y} r={16} fill={node.color === "R" ? "#ef4444" : "#292524"} stroke={isActive ? THEME.accent : "#fff"} strokeWidth={isActive ? 4 : 2.5} style={{ transition: "fill 0.3s, stroke 0.2s" }} />
             <text x={X} y={Y + 4} textAnchor="middle" fontSize={13} fontWeight={700} fill="#fff" fontFamily="ui-monospace, monospace">{node.key}</text>
           </g>
         );
@@ -401,7 +401,7 @@ function RBTreeVisualizer() {
       <div className="flex flex-col gap-3.5">
         <div className="flex gap-3.5 text-xs items-center">
           <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm bg-red-500" />RED</span>
-          <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm bg-gray-900" />BLACK</span>
+          <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm bg-stone-900" />BLACK</span>
         </div>
         {frame && <RBTreeViz frame={frame} />}
         <Callout>{frame?.message ?? "Press play to step through."}</Callout>
@@ -692,7 +692,7 @@ function BloomViz({ frame }: { frame: BloomFrame }) {
               className="flex flex-col items-center justify-center font-mono font-extrabold rounded transition-all"
               style={{
                 width: cell, height: cell,
-                background: b ? (hl ? THEME.accent : "#64748b") : (hl ? "rgba(245,158,11,0.2)" : THEME.bg),
+                background: b ? (hl ? THEME.accent : "#78716c") : (hl ? "rgba(245,158,11,0.2)" : THEME.bg),
                 color: b ? "#fff" : THEME.textMuted,
                 border: hl ? "2px solid #f59e0b" : `1px solid ${THEME.border}`,
                 fontSize: "0.9rem",

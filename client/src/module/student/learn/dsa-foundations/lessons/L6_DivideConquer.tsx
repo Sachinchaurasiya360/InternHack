@@ -198,7 +198,7 @@ function ClosestPairPlot({ points, frame }: { points: Point[]; frame: CPFrame })
         return (
           <g key={p.id}>
             <circle cx={sx(p.x)} cy={sy(p.y)} r={isBest ? 7 : 5}
-              fill={isBest ? "#ef4444" : inStrip ? "#8b5cf6" : "#0f172a"}
+              fill={isBest ? "#ef4444" : inStrip ? "#8b5cf6" : "#1c1917"}
               stroke="#fff" strokeWidth={2} style={{ transition: "all 0.3s" }} />
             <text x={sx(p.x) + 8} y={sy(p.y) - 8} fontSize="10" fill={THEME.textMuted} fontFamily={THEME.heading}>{p.id}</text>
           </g>
