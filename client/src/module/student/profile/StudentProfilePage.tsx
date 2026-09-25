@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
@@ -17,7 +17,7 @@ import GitHubImportModal from "./GitHubImportModal";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import { SectionHeader } from "./components/SectionHeader";
 import { IdentityCard } from "./components/IdentityCard";
-import { ProfileStrengthCard } from "./components/ProfileStrengthCard";
+import { ProfileStrengthCard, type MissingItem } from "./components/ProfileStrengthCard";
 import { BasicInfoSection } from "./components/BasicInfoSection";
 import { EducationSection } from "./components/EducationSection";
 import { SkillsSection } from "./components/SkillsSection";
@@ -173,8 +173,6 @@ export default function StudentProfilePage() {
     staleTime: 60 * 60 * 1000,
   });
 
-  // Same source (and query key) as /student/skill-verification, so the
-  // suggestion dropdown always matches the skills that are actually verifiable.
   const { data: skillTests } = useQuery({
     queryKey: queryKeys.skillTests.list(),
     queryFn: () => api.get("/skill-tests").then((r) => r.data.tests as SkillTest[]),
@@ -191,7 +189,6 @@ export default function StudentProfilePage() {
       })
     : [];
 
-  // Initialise form once when profile data first arrives
   useEffect(() => {
     if (!profileUser || formInitialized.current) return;
     formInitialized.current = true;
@@ -458,15 +455,75 @@ export default function StudentProfilePage() {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const handleFixMissingItem = (sectionKey: string) => {
+    setIsEditing(true);
+    setOpenSections((prev) => ({ ...prev, [sectionKey]: true }));
+    setTimeout(() => {
+      const element = document.getElementById(`section-${sectionKey}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 150);
+  };
+
   const displayDate = memberSince || user?.createdAt;
 
-  const profileCompletion = (() => {
-    const fields = [form.name, form.bio, form.contactNo, form.location, form.college, form.company, form.linkedinUrl, form.githubUrl];
-    const filled = fields.filter(Boolean).length;
-    const hasSkills = form.skills.length > 0 ? 1 : 0;
-    const hasResume = form.resumes.length > 0 ? 1 : 0;
-    return Math.round(((filled + hasSkills + hasResume) / (fields.length + 2)) * 100);
-  })();
+  // Weighted completeness score
+  const completeness = useMemo(() => {
+    let score = 0;
+    const missing: MissingItem[] = [];
+
+    // Basic details: Name, Bio, Location (20 points total)
+    if (form.name && form.bio && form.location) {
+      score += 20;
+    } else {
+      missing.push({ id: "basic-info", label: "Complete bio & location", section: "basic" });
+    }
+
+    // Contact Number (20 points - high weight for WhatsApp coordination)
+    if (form.contactNo) {
+      score += 20;
+    } else {
+      missing.push({ id: "phone", label: "Add WhatsApp number", section: "basic" });
+    }
+
+    // Education (15 points)
+    if (form.college && form.graduationYear) {
+      score += 15;
+    } else {
+      missing.push({ id: "edu", label: "Add college & graduation year", section: "education" });
+    }
+
+    // Skills (15 points)
+    if (form.skills.length > 0) {
+      score += 15;
+    } else {
+      missing.push({ id: "skills", label: "Add at least one skill", section: "skills" });
+    }
+
+    // Projects (10 points)
+    if (form.projects.length > 0) {
+      score += 10;
+    } else {
+      missing.push({ id: "projects", label: "Add a featured project", section: "projects" });
+    }
+
+    // Social Links (10 points)
+    if (form.linkedinUrl || form.githubUrl) {
+      score += 10;
+    } else {
+      missing.push({ id: "links", label: "Add a LinkedIn or GitHub link", section: "links" });
+    }
+
+    // Resumes (10 points)
+    if (form.resumes.length > 0) {
+      score += 10;
+    } else {
+      missing.push({ id: "resumes", label: "Upload your resume", section: "resumes" });
+    }
+
+    return { score, missing };
+  }, [form]);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -475,7 +532,7 @@ export default function StudentProfilePage() {
       <SEO title="My Profile" description="Update your InternHack student profile details." noIndex />
 
       <ProfilePageHeader
-        profileCompletion={profileCompletion}
+        profileCompletion={completeness.score}
         saving={saving}
         isEditing={isEditing}
         onEdit={() => setIsEditing(true)}
@@ -509,7 +566,9 @@ export default function StudentProfilePage() {
 
           <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible">
             <ProfileStrengthCard
-              profileCompletion={profileCompletion}
+              profileCompletion={completeness.score}
+              missingItems={completeness.missing}
+              onFixItem={handleFixMissingItem}
               resumeCount={form.resumes.length}
               displayDate={displayDate}
               isPremium={isPremium}
@@ -520,7 +579,7 @@ export default function StudentProfilePage() {
         {/* Right: Editable sections */}
         <div className="lg:col-span-8 xl:col-span-9 space-y-4">
           {/* Basic */}
-          <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div id="section-basic" custom={0} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 01"
               title="Basic information"
@@ -542,7 +601,7 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Education & Work */}
-          <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div id="section-education" custom={1} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 02"
               title="Education & work"
@@ -571,7 +630,7 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Skills */}
-          <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div id="section-skills" custom={2} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 03"
               title="Skills"
@@ -598,7 +657,7 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Projects */}
-          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div id="section-projects" custom={3} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 04"
               title="Featured Projects"
@@ -633,7 +692,7 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Social links */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div id="section-links" custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 05"
               title="Social links"
@@ -659,7 +718,7 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Resumes */}
-          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div id="section-resumes" custom={5} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 06"
               title="Resumes"
