@@ -880,22 +880,24 @@ export class OpensourceService {
       where: { id: { in: repoIds } },
       select: { id: true },
     });
-    const validIds = validRepos.map((r) => r.id);
-    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
 
-    await prisma.$transaction(
-      validIds.map((repoId: number) =>
-        prisma.opensourceBookmark.upsert({
-          where: { userId_repoId: { userId, repoId } },
-          create: { userId, repoId },
-          update: {},
-        }),
-      ),
-    );
+    const validIds = validRepos.map((repo) => repo.id);
+
+    // Nothing valid to import; preserve the user's existing bookmarks
+    if (validIds.length === 0) {
+      return this.getBookmarkedRepoIds(userId);
+    }
+
+    await prisma.opensourceBookmark.createMany({
+      data: validIds.map((repoId) => ({
+        userId,
+        repoId,
+      })),
+      skipDuplicates: true,
+    });
 
     return this.getBookmarkedRepoIds(userId);
   }
-
 }
 
 
