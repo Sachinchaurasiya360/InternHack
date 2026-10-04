@@ -22,10 +22,12 @@ import {
   ArrowRight,
   Mail,
   Download,
+  FileSpreadsheet,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import { CopyButton } from "../../../components/ui/CopyButton";
+import { Popover, PopoverTrigger, PopoverContent, PopoverBody } from "../../../components/ui/popover";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore, UsageStats } from "../../../lib/types";
@@ -170,6 +172,42 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
 
     doc.save(filename);
   };
+
+  const handleDownloadCsv = () => {
+    if (!result) return;
+    
+    // Create CSV content
+    const rows = [
+      ["ATS Analysis Report"],
+      ["Resume", getResumeName(result.resumeUrl)],
+      ["Generated", new Date().toISOString().slice(0, 10)],
+      ["Overall Score", result.overallScore.toString()],
+      [],
+      ["Category Scores"],
+      ...Object.entries(result.categoryScores).map(([k, v]) => [CATEGORY_LABELS[k] ?? k, v.toString()]),
+      [],
+      ["Missing Keywords"],
+      ...result.keywordAnalysis.missing.map(k => [k]),
+      [],
+      ["Suggestions"],
+      ...result.suggestions.map((suggestion) => {
+        const text = typeof suggestion === "string" ? suggestion : (suggestion as any).suggestion ?? String(suggestion);
+        return [text];
+      })
+    ];
+    
+    const csvContent = rows.map(e => e.map(val => `"${val?.replace(/"/g, '""') || ''}"`).join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `ats-report-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
 
   const [guestLimitReached, setGuestLimitReached] = useState(false);
 
@@ -1012,16 +1050,37 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
                         );
                       })}
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleDownloadPdf}
-                      disabled={loading}
-                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed print:hidden"
-                      title="Download or print this ATS report"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Download Report</span>
-                    </button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          disabled={loading || !result}
+                          className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed print:hidden"
+                          title="Export this ATS report"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Export</span>
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-48 p-1 rounded-lg">
+                        <PopoverBody className="flex flex-col gap-1 p-1">
+                          <button
+                            onClick={handleDownloadPdf}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-md transition-colors border-0 bg-transparent cursor-pointer"
+                          >
+                            <FileText className="w-4 h-4" />
+                            Export as PDF
+                          </button>
+                          <button
+                            onClick={handleDownloadCsv}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-md transition-colors border-0 bg-transparent cursor-pointer"
+                          >
+                            <FileSpreadsheet className="w-4 h-4" />
+                            Export as CSV
+                          </button>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div className="p-5">
