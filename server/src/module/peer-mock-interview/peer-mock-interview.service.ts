@@ -1,3 +1,4 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import type { MockInterviewTopic } from "@prisma/client";
 import { getGenericPrepMaterial } from "./peer-mock-interview.prep.js";
@@ -1247,4 +1248,95 @@ export class PeerMockInterviewService {
 
     return this.attachPreparationMaterial(match, userId);
   }
+
+  /**
+   * Calculates the average rating and summarizes feedback themes for a user using Gemini.
+   */
+  async getAnalytics(userId: number) {
+    const interviews = await prisma.peerMockInterview.findMany({
+      where: {
+        OR: [
+          { studentAId: userId, ratingBForA: { not: null } },
+          { studentBId: userId, ratingAForB: { not: null } },
+        ],
+        status: "COMPLETED",
+      },
+      select: {
+        studentAId: true,
+        studentBId: true,
+        ratingAForB: true,
+        ratingBForA: true,
+        feedbackAForB: true,
+        feedbackBForA: true,
+        completedAt: true,
+      },
+      orderBy: { completedAt: "desc" },
+    });
+
+    if (interviews.length === 0) {
+      return {
+        totalInterviews: 0,
+        averageRating: 0,
+        strengths: [],
+        improvements: [],
+      };
+    }
+
+    let totalRating = 0;
+    const feedbacks: string[] = [];
+
+    for (const interview of interviews) {
+      if (interview.studentAId === userId && interview.ratingBForA !== null) {
+        totalRating += interview.ratingBForA;
+        if (interview.feedbackBForA) feedbacks.push(interview.feedbackBForA);
+      } else if (interview.studentBId === userId && interview.ratingAForB !== null) {
+        totalRating += interview.ratingAForB;
+        if (interview.feedbackAForB) feedbacks.push(interview.feedbackAForB);
+      }
+    }
+
+    const averageRating = totalRating / interviews.length;
+    let strengths: string[] = [];
+    let improvements: string[] = [];
+
+    // Only run AI summarization if there is some feedback to summarize
+    if (feedbacks.length > 0) {
+      try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+        const prompt = `
+          You are an expert technical interview coach. Summarize the following feedback given to a student by their peers into two categories: 'strengths' and 'improvements'.
+          Provide up to 3 concise bullet points for each. Be specific and constructive.
+          Respond strictly in JSON format with no markdown formatting.
+          Format: { "strengths": ["...", "..."], "improvements": ["...", "..."] }
+          
+          Feedback:
+          ${feedbacks.map(f => `- "${f}"`).join('\n')}
+        `;
+        
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        
+        let jsonStr = text;
+        const jsonMatch = text.match(/\{.*\}/s);
+        if (jsonMatch) {
+          jsonStr = jsonMatch[0];
+        }
+        
+        const parsed = JSON.parse(jsonStr);
+        if (Array.isArray(parsed.strengths)) strengths = parsed.strengths.slice(0, 3);
+        if (Array.isArray(parsed.improvements)) improvements = parsed.improvements.slice(0, 3);
+      } catch (err) {
+        console.error("Failed to generate feedback analytics via Gemini", err);
+      }
+    }
+
+    return {
+      totalInterviews: interviews.length,
+      averageRating: Math.round(averageRating * 10) / 10,
+      strengths,
+      improvements,
+    };
+  }
+
 }

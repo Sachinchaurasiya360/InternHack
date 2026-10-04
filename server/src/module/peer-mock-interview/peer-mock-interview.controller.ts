@@ -21,6 +21,19 @@ export class PeerMockInterviewController {
     }
   }
 
+  async getAnalytics(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const analytics = await service.getAnalytics(req.user.id);
+      res.json(analytics);
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to fetch analytics" });
+    }
+  }
+
   async selectMatch(req: Request, res: Response) {
     try {
       if (!req.user) {

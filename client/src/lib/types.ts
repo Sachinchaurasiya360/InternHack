@@ -12,3 +12,4 @@ export * from "./types/learning.types";
 export * from "./types/misc.types";
 export * from "./types/verbal-ability.types"; 
 
+export interface PeerMockInterviewAnalytics { totalInterviews: number; averageRating: number; strengths: string[]; improvements: string[]; }

@@ -252,6 +252,7 @@ export const queryKeys = {
     upcoming: () => ["peer-mock-interview", "upcoming"] as const,
     matches: () => ["peer-mock-interview", "matches"] as const,
     history: (userId?: number) => ["peer-mock-interview", "history", userId] as const,
+    analytics: () => ["peer-mock-interview", "analytics"] as const,
   },
 
   // Expert Mock Interview Sessions

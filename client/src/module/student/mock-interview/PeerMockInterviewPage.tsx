@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, MessageCircle, ShieldCheck, Star, Users, Check } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, MessageCircle, ShieldCheck, Star, Users, Check } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type { AxiosError } from "axios";
@@ -19,6 +19,7 @@ import type {
   PeerMatchCandidate,
   PeerLockedMatch,
   PeerMatchStrength,
+  PeerMockInterviewAnalytics,
 } from "../../../lib/types";
 
 const FOCUS_AREA_OPTIONS = ["DSA", "System Design", "Frontend", "Backend", "Behavioral", "Resume Review"];
@@ -409,6 +410,89 @@ function MatchListSection({
           Leave matching pool
         </Button>
       </div>
+    </div>
+  );
+}
+
+
+
+function FeedbackAnalyticsCard() {
+  const { data: analytics, isLoading } = useQuery<PeerMockInterviewAnalytics>({
+    queryKey: queryKeys.peerMockInterview.analytics(),
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/analytics");
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md mb-4">
+        <Loader2 className="w-5 h-5 animate-spin text-stone-400" />
+      </div>
+    );
+  }
+
+  if (!analytics || analytics.totalInterviews === 0) {
+    return null; // Don't show if no interviews
+  }
+
+  return (
+    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 mb-6">
+      <div className="flex items-center gap-3 mb-4 border-b border-stone-100 dark:border-white/5 pb-4">
+        <div className="w-10 h-10 bg-lime-400/10 text-lime-500 rounded-md flex items-center justify-center shrink-0">
+          <Star className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="font-bold text-stone-900 dark:text-stone-50">Feedback Analytics</h3>
+          <p className="text-xs text-stone-500">Aggregated from {analytics.totalInterviews} peer reviews</p>
+        </div>
+        <div className="ml-auto text-right">
+          <div className="text-2xl font-black text-stone-900 dark:text-stone-50 leading-none">
+            {analytics.averageRating.toFixed(1)}<span className="text-sm text-stone-400 font-normal">/5</span>
+          </div>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mt-1">Avg Rating</p>
+        </div>
+      </div>
+      
+      {(analytics.strengths.length > 0 || analytics.improvements.length > 0) ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          {analytics.strengths.length > 0 && (
+            <div className="space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" /> Identified Strengths
+              </span>
+              <ul className="space-y-2">
+                {analytics.strengths.map((str, i) => (
+                  <li key={i} className="text-sm text-stone-600 dark:text-stone-300 flex items-start gap-2 leading-relaxed">
+                    <span className="w-1.5 h-1.5 bg-lime-400 rounded-full shrink-0 mt-1.5" />
+                    {str}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {analytics.improvements.length > 0 && (
+            <div className="space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-orange-600 dark:text-orange-500 flex items-center gap-1.5">
+                <ArrowUpRight className="w-3.5 h-3.5" /> Areas for Improvement
+              </span>
+              <ul className="space-y-2">
+                {analytics.improvements.map((str, i) => (
+                  <li key={i} className="text-sm text-stone-600 dark:text-stone-300 flex items-start gap-2 leading-relaxed">
+                    <span className="w-1.5 h-1.5 bg-orange-400 rounded-full shrink-0 mt-1.5" />
+                    {str}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="text-xs text-stone-500 dark:text-stone-400 italic">
+          Complete more interviews with feedback to unlock AI thematic summaries.
+        </p>
+      )}
     </div>
   );
 }
@@ -916,7 +1000,7 @@ export default function PeerMockInterviewPage() {
               </div>
 
               {activeTab === "history" && currentUserId ? (
-                <HistorySection userId={currentUserId} />
+                <><FeedbackAnalyticsCard /><HistorySection userId={currentUserId} /></>
               ) : enabled && pairing ? (
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden p-6 space-y-6">
                   <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-4">

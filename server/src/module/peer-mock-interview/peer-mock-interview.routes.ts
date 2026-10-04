@@ -42,6 +42,14 @@ peerMockInterviewRouter.get(
   (req, res) => controller.getMatches(req, res)
 );
 
+// Analytics for the current user
+peerMockInterviewRouter.get(
+  "/analytics",
+  authMiddleware,
+  requireRole("STUDENT"),
+  (req, res) => controller.getAnalytics(req, res)
+);
+
 // Instantly pair with a candidate from the live match list
 peerMockInterviewRouter.post(
   "/matches/select",
