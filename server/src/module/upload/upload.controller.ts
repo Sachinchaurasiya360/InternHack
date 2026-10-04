@@ -251,22 +251,39 @@ export class UploadController {
       }
 
       const userId = req.user.id;
-      const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
 
-      let updatedResumes = current?.resumes ?? [];
-      if (updatedResumes.length >= MAX_RESUMES) {
-        const oldest = updatedResumes[0]!;
-        deleteFile(oldest);
-        updatedResumes = [...updatedResumes.slice(1), fileUrl];
-      } else {
-        updatedResumes = [...updatedResumes, fileUrl];
-      }
+      const { user, evictedResume } = await prisma.$transaction(async (tx) => {
+        // Serialize concurrent uploads for the same user: acquire a row lock so
+        // two parallel uploads cannot both read the same resumes array and then
+        // overwrite each other's write (lost update).
+        await tx.$queryRaw`SELECT id FROM "user" WHERE id = ${userId} FOR UPDATE`;
 
-      const user = await prisma.user.update({
-        where: { id: userId },
-        data: { resumes: updatedResumes },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+        const current = await tx.user.findUnique({
+          where: { id: userId },
+          select: { resumes: true },
+        });
+
+        let updatedResumes = current?.resumes ?? [];
+        let evictedResume: string | undefined;
+        if (updatedResumes.length >= MAX_RESUMES) {
+          evictedResume = updatedResumes[0]!;
+          updatedResumes = [...updatedResumes.slice(1), fileUrl];
+        } else {
+          updatedResumes = [...updatedResumes, fileUrl];
+        }
+
+        const updated = await tx.user.update({
+          where: { id: userId },
+          data: { resumes: updatedResumes },
+          select: { id: true, name: true, email: true, role: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+        });
+
+        return { user: updated, evictedResume };
       });
+
+      // S3 deletes are not transactional and cannot be rolled back, so the
+      // evicted file is removed only after the DB transaction commits.
+      if (evictedResume) deleteFile(evictedResume);
 
       const signedResumes = await signUrls(user.resumes);
 
