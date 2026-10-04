@@ -159,11 +159,18 @@ async function searchJobsFromFilters(filters: any): Promise<any[]> {
   }));
 }
 
+const ALLOWED_PREF_KEYS = new Set([
+  "desiredRoles", "desiredSkills", "desiredLocations",
+  "minSalary", "workMode", "experienceLevel", "domains",
+]);
+
 async function upsertPreferences(userId: number, updatedPreferences: any): Promise<boolean> {
   if (!updatedPreferences) return false;
   const updates: Record<string, any> = {};
   for (const [key, val] of Object.entries(updatedPreferences)) {
-    if (val !== null && val !== undefined) updates[key] = val;
+    if (ALLOWED_PREF_KEYS.has(key) && val !== null && val !== undefined) {
+      updates[key] = val;
+    }
   }
   if (Object.keys(updates).length === 0) return false;
   await prisma.userJobPreference.upsert({
