@@ -3,6 +3,7 @@ import { useLayoutStore } from "../../lib/layout.store";
 import { useStudentSidebar } from "../../components/StudentSidebar";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
+import { CommandPalette } from "../../components/CommandPalette";
 
 export default function StudentLayout() {
   const immersive = useLayoutStore((s) => s.immersive);
@@ -11,6 +12,7 @@ export default function StudentLayout() {
   if (immersive) {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <CommandPalette />
         <main className="p-4">
           <Outlet />
         </main>
@@ -21,6 +23,7 @@ export default function StudentLayout() {
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <SEO title="Student Dashboard" noIndex />
+      <CommandPalette />
       {/* Navbar hidden on mobile (mobile top bar is in StudentSidebar) */}
       <div className="hidden lg:block">
         <Navbar sidebarOffset={sidebarWidth} />
