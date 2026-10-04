@@ -20,6 +20,11 @@ export class BehavioralController {
       }
 
       const isPremium = await isPremiumUser(req.user.id);
+      if (!isPremium) {
+        res.status(403).json({ message: "Premium subscription required for behavioral evaluation" });
+        return;
+      }
+
       const evaluation = await this.behavioralService.evaluate(parsed.data);
 
       res.json({ evaluation, isPremium });
