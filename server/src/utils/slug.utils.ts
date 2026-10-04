@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 /**
  * Convert a string to a URL-safe slug. Lowercases, strips diacritics, replaces
  * any run of non-alphanumeric characters with a single hyphen, and trims
@@ -16,6 +18,6 @@ export function slugify(input: string, maxLength?: number): string {
 /** Slug with a short random suffix for uniqueness when persistence isn't easy. */
 export function slugifyWithSuffix(input: string, fallback = "item"): string {
   const base = slugify(input) || fallback;
-  const suffix = Math.random().toString(36).slice(2, 6);
+  const suffix = randomUUID().split("-")[0];
   return `${base}-${suffix}`;
 }

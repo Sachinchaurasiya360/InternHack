@@ -24,14 +24,14 @@ describe("slug.utils", () => {
   });
 
   describe("slugifyWithSuffix", () => {
-    it("should append a random 4-character suffix for uniqueness", () => {
+    it("should append a random 8-character hex suffix for uniqueness", () => {
       const slug = slugifyWithSuffix("My Awesome Title");
-      expect(slug).toMatch(/^my-awesome-title-[a-z0-9]{4}$/);
+      expect(slug).toMatch(/^my-awesome-title-[a-f0-9]{8}$/);
     });
 
     it("should use fallback if title generates an empty slug", () => {
       const slug = slugifyWithSuffix("!!!", "custom-fallback");
-      expect(slug).toMatch(/^custom-fallback-[a-z0-9]{4}$/);
+      expect(slug).toMatch(/^custom-fallback-[a-f0-9]{8}$/);
     });
   });
 });
