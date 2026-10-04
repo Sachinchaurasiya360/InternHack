@@ -15,6 +15,7 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { queryKeys } from "../../../lib/query-keys";
 import api from "../../../lib/axios";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { InterviewExperience, InterviewExperienceCompany, InterviewListResponse } from "../../../lib/types";
 import {
   deleteExperience,
@@ -32,6 +33,7 @@ export default function AdminInterviewsPage() {
   const qc = useQueryClient();
   const [status, setStatus] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState<InterviewExperience | null>(null);
   const [linkTarget, setLinkTarget] = useState<InterviewExperience | null>(null);
@@ -39,16 +41,16 @@ export default function AdminInterviewsPage() {
   const queryParams = useMemo(
     () => ({
       page,
-      limit: 20,
+      limit,
       status,
       search: search || undefined,
       sort: "recent" as const,
     }),
-    [page, status, search],
+    [page, limit, status, search],
   );
 
   const { data, isLoading } = useQuery<InterviewListResponse>({
-    queryKey: queryKeys.interviews.list({ admin: 1, status, page, search }),
+    queryKey: queryKeys.interviews.list({ admin: 1, status, page, limit, search }),
     queryFn: () => listExperiences(queryParams),
   });
 
@@ -276,27 +278,17 @@ export default function AdminInterviewsPage() {
         </div>
       </div>
 
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-3 py-1.5 rounded text-sm text-gray-300 bg-gray-800 disabled:opacity-40 hover:bg-gray-700 transition-colors"
-          >
-            Prev
-          </button>
-          <span className="text-sm text-gray-400">
-            {page} / {totalPages}
-          </span>
-          <button
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1.5 rounded text-sm text-gray-300 bg-gray-800 disabled:opacity-40 hover:bg-gray-700 transition-colors"
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
+      <PaginationControls
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        showingInfo={{ total: data?.pagination.total ?? 0, limit }}
+        pageSize={limit}
+        onPageSizeChange={(size) => {
+          setLimit(size);
+          setPage(1);
+        }}
+      />
 
       {preview ? (
         <PreviewModal

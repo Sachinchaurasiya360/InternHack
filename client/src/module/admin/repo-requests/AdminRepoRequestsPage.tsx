@@ -75,6 +75,7 @@ export default function AdminRepoRequestsPage() {
 const [domainFilter, setDomainFilter] = useState("");
 const [difficultyFilter, setDifficultyFilter] = useState("");
 const [page, setPage] = useState(1);
+const [limit, setLimit] = useState(20);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchRequests = async () => {
@@ -86,7 +87,7 @@ const [page, setPage] = useState(1);
     domain: domainFilter,
     difficulty: difficultyFilter,
     page,
-    limit: 20,
+    limit,
   },
 });
       setRequests(res.data.requests);
@@ -105,7 +106,7 @@ const [page, setPage] = useState(1);
     // Selection is cleared when page or filters change because the list items change
     setSelectedIds([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, domainFilter, difficultyFilter, page]);
+  }, [statusFilter, domainFilter, difficultyFilter, page, limit]);
 
   // Reset page to 1 when filters change
   const handleFilterChange = (setter: (v: string) => void, value: string) => {
@@ -270,6 +271,12 @@ const [page, setPage] = useState(1);
               currentPage={page}
               totalPages={pagination.totalPages}
               onPageChange={setPage}
+              showingInfo={{ total: pagination.total, limit }}
+              pageSize={limit}
+              onPageSizeChange={(size) => {
+                setLimit(size);
+                setPage(1);
+              }}
             />
           )}
         </div>

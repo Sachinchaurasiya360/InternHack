@@ -15,11 +15,12 @@ export default function ErrorLogsPage() {
   const [pathSearch, setPathSearch] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(20);
 
-  const fetchLogs = async (page = 1) => {
+  const fetchLogs = async (page = 1, size = limit) => {
     setLoading(true);
     try {
-      const params: Record<string, string | number> = { page, limit: 20 };
+      const params: Record<string, string | number> = { page, limit: size };
       if (statusGroup) params.statusGroup = statusGroup;
       if (method) params.method = method;
       if (pathSearch) params.path = pathSearch;
@@ -34,7 +35,7 @@ export default function ErrorLogsPage() {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { fetchLogs(); }, [statusGroup, method]);
+  useEffect(() => { fetchLogs(); }, [statusGroup, method, limit]);
 
   useEffect(() => {
     const timeout = setTimeout(() => fetchLogs(), 400);
@@ -128,6 +129,8 @@ export default function ErrorLogsPage() {
           totalPages={pagination.totalPages}
           onPageChange={fetchLogs}
           showingInfo={{ total: pagination.total, limit: pagination.limit }}
+          pageSize={limit}
+          onPageSizeChange={(size) => setLimit(size)}
         />
       </div>
     </div>

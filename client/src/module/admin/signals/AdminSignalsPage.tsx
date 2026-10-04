@@ -14,6 +14,7 @@ import {
 import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { queryKeys } from "../../../lib/query-keys";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { FundingSignal, FundingSignalListResponse } from "../../../lib/types";
 import {
   cleanupNoise,
@@ -114,6 +115,7 @@ function signalToForm(sig: FundingSignal): FormState {
 export default function AdminSignalsPage() {
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [statusFilter, setStatusFilter] = useState<"ACTIVE" | "STALE" | "ARCHIVED" | "ALL">(
     "ACTIVE",
   );
@@ -126,12 +128,12 @@ export default function AdminSignalsPage() {
   const queryParams = useMemo(
     () => ({
       page,
-      limit: 20,
+      limit,
       status: statusFilter,
       source: sourceFilter || undefined,
       search: search || undefined,
     }),
-    [page, statusFilter, sourceFilter, search],
+    [page, limit, statusFilter, sourceFilter, search],
   );
 
   const { data, isLoading } = useQuery<FundingSignalListResponse>({
@@ -438,27 +440,17 @@ export default function AdminSignalsPage() {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-3 py-1.5 rounded text-sm text-gray-300 bg-gray-800 disabled:opacity-40 hover:bg-gray-700 transition-colors"
-          >
-            Prev
-          </button>
-          <span className="text-sm text-gray-400">
-            {page} / {totalPages}
-          </span>
-          <button
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1.5 rounded text-sm text-gray-300 bg-gray-800 disabled:opacity-40 hover:bg-gray-700 transition-colors"
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
+      <PaginationControls
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        showingInfo={{ total: data?.pagination.total ?? 0, limit }}
+        pageSize={limit}
+        onPageSizeChange={(size) => {
+          setLimit(size);
+          setPage(1);
+        }}
+      />
 
       {/* Ingest logs */}
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">

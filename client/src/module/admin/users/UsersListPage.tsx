@@ -14,11 +14,12 @@ export default function UsersListPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(20);
 
-  const fetchUsers = async (page = 1) => {
+  const fetchUsers = async (page = 1, size = limit) => {
     setLoading(true);
     try {
-      const params: Record<string, string | number> = { page, limit: 20 };
+      const params: Record<string, string | number> = { page, limit: size };
       if (search) params.search = search;
       if (roleFilter) params.role = roleFilter;
       const { data } = await api.get("/admin/users", { params });
@@ -32,7 +33,7 @@ export default function UsersListPage() {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { fetchUsers(); }, [roleFilter]);
+  useEffect(() => { fetchUsers(); }, [roleFilter, limit]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,6 +169,8 @@ export default function UsersListPage() {
           totalPages={pagination.totalPages}
           onPageChange={fetchUsers}
           showingInfo={{ total: pagination.total, limit: pagination.limit }}
+          pageSize={limit}
+          onPageSizeChange={(size) => setLimit(size)}
         />
       </div>
     </div>

@@ -28,12 +28,13 @@ export default function AdminContributionsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const fetchContributions = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/contributions", { params: { status: statusFilter, page, limit: 20 } });
+      const res = await api.get("/admin/contributions", { params: { status: statusFilter, page, limit } });
       setContributions(res.data.contributions);
       setPagination(res.data.pagination);
     } catch {
@@ -46,7 +47,7 @@ export default function AdminContributionsPage() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setPage(1); }, [statusFilter]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { fetchContributions(); }, [statusFilter, page]);
+  useEffect(() => { fetchContributions(); }, [statusFilter, page, limit]);
 
   const handleStatus = async (id: number, status: "APPROVED" | "REJECTED") => {
     try {
@@ -147,6 +148,12 @@ export default function AdminContributionsPage() {
           currentPage={page}
           totalPages={pagination.totalPages}
           onPageChange={setPage}
+          showingInfo={{ total: pagination.total, limit }}
+          pageSize={limit}
+          onPageSizeChange={(size) => {
+            setLimit(size);
+            setPage(1);
+          }}
         />
       )}
     </div>

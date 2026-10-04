@@ -18,7 +18,7 @@ export default function AdminSubscribersPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const limit = 50;
+  const [limit, setLimit] = useState(50);
 
   const fetchSubscribers = useCallback(() => {
     setLoading(true);
@@ -33,7 +33,7 @@ export default function AdminSubscribersPage() {
         toast.error("Failed to fetch subscribers");
       })
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, limit]);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchSubscribers(); }, [fetchSubscribers]);
@@ -127,6 +127,12 @@ export default function AdminSubscribersPage() {
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
+            showingInfo={{ total, limit }}
+            pageSize={limit}
+            onPageSizeChange={(size) => {
+              setLimit(size);
+              setPage(1);
+            }}
           />
         </>
       )}

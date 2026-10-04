@@ -101,6 +101,7 @@ export default function AdminAptitudePage() {
   const [editingQ, setEditingQ] = useState<AptitudeQuestion | null>(null);
   const [qPage, setQPage] = useState(1);
   const [qTotal, setQTotal] = useState(0);
+  const [qLimit, setQLimit] = useState(20);
 
   const fetchCategories = useCallback(() => {
     setLoading(true);
@@ -118,11 +119,11 @@ export default function AdminAptitudePage() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
-  const fetchQuestions = useCallback((topicId: number, page: number = 1) => {
+  const fetchQuestions = useCallback((topicId: number, page: number = 1, size: number = qLimit) => {
     setQuestionsLoading(true);
     api
       .get("/admin/aptitude/questions", {
-        params: { topicId, page, limit: 20 },
+        params: { topicId, page, limit: size },
       })
       .then((res) => {
         setQuestions(res.data.questions);
@@ -131,7 +132,7 @@ export default function AdminAptitudePage() {
         setQuestionsLoading(false);
       })
       .catch(() => setQuestionsLoading(false));
-  }, []);
+  }, [qLimit]);
 
   // Category CRUD
   const handleSaveCategory = async () => {
@@ -568,8 +569,14 @@ export default function AdminAptitudePage() {
 
         <PaginationControls
           currentPage={qPage}
-          totalPages={Math.ceil(qTotal / 20)}
+          totalPages={Math.ceil(qTotal / qLimit)}
           onPageChange={(p) => fetchQuestions(selectedTopic.id, p)}
+          showingInfo={{ total: qTotal, limit: qLimit }}
+          pageSize={qLimit}
+          onPageSizeChange={(size) => {
+            setQLimit(size);
+            fetchQuestions(selectedTopic.id, 1, size);
+          }}
         />
       </div>
       </>

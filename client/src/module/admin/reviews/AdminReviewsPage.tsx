@@ -14,11 +14,12 @@ export default function AdminReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
 
   const fetchReviews = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/reviews", { params: { status: statusFilter, page, limit: 20 } });
+      const res = await api.get("/admin/reviews", { params: { status: statusFilter, page, limit } });
       setReviews(res.data.reviews);
       setPagination(res.data.pagination);
     } catch {
@@ -31,7 +32,7 @@ export default function AdminReviewsPage() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setPage(1); }, [statusFilter]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { fetchReviews(); }, [statusFilter, page]);
+  useEffect(() => { fetchReviews(); }, [statusFilter, page, limit]);
 
   const handleStatus = async (id: number, status: "APPROVED" | "REJECTED") => {
     try {
@@ -126,6 +127,12 @@ export default function AdminReviewsPage() {
           currentPage={page}
           totalPages={pagination.totalPages}
           onPageChange={setPage}
+          showingInfo={{ total: pagination.total, limit }}
+          pageSize={limit}
+          onPageSizeChange={(size) => {
+            setLimit(size);
+            setPage(1);
+          }}
         />
       )}
     </div>

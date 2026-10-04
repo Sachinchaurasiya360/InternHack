@@ -28,6 +28,7 @@ const EMPTY_FORM = {
 export default function AdminExternalJobsPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -65,9 +66,9 @@ export default function AdminExternalJobsPage() {
   }, []);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin-external-jobs", page, search],
+    queryKey: ["admin-external-jobs", page, limit, search],
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(page), limit: "20" });
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
       if (search) params.set("search", search);
       const res = await api.get(`/admin/external-jobs?${params}`);
       return res.data as { jobs: AdminJob[]; total: number; totalPages: number };
@@ -364,6 +365,12 @@ export default function AdminExternalJobsPage() {
           currentPage={page}
           totalPages={data.totalPages}
           onPageChange={setPage}
+          showingInfo={{ total: data.total, limit }}
+          pageSize={limit}
+          onPageSizeChange={(size) => {
+            setLimit(size);
+            setPage(1);
+          }}
         />
       )}
     </div>

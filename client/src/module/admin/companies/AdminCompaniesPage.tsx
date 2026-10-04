@@ -13,11 +13,12 @@ export default function AdminCompaniesPage() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/companies", { params: { page, limit: 20 } });
+      const res = await api.get("/admin/companies", { params: { page, limit } });
       setCompanies(res.data.companies);
       setPagination(res.data.pagination);
     } catch {
@@ -25,7 +26,7 @@ export default function AdminCompaniesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page]);
+  }, [page, limit]);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
@@ -127,6 +128,12 @@ export default function AdminCompaniesPage() {
           currentPage={page}
           totalPages={pagination.totalPages}
           onPageChange={setPage}
+          showingInfo={{ total: pagination.total, limit }}
+          pageSize={limit}
+          onPageSizeChange={(size) => {
+            setLimit(size);
+            setPage(1);
+          }}
         />
       )}
     </div>
