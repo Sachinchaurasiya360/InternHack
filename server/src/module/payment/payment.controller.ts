@@ -46,13 +46,14 @@ export class PaymentController {
       res.json({ received: true });
     } catch (err) {
       console.error("[Webhook] Error processing webhook:", err);
-      // Still return 200 to avoid retries for known errors
       // Return 401 only for signature verification failures
       if (err instanceof Error && err.message.includes("signature")) {
         res.status(401).json({ error: "Invalid signature" });
         return;
       }
-      next(err);
+      // Always return 200 to acknowledge receipt and avoid Dodo retries;
+      // transient/known errors must not trigger a retry storm or duplicate emails.
+      res.json({ received: true });
     }
   }
 
