@@ -210,34 +210,33 @@ export class AdminPlatformService {
   async deleteUser(userId: number, adminId: number) {
     if (userId === adminId) throw new Error("Cannot delete yourself");
 
-    // Fetch user + their adminProfile in one round-trip
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { adminProfile: true },
+    await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        include: { adminProfile: true },
+      });
+      if (!user) throw new Error("User not found");
+
+      if (user.role === "ADMIN") {
+        const [deleterProfile, superAdminCount] = await Promise.all([
+          tx.adminProfile.findUnique({ where: { userId: adminId } }),
+          user.adminProfile?.tier === "SUPER_ADMIN"
+            ? tx.adminProfile.count({ where: { tier: "SUPER_ADMIN", isActive: true } })
+            : Promise.resolve(null),
+        ]);
+
+        if (!deleterProfile || deleterProfile.tier !== "SUPER_ADMIN")
+          throw new Error("Only SUPER_ADMIN can delete admin users");
+
+        if (superAdminCount !== null && superAdminCount <= 1)
+          throw new Error("Cannot delete the last SUPER_ADMIN");
+      }
+
+      await tx.user.update({ where: { id: userId }, data: { tokenVersion: { increment: 1 } } });
+      invalidateVersionCache(userId);
+      await tx.user.delete({ where: { id: userId } });
+      invalidateVersionCache(userId);
     });
-    if (!user) throw new Error("User not found");
-
-    if (user.role === "ADMIN") {
-      // Batch: fetch deleter's profile alongside a SUPER_ADMIN count when needed
-      const [deleterProfile, superAdminCount] = await Promise.all([
-        prisma.adminProfile.findUnique({ where: { userId: adminId } }),
-        user.adminProfile?.tier === "SUPER_ADMIN"
-          ? prisma.adminProfile.count({ where: { tier: "SUPER_ADMIN", isActive: true } })
-          : Promise.resolve(null),
-      ]);
-
-      if (!deleterProfile || deleterProfile.tier !== "SUPER_ADMIN")
-        throw new Error("Only SUPER_ADMIN can delete admin users");
-
-      if (superAdminCount !== null && superAdminCount <= 1)
-        throw new Error("Cannot delete the last SUPER_ADMIN");
-    }
-
-    // Invalidate all active sessions before deleting the user
-    await prisma.user.update({ where: { id: userId }, data: { tokenVersion: { increment: 1 } } });
-    invalidateVersionCache(userId);
-    await prisma.user.delete({ where: { id: userId } });
-    invalidateVersionCache(userId);
   }
 
   async getErrorLogs(query: {
