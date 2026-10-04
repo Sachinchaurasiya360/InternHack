@@ -190,6 +190,7 @@ export class ApplicationTrackerService {
     const existing = await prisma.trackedJobApplication.findFirst({ where: { id, userId } });
     if (!existing) return null;
     const events = Array.isArray(existing.events) ? existing.events as Prisma.InputJsonValue[] : [];
+    if (events.length >= 100) return null;
     const nextEvent = { ...event, createdAt: new Date().toISOString() } as Prisma.InputJsonObject;
     return prisma.trackedJobApplication.update({
       where: { id },
