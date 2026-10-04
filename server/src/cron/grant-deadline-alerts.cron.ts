@@ -7,7 +7,7 @@ import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
-const ALERT_DAYS = [30, 7, 3, 1];
+const ALERT_DAYS = [30, 7, 3, 1, 0];
 
 export async function runGrantDeadlineAlerts(): Promise<void> {
   const now = new Date();
@@ -32,8 +32,8 @@ export async function runGrantDeadlineAlerts(): Promise<void> {
     if (!grant.deadline) continue;
     if (!grant.user.isActive || !grant.user.isVerified || grant.user.unsubscribeDigest) continue;
 
-    const diffMs = grant.deadline.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+const diffMs = grant.deadline.getTime() - now.getTime();
+const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) continue;
     if (!ALERT_DAYS.includes(diffDays)) continue;
