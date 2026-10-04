@@ -63,7 +63,7 @@ export class ResumeService {
       domain: String(repo.domain),
       difficulty: String(repo.difficulty),
     }));
-    const completedStepCount = firstPrProgress?.completedStepIds.length ?? 0;
+    const completedStepCount = Array.isArray(firstPrProgress?.completedStepIds) ? firstPrProgress.completedStepIds.length : 0;
     const completedGuides =
       completedStepCount > 0
         ? [{ name: "First PR Guide", completedSteps: completedStepCount, totalSteps: FIRST_PR_TOTAL_STEPS }]
