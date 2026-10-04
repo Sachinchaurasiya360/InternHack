@@ -68,7 +68,7 @@ export class StudentService {
 
   private async checkApplicationMilestone(studentId: number) {
     const total = await prisma.externalJobApplication.count({ where: { studentId } });
-    if (total === 10) {
+    if (total >= 10) {
       const user = await prisma.user.findUnique({
         where: { id: studentId },
         select: { name: true, email: true, unsubscribeDigest: true },
