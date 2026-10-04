@@ -21,6 +21,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
 import { CARD_BASE } from "../../../lib/card-styles";
+import { EmptyState } from "../../../components/ui/EmptyState";
 
 
 interface Internship {
@@ -260,17 +261,19 @@ export default function GovInternshipsPage() {
             ))}
           </div>
         ) : internships.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center mb-5">
-              <Landmark className="w-7 h-7 text-stone-500" />
-            </div>
-            <h3 className="text-stone-900 dark:text-stone-50 font-bold text-base mb-2">
-              No internships found
-            </h3>
-            <p className="text-stone-500 text-sm max-w-xs leading-relaxed mx-auto">
-              Try adjusting your search or category filter.
-            </p>
-          </div>
+          <EmptyState
+            icon={<Landmark className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No internships found"
+            description="Try adjusting your search or category filter."
+            action={{
+              label: "Clear filters",
+              onClick: () => {
+                setSearchInput("");
+                setCategory("");
+                setPage(1);
+              },
+            }}
+          />
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

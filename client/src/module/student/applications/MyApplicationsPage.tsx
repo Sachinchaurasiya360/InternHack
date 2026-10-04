@@ -6,7 +6,6 @@ import {
   Briefcase,
   MapPin,
   Building2,
-  ArrowUpRight,
   Clock,
   Search,
   ExternalLink,
@@ -615,23 +614,14 @@ export default function MyApplicationsPage() {
 
       {/* List */}
       {totalAll === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-          <div className="w-16 h-16 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
-            <Briefcase className="w-7 h-7 text-stone-500" />
-          </div>
-          <h3 className="text-lg font-bold text-stone-900 dark:text-stone-50 mb-2">
-            No applications yet.
-          </h3>
-          <p className="text-sm text-stone-500 mb-6 max-w-sm mx-auto">
-            Apply from InternHack jobs or connect the browser extension to start tracking your pipeline here.
-          </p>
-          <Link
-            to="/external-jobs"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-sm font-semibold no-underline transition-colors"
-          >
-            Browse jobs <ArrowUpRight className="w-4 h-4" />
-          </Link>
-        </div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Briefcase className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No applications yet"
+            description="Apply from InternHack jobs or connect the browser extension to start tracking your pipeline here."
+            action={{ label: "Browse jobs", to: "/external-jobs" }}
+          />
+        </motion.div>
       ) : filtered.length === 0 ? (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <EmptyState

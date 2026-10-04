@@ -1,5 +1,7 @@
 import { useEffect, useState, memo } from "react";
+import { Link } from "react-router";
 import type { ReactNode } from "react";
+import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -220,9 +222,13 @@ export default function RoadmapCertificatesGalleryPage() {
               No certificates yet
             </h2>
 
-            <p className="text-stone-400">
+            <p className="text-stone-400 mb-6">
               Complete a roadmap to unlock certificates.
             </p>
+
+            <Button asChild variant="primary" size="md">
+              <Link to="/student/roadmaps">Browse roadmaps</Link>
+            </Button>
           </div>
         )}
 
