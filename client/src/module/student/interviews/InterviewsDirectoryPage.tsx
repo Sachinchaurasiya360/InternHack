@@ -13,6 +13,7 @@ import {
   Clock,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import { queryKeys } from "../../../lib/query-keys";
 import type {
   InterviewCompanyListResponse,
@@ -186,7 +187,7 @@ export default function InterviewsDirectoryPage() {
         </div>
       ) : view === "companies" ? (
         companies.length === 0 ? (
-          <EmptyState onShare />
+          <InterviewsEmptyState onShare />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {companies.map((c) => (
@@ -228,7 +229,7 @@ export default function InterviewsDirectoryPage() {
           </div>
         )
       ) : recent.length === 0 ? (
-        <EmptyState onShare />
+        <InterviewsEmptyState onShare={true} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {recent.map((e) => (
@@ -317,24 +318,18 @@ export default function InterviewsDirectoryPage() {
   );
 }
 
-function EmptyState({ onShare }: { onShare: boolean }) {
+function InterviewsEmptyState({ onShare }: { onShare: boolean }) {
   return (
-    <div className="text-center py-20 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
-      <div className="w-16 h-16 mx-auto bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center mb-4">
-        <MessageCircle className="w-7 h-7 text-stone-500" />
-      </div>
-      <p className="text-stone-500 text-sm mb-4 max-w-xs mx-auto leading-relaxed">
-        No interview experiences yet. Be the first to share what a company asked you.
-      </p>
-      {onShare ? (
-        <Link
-          to="/student/interviews/share"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-sm font-semibold transition-colors border-0 cursor-pointer no-underline"
-        >
-          <Plus className="w-4 h-4" />
-          Share yours
-        </Link>
-      ) : null}
-    </div>
+    <EmptyState
+      icon={<MessageCircle className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+      title="No interview experiences yet"
+      description="Be the first to share what a company asked you."
+      action={
+        onShare ? {
+          label: "Share yours",
+          to: "/student/interviews/share"
+        } : undefined
+      }
+    />
   );
 }

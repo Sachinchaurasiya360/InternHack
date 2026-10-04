@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowLeft, BadgeCheck, CalendarClock, ExternalLink, Loader2, Lock, MessageCircle, ShieldCheck, Star, Users, Check } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import api from "../../../lib/axios";
 import type { AxiosError } from "axios";
 import { Button } from "../../../components/ui/button";
@@ -432,9 +433,12 @@ function HistorySection({ userId }: { userId: number }) {
 
   if (!pairings || pairings.length === 0) {
     return (
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-8 text-center">
-        <p className="text-sm text-stone-500">No mock interview history found.</p>
-      </div>
+      <EmptyState
+        icon={<CalendarClock className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+        title="No mock interviews yet"
+        description="Set your availability to start practicing with peers."
+        action={{ label: "Set Availability", onClick: () => document.getElementById("preferences-section")?.scrollIntoView({ behavior: "smooth" }) }}
+      />
     );
   }
 
@@ -1188,7 +1192,7 @@ export default function PeerMockInterviewPage() {
               )}
             </div>
             {/* Right Column: Preferences Settings */}
-            <div className="space-y-6">
+            <div id="preferences-section" className="space-y-6">
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                 <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950/40">
                   <div className="flex items-center gap-2">
