@@ -41,7 +41,7 @@ export async function runPeerMockInterviewReminders(): Promise<void> {
   for (const pairing of upcomingPairings) {
     if (!pairing.scheduledAt) continue;
 
-    const diffDays = Math.ceil((pairing.scheduledAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor((pairing.scheduledAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     if (!REMINDER_DAYS.includes(diffDays)) continue;
 
     const subject = diffDays === 0 ? "Reminder: Mock Interview today!" : "Reminder: Mock Interview tomorrow!";
