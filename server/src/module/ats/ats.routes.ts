@@ -10,6 +10,7 @@ import { LatexChatService } from "./latex-chat.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
+import { requirePremium } from "../../middleware/premium.middleware.js";
 
 const atsService = new AtsService();
 const atsController = new AtsController(atsService);
@@ -36,12 +37,12 @@ atsRouter.use(authMiddleware, requireRole("STUDENT"));
 
 atsRouter.get("/usage", (req, res, next) => atsController.getUsageStats(req, res, next));
 atsRouter.post("/score", usageLimit("ATS_SCORE", "monthly"), (req, res, next) => atsController.scoreResume(req, res, next));
-atsRouter.post("/apply-suggestions", usageLimit("GENERATE_RESUME"), (req, res, next) => atsController.applySuggestions(req, res, next));
+atsRouter.post("/apply-suggestions", requirePremium, usageLimit("GENERATE_RESUME"), (req, res, next) => atsController.applySuggestions(req, res, next));
 atsRouter.post("/cover-letter", usageLimit("COVER_LETTER"), (req, res, next) => coverLetterController.generate(req, res, next));
 atsRouter.get("/cover-letter/history", (req, res, next) => coverLetterController.getHistory(req, res, next));
 atsRouter.get("/cover-letter/history/:id", (req, res, next) => coverLetterController.getOne(req, res, next));
 atsRouter.delete("/cover-letter/history/:id", (req, res, next) => coverLetterController.deleteOne(req, res, next));
 atsRouter.post("/generate-resume", usageLimit("GENERATE_RESUME"), (req, res, next) => resumeGenController.generate(req, res, next));
 atsRouter.get("/resume-history", (req, res, next) => resumeGenController.getHistory(req, res, next));
-atsRouter.post("/latex-chat", usageLimit("GENERATE_RESUME"), (req, res, next) => latexChatController.chat(req, res, next));
-atsRouter.post("/latex-optimize-jd", usageLimit("GENERATE_RESUME"), (req, res, next) => latexChatController.optimizeForJD(req, res, next));
+atsRouter.post("/latex-chat", requirePremium, usageLimit("GENERATE_RESUME"), (req, res, next) => latexChatController.chat(req, res, next));
+atsRouter.post("/latex-optimize-jd", requirePremium, usageLimit("GENERATE_RESUME"), (req, res, next) => latexChatController.optimizeForJD(req, res, next));

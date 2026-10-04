@@ -39,7 +39,7 @@ export async function requirePremium(
   ) {
     res
       .status(403)
-      .json({ message: "Premium subscription required for peer mock interviews" });
+      .json({ message: "Premium subscription required" });
     return;
   }
 

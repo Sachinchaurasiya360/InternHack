@@ -6,7 +6,7 @@ import { prisma } from "../../database/db.js";
 import { DAILY_LIMITS, MONTHLY_LIMITS, getPlanTier, type UsageAction } from "../../config/usage-limits.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { atsScoreReportHtml } from "../../utils/email-templates.js";
-import { isPremiumUser } from "../../utils/premium.utils.js";
+
 
 export class AtsController {
   constructor(private readonly atsService: AtsService) {}
@@ -111,12 +111,6 @@ export class AtsController {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
-        return;
-      }
-
-      const isPremium = await isPremiumUser(req.user.id);
-      if (!isPremium) {
-        res.status(403).json({ message: "Premium subscription required to apply AI suggestions" });
         return;
       }
 

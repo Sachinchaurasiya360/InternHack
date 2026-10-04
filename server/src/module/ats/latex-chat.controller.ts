@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { LatexChatService } from "./latex-chat.service.js";
 import { latexChatSchema, latexJDOptimizeSchema } from "./latex-chat.validation.js";
-import { isPremiumUser } from "../../utils/premium.utils.js";
 
 export class LatexChatController {
   constructor(private readonly chatService: LatexChatService) {}
@@ -10,12 +9,6 @@ export class LatexChatController {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
-        return;
-      }
-
-      const isPremium = await isPremiumUser(req.user.id);
-      if (!isPremium) {
-        res.status(403).json({ message: "Premium subscription required to use AI Resume Assistant" });
         return;
       }
 
@@ -37,12 +30,6 @@ export class LatexChatController {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
-        return;
-      }
-
-      const isPremium = await isPremiumUser(req.user.id);
-      if (!isPremium) {
-        res.status(403).json({ message: "Premium subscription required to use AI Resume Assistant" });
         return;
       }
 
