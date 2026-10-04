@@ -28,7 +28,7 @@ function FounderCard({ founder }: { founder: YCFounder }) {
       {founder.imageUrl ? (
         <img
           src={founder.imageUrl}
-          alt={founder.name}
+          alt={`${founder.name}`}
           className="w-14 h-14 rounded-md object-cover border border-stone-200 dark:border-white/10 shrink-0"
         />
       ) : (

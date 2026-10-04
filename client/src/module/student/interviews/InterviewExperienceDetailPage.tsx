@@ -359,7 +359,7 @@ export default function InterviewExperienceDetailPage() {
                   {!experience.isAnonymous && experience.user?.profilePic ? (
                     <img
                       src={experience.user.profilePic}
-                      alt=""
+                      alt={`${experience.user.name}`}
                       className="w-full h-full object-cover"
                     />
                   ) : (

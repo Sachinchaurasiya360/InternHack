@@ -242,7 +242,7 @@ function MatchCard({
           {match.profilePic ? (
             <img
               src={match.profilePic}
-              alt={match.name}
+              alt={`${match.name}`}
               className="w-11 h-11 rounded object-cover border border-stone-200 dark:border-white/10 shrink-0"
             />
           ) : (

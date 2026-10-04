@@ -50,7 +50,7 @@ export function IdentityCard({
       {/* Cover band */}
       <div className="h-24 bg-stone-900 dark:bg-stone-950 relative group/banner overflow-hidden">
         {coverImage ? (
-          <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+          <img src={coverImage} alt="" className="w-full h-full object-cover" />
         ) : (
           <>
             <div
@@ -84,7 +84,7 @@ export function IdentityCard({
         <div className="relative group mb-3 w-20">
           <div className="w-20 h-20 rounded-md bg-white dark:bg-stone-900 border-2 border-white dark:border-stone-900 shadow overflow-hidden">
             {profilePic ? (
-              <img src={profilePic} alt={name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+              <img src={profilePic} alt={`${name}`} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
             ) : (
               <div className="w-full h-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
                 <User className="w-8 h-8 text-stone-400" />

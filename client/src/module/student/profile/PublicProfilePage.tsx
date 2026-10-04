@@ -151,7 +151,7 @@ export default function PublicProfilePage() {
           <div className="flex items-end gap-5">
             <div className="w-28 h-28 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-3xl font-bold overflow-hidden shrink-0">
               {profile.profilePic ? (
-                <img src={profile.profilePic} alt={profile.name} className="w-28 h-28 rounded-2xl object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                <img src={profile.profilePic} alt={`${profile.name}`} className="w-28 h-28 rounded-2xl object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
               ) : (
                 <User className="w-12 h-12 text-gray-400 dark:text-gray-500" />
               )}

@@ -308,7 +308,7 @@ export default function UserDetailPage() {
             {user.coverImage && (
               <div className="mb-4">
                 <span className="text-gray-500 text-xs block mb-2">Cover Image</span>
-                <img src={user.coverImage} alt="Cover" className="w-full max-w-md h-32 object-cover rounded-lg" />
+                <img src={user.coverImage} alt={`${user.name}'s cover image`} className="w-full max-w-md h-32 object-cover rounded-lg" />
               </div>
             )}
             {user.resumes && user.resumes.length > 0 && (
