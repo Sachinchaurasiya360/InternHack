@@ -95,6 +95,7 @@ export default function LatexChatPanel({ code, onApplyCode, onClose }: LatexChat
   const [jobDescription, setJobDescription] = useState("");
   const [appliedIdx, setAppliedIdx] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const msgKeyRef = useRef(0);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -263,7 +264,7 @@ export default function LatexChatPanel({ code, onApplyCode, onClose }: LatexChat
         <AnimatePresence initial={false}>
           {messages.map((msg, idx) => (
             <motion.div
-              key={idx}
+              key={`${msg.role}-${idx}`}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15 }}
