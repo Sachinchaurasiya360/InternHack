@@ -464,7 +464,10 @@ export default function ResumeBuilderPage() {
     const t = setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }, 500);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
   }, [data]);
   useEffect(() => {
     localStorage.setItem(TEMPLATE_KEY, selectedTemplate);
