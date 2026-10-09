@@ -43,6 +43,8 @@ model user {
   projects                 Json                           @default("[]")
   tokenVersion             Int                            @default(0)
   unsubscribeDigest        Boolean                        @default(false)
+  grantRemindersEnabled    Boolean                        @default(true)
+  grantReminderDays        Int[]                          @default([30, 7, 3, 1])
   profileSlug              String?                        @unique
   passwordResetAttempts    Int                            @default(0)
   passwordResetLockedUntil DateTime?
